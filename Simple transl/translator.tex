@@ -1,0 +1,403 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage[large]{subfigure}
+
+\usepackage{lipsum}
+\usepackage[utf8]{inputenc}
+\usepackage{csvsimple}
+\usepackage{listings}
+
+\usepackage{bm}
+\usepackage{soul}
+\usepackage{rotating}
+
+
+
+% George: I added the following package to solve a problem in my machine about finding figures, please let me know if it does not work for you:
+\usepackage{grffile}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\setlength{\parindent}{0.6em}
+\setlength{\parskip}{0.2 em} 
+
+\makeatletter
+\renewcommand{\paragraph}{%
+  \@startsection{paragraph}{4}%
+  {\z@}{0.2 ex \@plus 1ex \@minus .2ex}{-1em}%
+  {\normalfont\normalsize\bfseries}
+}
+\makeatother
+
+
+
+
+\renewcommand{\baselinestretch}{1.2}
+
+
+\usepackage[font=large]{caption}
+% Si on veut des mini-tables des matières (utiliser minitoc-hyper 
+% en conjonction avec tulhypref) :
+\usepackage[english]{minitoc}
+\usepackage{arydshln}
+%\usepackage{comment}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Packages added by George 
+\usepackage[margin=1.4 in]{geometry}
+\usepackage[colorlinks=true,urlcolor=blue,linkcolor=blue,citecolor=black]{hyperref}
+
+%\addbibresource{ReadingCourse (1).bib}
+\usepackage{graphicx}
+\usepackage[T1]{fontenc}  
+\usepackage[utf8]{inputenc}
+\usepackage{times} 
+\usepackage{amsmath}
+\usepackage{amsfonts}  
+\usepackage{amssymb}
+\usepackage{mathtools}
+%\usepackage{amscd}     
+\usepackage{graphicx}  
+%\usepackage{hyperref}   
+%\usepackage[dvipsnames]{xcolor}  
+
+\usepackage[noend]{algorithmic}  
+\usepackage{algorithm}
+\usepackage{multirow}
+\usepackage{amsthm}
+\usepackage{color}
+\usepackage{tikz-cd}
+\usepackage{tikz}
+\usepackage[alphabetic,y2k]{amsrefs} 
+\usepackage[all]{xy}\SelectTips{cm}{}
+\usepackage{cleveref}
+\crefname{subsection}{subsection}{subsections}
+
+\usepackage{stmaryrd}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{url}
+\usepackage{enumitem}
+\usepackage{mathrsfs}     
+\usepackage[normalem]{ulem} %for sout
+\usepackage{lineno}
+\usepackage{mathtools}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{conj}[thm]{Conjecture}
+\newtheorem{dfn}[thm]{Definition}
+\newtheorem{nota}[thm]{Notation}
+\newtheorem{rem}[thm]{Remark}
+\newtheorem{dfnnota}[thm]{Definition and Notation}
+\newtheorem{notarem}[thm]{Definition and Remark}
+\newtheorem{ex}[thm]{Example}
+
+
+
+\newtheorem{claim}[thm]{Claim}
+
+\newtheorem{prob}[thm]{Problem}
+\newtheorem{ass}[thm]{Assumption}
+\newtheorem{obs}[thm]{Observation}
+\newtheorem{moti}[thm]{Motivation}
+\newtheorem{cons}[thm]{Construction}
+\newtheorem{setup}[thm]{Computational Setup}
+\newtheorem{dfns}{Definitions}[section]
+\newtheorem{axiom}[thm]{Axiom}
+\newtheorem{dis}[thm]{Discussion}
+\numberwithin{equation}{section}
+
+%\numberwithin{figure}{section}
+
+
+
+%Figure numbering, added by George 
+
+ 
+
+
+\renewcommand{\labelenumi}{(\arabic{enumi})}
+\renewcommand{\labelenumiii}{(\roman{enumiii})}
+\renewcommand{\theenumi}{\alph{enumi}}
+\renewcommand{\labelenumi}{(\theenumi)}
+\renewcommand{\theenumii}{\roman{enumii}}
+\renewcommand{\labelenumii}{(\theenumii)}
+
+%semiAlgorithm environment
+\makeatletter
+\newcounter{algorithmbis}
+\setcounter{algorithmbis}{0}
+\renewcommand{\thealgorithmbis}{\arabic{algorithmbis}}
+\def\algorithmbis{\@ifnextchar[{\@algorithmbisa}{\@algorithmbisb}}
+\def\@algorithmbisa[#1][#2]{%
+ ~\refstepcounter{algorithmbis}
+  \trivlist
+  \leftmargin\z@
+  \itemindent\z@
+  \labelsep\z@
+  \item[\parbox{\textwidth}{%
+    \hrule
+    \hrule
+    \noindent\strut\textbf{ #1 \thealgorithmbis}#2 
+    \hrule
+  }]\hfil\vskip0em%
+}
+\def\@algorithmbisb{\@algorithmbisa[]}
+\def\endalgorithmbis{\hfil\vskip-1em\hrule\endtrivlist}
+\makeatother
+
+\renewcommand{\algorithmiccomment}[1]{  $\triangleright$ #1}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:} }
+\newcommand{\termin}{\hspace{-0.84 cm } \textbf{Termination Condition:}}
+% End: Algorithm environment
+
+
+
+
+
+
+
+\newcommand{\Boxx}{\rm{Box}} 
+
+%%%%%%%%%%%%%%%%% REVIEW COLORS  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{xspace}
+\newcommand{\revisionNewOld}[2]{{\color{blue}#1\xspace}{\color{red}\sout{#2}\xspace}}
+\newcommand{\revisionAdd}[1]{{\color{blue}#1\xspace}}
+\newcommand{\revisionMargin}[1]{\textcolor{blue}{$\star$}\marginpar{\scriptsize\color{blue}
+    {$\star$ #1}}}
+\newcommand{\revisionMarginNoStar}[1]{\marginpar{\scriptsize\color{blue}  {#1}}}
+\newcommand{\markRevCom}[2]{\marginpar{\scriptsize\color{blue}  {Reviewer~#1,
+      Comment~#2}}}
+\newcommand{\revisionCertified}[1]{{\color{brown}#1\xspace}}
+
+%% SWITCH BETWEEN COMMENTED OR NOT COMMENTED VERSIONS
+\newcounter{version}
+\setcounter{version}{0}
+\setcounter{version}{1}
+% 0 means version with colors and margin comments
+% 1 means version with without colors and without margin comments, that is true
+% final version
+\ifnum \value{version}=1
+  %% REMOVE COLORS and margin comments
+  \renewcommand{\revisionNewOld}[2]{{#1\xspace}}
+  \renewcommand{\revisionAdd}[1]{{#1\xspace}}
+  \renewcommand{\revisionMargin}[1]{}
+  \renewcommand{\revisionMarginNoStar}[1]{}
+  \renewcommand{\markRevCom}[2]{}
+  \renewcommand{\revisionCertified}[1]{{#1\xspace}}
+
+
+
+
+
+
+
+
+\newcommand*{\logeq}{\ratio\Leftrightarrow}
+\newcommand{\spec}{\operatorname{spec}}
+\newcommand{\Gr}{\operatorname{Gr}}
+\newcommand{\Emb}{\operatorname{Emb}}
+
+
+%%%%%%%%%%%%%%%%% Comments %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% One way to insert comments
+\newcommand{\george}[1]{\textcolor{brown}{\textsc{George: } {\sf #1}}}
+\newcommand{\gk}[2]{{\color{blue}$\star$}\marginpar{\tiny\color{blue} George: #1\space}}
+\newcommand{\gkr}[2]{{\color{red}$\star$}\marginpar{\tiny\color{red} George: #1\space}}
+\newcommand{\MP}[1]{\textcolor{cyan}{\textsc{Marc: } {\sf #1}}}
+\newcommand{\GM}[1]{\marginpar{\tiny\textcolor{BrickRed}{\textsc{G: }
+{#1}}}}
+\newcommand{\SL}[2]{{\textcolor{Red} {#1}} \sout{\textcolor{green}{#2}}}
+\newcommand{\SLa}[1]{\textcolor{Red} {#1}}
+\newcommand{\SLr}[1]{\sout{\textcolor{green}{#1}}}
+%% Without comments:
+%\renewcommand{\SL}[2]{{\textcolor{Red} {#1}}}
+%\renewcommand{\SLa}[1]{\textcolor{Red} {#1}}
+%\renewcommand{\SLr}[1]{}
+% another way
+\newcommand{\syl}[1]{\textcolor{blue}{$\star$}\marginpar{\textcolor{blue}{ \tiny
+      Syl: #1}}}
+\newcommand{\marc}[1]{\textcolor{cyan}{$\star$}\marginpar{\textcolor{cyan}{ \tiny
+      Marc: #1}}}
+
+%\usepackage{easyReview}
+%\usepackage{authblk}
+
+
+%MARC
+
+\newcommand {\R}{\mathbb R}
+\newcommand {\A}{\mathbb A}
+\newcommand {\Q}{\mathbb Q}
+\newcommand {\C}{\mathbb C}
+\newcommand {\Z}{\mathbb Z}
+\newcommand {\N}{\mathbb N}
+\newcommand {\Cn}{\mathfrak{C}}
+\newcommand {\Cnb}{\overline{\Cn}}
+\newcommand {\LL}{\mathfrak{L}}
+\newcommand {\Lc}{\LL_{\rm c}}
+\newcommand {\Lcp}{\Lc^{\prime}}
+\newcommand {\Ln}{\LL_{\rm n}}
+\newcommand {\Lnp}{\Ln^{\prime}}
+\newcommand {\Lh}{\widehat{\LL}}
+\newcommand {\Lnh}{\Lh_{\rm n}}
+\newcommand {\Lch}{\Lh_{\rm c}}
+\newcommand {\Ball}{\mathrm{Ball}}
+\newcommand {\codim}{\mathrm{codim}}
+\newcommand{\Ub}{\overline{\mathfrak{U}}}
+
+\newcommand{\Pt}{\widetilde{P}}
+\newcommand{\calA}{\mathcal{A}}
+\newcommand{\rank}{\operatorname{rank}}
+\newcommand{\ord}{\operatorname{ord}}
+\newcommand{\Bbox}{\mathfrak{B}}
+\renewcommand{\le}{\leqslant}
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\ge}{\geqslant}
+\renewcommand{\geq}{\geqslant}
+\newcommand{\mult}{\operatorname{mult}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%For embadding codes 
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\large\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\Large,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%For controling the margin locally 
+\newenvironment{changemargin}[2]{%
+\begin{list}{}{%
+\setlength{\topsep}{0pt}%
+\setlength{\leftmargin}{#1}%
+\setlength{\rightmargin}{#2}%
+\setlength{\listparindent}{\parindent}%
+\setlength{\itemindent}{\parindent}%
+\setlength{\parsep}{\parskip}%
+}%
+\item[]}{\end{list}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+\begin{document}
+\large
+
+
+  
+
+Consider a positive integer $n$ and a  set of parametrized   processes: 
+
+\begin{lstlisting}[language=Python]
+ process Given_proc \in  1 .. n   
+    Ai_1,  Bi_1 
+    Ai_2,  Bi_2
+    .........
+    .........
+    Ai_mi,  Bi_mi
+ end process    
+
+\end{lstlisting}
+where  \emph{$Ai\_j$},  \emph{$Bi\_j$}, with $1\leq j\leq mi$,  are  translatable expressions to Cubicle. In particular, 
+\emph{$Ai\_j$}  includes only primed-free variables.   
+
+
+Let \emph{Translation($Ai\_j)$} and \emph{Translation($Bi\_j)$} be the translation (to Cubicle) of $Ai\_j$ and $Bi\_j$ respectively, then  the translation is  done by an integer vector \emph{$pointer$}:
+
+\begin{lstlisting}[language=C++]
+array pointer[proc] : int
+\end{lstlisting}
+
+
+ and a set of Cubicle transitions which are: 
+\begin{lstlisting}[language=C++]
+transition output_trans (i j) 
+ requires {  
+ pointer[i]=j  && 
+ Translation(Ai_j)  }     
+ { 
+ Translation({Bi_j) 
+ (*removing the prime signs from variables*)
+ && pointer[i]=j+1 
+\end{lstlisting}
+
+\section*{Simple Spec translation}
+
+
+\paragraph{Initial state}: still not sure 
+
+
+\paragraph{Next state:} Will be equivalent to the set of transitions
+For a simple Spec of the form: 
+\begin{lstlisting}[language=Python]
+CONSTANT con1, ... ,conk
+VARIABLES var1 .. vart
+
+Init==  /\ A1 
+            .......
+            .......
+        /\ Am
+
+Next== \/ (B1 /\ B1')
+           ..........
+           ..........
+       \/ (Bh /\ Bh')    
+
+Spec== Init \/ []Next_<<vars>>
+\end{lstlisting}
+
+
+the translation is 
+
+
+\begin{lstlisting}[language=Python]
+const :  con1
+ ... 
+ const : conk
+
+VARIABLES var1 .. vart (*how to translate?*)
+ 
+
+\end{lstlisting}
+
+
+
+\bibliographystyle{unsrt}
+\bibliography{bibl}
+
+\end{document}
+
