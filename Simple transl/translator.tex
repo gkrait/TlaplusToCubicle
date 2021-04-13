@@ -320,81 +320,108 @@
 
   
 
-Consider a positive integer $n$ and a  set of parametrized   processes: 
+We consider the following TLA+ Spec which we want to translate.
 
 \begin{lstlisting}[language=Python]
- process Given_proc \in  1 .. n   
-    Ai_1,  Bi_1 
-    Ai_2,  Bi_2
-    .........
-    .........
-    Ai_mi,  Bi_mi
- end process    
+CONSTANTS c1, .. , cm
 
+ASSUME   (* declaring the the constants values, e.g., c1= 5   *)  
+
+VARIABLES x1,.., xn
+
+TypeOK == 
+          /\ xn \in Set_n
+
+          /\ x1 \in Set_1
+          ....
+          ....
+          /\ xn \in Set_n
+
+Invariants == (* Defining the invariants of the Spec *)           
+
+(* I_i is a state predicate that determines the initial state of x_i *)
+
+Init == /\ I_1    
+        /\ I_2 
+        .....
+        .....
+        /\ I_n 
+
+(* N_i is a next-state relation (more details are below *)
+
+Next == \/  N1 
+        \/  N2 
+            ...
+            ...
+        \/  N_k 
+
+Spec == Init \/ []Next_<<x1, .. xn>>        
 \end{lstlisting}
-where  \emph{$Ai\_j$},  \emph{$Bi\_j$}, with $1\leq j\leq mi$,  are  translatable expressions to Cubicle. In particular, 
-\emph{$Ai\_j$}  includes only primed-free variables.   
-
-
-Let \emph{Translation($Ai\_j)$} and \emph{Translation($Bi\_j)$} be the translation (to Cubicle) of $Ai\_j$ and $Bi\_j$ respectively, then  the translation is  done by an integer vector \emph{$pointer$}:
-
-\begin{lstlisting}[language=C++]
-array pointer[proc] : int
-\end{lstlisting}
-
-
- and a set of Cubicle transitions which are: 
-\begin{lstlisting}[language=C++]
-transition output_trans (i j) 
- requires {  
- pointer[i]=j  && 
- Translation(Ai_j)  }     
- { 
- Translation({Bi_j) 
- (*removing the prime signs from variables*)
- && pointer[i]=j+1 
-\end{lstlisting}
-
-\section*{Simple Spec translation}
-
-
-\paragraph{Initial state}: still not sure 
-
-
-\paragraph{Next state:} Will be equivalent to the set of transitions
-For a simple Spec of the form: 
-\begin{lstlisting}[language=Python]
-CONSTANT con1, ... ,conk
-VARIABLES var1 .. vart
-
-Init==  /\ A1 
-            .......
-            .......
-        /\ Am
-
-Next== \/ (B1 /\ B1')
-           ..........
-           ..........
-       \/ (Bh /\ Bh')    
-
-Spec== Init \/ []Next_<<vars>>
-\end{lstlisting}
-
-
-the translation is 
-
-
-\begin{lstlisting}[language=Python]
-const :  con1
- ... 
- const : conk
-
-VARIABLES var1 .. vart (*how to translate?*)
  
 
+\section*{Rules of translation}
+
+ 
+\subsection*{CONSTANTS} Each TLA-constant $ci$ is  translated in a straightforward  way  by:  
+   
+\begin{lstlisting}[language=Java]
+const ci : Type(ci) 
 \end{lstlisting}
 
+\emph{$Type(ci)$} is obtained by "ASSUME" expression. If \emph{$Type(ci)$} is Int, BOOLEAN or a tuple of integer or boolean values, then its translation is int,  bool or array respectively.\footnote{Indeed, it is possible to define multi-dimensional tuples in Cubicle language as done in Example \emph{$distrib\_channels.cub$} which can be found in "Examples" folder} 
 
+
+\subsection*{VARIABLES} For every variable $xi$, the type  \emph{$Type(xi)$} is obtained from the predicate \emph{$TypeOK$}. IF \emph{$TypeOK$} is Int, BOOLEAN, then the translation is: 
+
+\begin{lstlisting}[language=Java]
+var xi : Type(xi) 
+\end{lstlisting}
+
+If $xi$ is a tuple, then the translation is 
+
+\begin{lstlisting}[language=Java]
+array xi : Type(xi) 
+\end{lstlisting}
+
+\subsection*{Initial state} 
+Let $h$ be the maximal dimension of the tuple variables, i.e., $h=\max\{dim(xi)\mid 1\leq i \leq n\}$\footnote{By dimension we mean the minimum number of indexes needed to parametrize $xi$.} 
+The translation of \emph{Init} is:
+
+\begin{lstlisting}[language=Java]
+init (z1 z2 ... zh) {
+                       Translation(I_1) 
+                       && Translation(I_2)
+                       ...
+                       ...
+                       && Translation(I_n)
+                        }
+\end{lstlisting}
+assuming the existence and feasibility of \emph{$Translation(I\_1)$}.
+
+
+\color{red} George: I am still thinking about the following section, so the strategy used there may not be the best one. \color{black}
+\subsection*{The next-state relation} 
+We consider several cases:
+
+
+\begin{enumerate}
+\item If  $N\_i$ is defined as:
+
+\begin{lstlisting}[language=Python]
+N_i == \E y1 ... yb : S1(y1,..,yb) /\ S2(y1,..,yb,y1',..,yb')
+\end{lstlisting}
+
+where $S1(y1,..,yb)$  and $S2(y1,..,yb,y1',..,yb')$  are a state predicate and a next-state relation respectively, i.e., $S1$ describes the preconditioning and $S2$ defined the probed variables. Then  $N\_i$ is translated to: 
+
+\begin{lstlisting}[language=Java]
+transition N_i (y1 ... yb) 
+
+requires {  Translation(S1) }
+{ Translation(S2(y1,..,yb,y1,..,yb)) }
+
+\end{lstlisting}
+
+\end{enumerate}
 
 \bibliographystyle{unsrt}
 \bibliography{bibl}
