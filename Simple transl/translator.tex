@@ -225,8 +225,7 @@
 %\renewcommand{\SLa}[1]{\textcolor{Red} {#1}}
 %\renewcommand{\SLr}[1]{}
 % another way
-\newcommand{\syl}[1]{\textcolor{blue}{$\star$}\marginpar{\textcolor{blue}{ \tiny
-      Syl: #1}}}
+\newcommand{\ste}[1]{\par\noindent\textcolor{blue}{\small Stephan: #1}}
 \newcommand{\marc}[1]{\textcolor{cyan}{$\star$}\marginpar{\textcolor{cyan}{ \tiny
       Marc: #1}}}
 
@@ -370,6 +369,10 @@ const ci : Type(ci)
 
 \emph{$Type(ci)$} is obtained by "ASSUME" expression. If \emph{$Type(ci)$} is Int, BOOLEAN or a tuple of integer or boolean values, then its translation is int,  bool or array respectively.\footnote{Indeed, it is possible to define multi-dimensional tuples in Cubicle language as done in Example \emph{$distrib\_channels.cub$} which can be found in "Examples" folder} 
 
+\ste{Should clarify what Type(ci) can be. Int, Boolean, functions, records? And
+  probably we want to handle the constant representing processes in a special
+  way, mapping it to the type proc of Cubicle.}
+
 
 \subsection*{VARIABLES} For every variable $xi$, the type  \emph{$Type(xi)$} is obtained from the predicate \emph{$TypeOK$}. IF \emph{$TypeOK$} is Int, BOOLEAN, then the translation is: 
 
@@ -378,6 +381,10 @@ var xi : Type(xi)
 \end{lstlisting}
 
 If $xi$ is a tuple, then the translation is 
+
+\ste{More precisely, xi is not a tuple but you retrieve that information from
+  the type that is declared for the variable. Should clarify what kinds of sets
+  are allowed in the TypeOK predicate.}
 
 \begin{lstlisting}[language=Java]
 array xi : Type(xi) 
@@ -398,6 +405,8 @@ init (z1 z2 ... zh) {
 \end{lstlisting}
 assuming the existence and feasibility of \emph{$Translation(I\_i)$}.
 
+\ste{Again, the exact form of the initializations in the subset of TLA+ that we
+  are prepared to handle will have to be determined.}
 
 
 \subsection*{The next-state relation} 
@@ -422,6 +431,12 @@ requires {  Translation(S1) }
 
 \end{lstlisting}
 
+\ste{I presume that x1,\dots,xb are the variables? Here too we will have to fix
+  the syntactic form of actions (S1 and S2 parts) that will be allowed, and then
+  define the translation function accordingly. For example, do we treat
+  conjunction, disjunction, conditionals, let expressions etc.
+  One detail is that the TLA+ action will contain UNCHANGED predicates (or
+  conjuncts xi' = xi) that will be ignored by Cubicle.}
 
 \item If  $N\_i$ is defined as:
 
@@ -439,6 +454,9 @@ requires {  Translation(S1) }
 
 \end{lstlisting}
 
+\ste{In fact, the S1 and S2 parts contain the variables xi as above as well as
+  the parameters yj, but the latter only unprimed.}
+
 \item If  $N\_i$ is defined as:
 \begin{lstlisting}[language=Python]
 N_i == \A y . N_i' 
@@ -446,7 +464,16 @@ N_i == \A y . N_i'
 where $N\_i' $ is as $N\_i$  in (a) or (b), then the translation is 
 \color{red} George: Still investigating \color{black}
 
- \end{enumerate}
+\ste{Do you have a concrete example of such an action in a specification?}
+
+\end{enumerate}
+
+\ste{I have the feeling that the overall shape of the translation that you
+  describe applies to the disjuncts of the next-state relation, but a TLA+
+  specification may contain other definitions as well (that may be building
+  blocks for defining the actions that make up Next). It seems to me that we
+  need to proceed top-down starting from the initial and next-state predicates.
+  What these are can be identified by a ``configuration'' file as used for TLC.}
 
 \bibliographystyle{unsrt}
 \bibliography{bibl}
