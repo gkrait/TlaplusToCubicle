@@ -396,15 +396,33 @@ init (z1 z2 ... zh) {
                        && Translation(I_n)
                         }
 \end{lstlisting}
-assuming the existence and feasibility of \emph{$Translation(I\_1)$}.
+assuming the existence and feasibility of \emph{$Translation(I\_i)$}.
 
 
-\color{red} George: I am still thinking about the following section, so the strategy used there may not be the best one. \color{black}
+
 \subsection*{The next-state relation} 
 We consider several cases:
 
 
 \begin{enumerate}
+
+\item If  $N\_i$ is defined as:
+
+\begin{lstlisting}[language=Python]
+N_i == S1(x1,..,xb) /\ S2(x1,..,xb,x1',..,xb')
+\end{lstlisting}
+, that is, $N\_i$ has no quantifier. Then the translation of  $N\_i$ is: 
+
+
+\begin{lstlisting}[language=Java]
+transition N_i 
+
+requires {  Translation(S1) }
+{ Translation(S2(x1,..,xb,x1',..,xb') }
+
+\end{lstlisting}
+
+
 \item If  $N\_i$ is defined as:
 
 \begin{lstlisting}[language=Python]
@@ -421,7 +439,14 @@ requires {  Translation(S1) }
 
 \end{lstlisting}
 
-\end{enumerate}
+\item If  $N\_i$ is defined as:
+\begin{lstlisting}[language=Python]
+N_i == \A y . N_i' 
+\end{lstlisting}
+where $N\_i' $ is as $N\_i$  in (a) or (b), then the translation is 
+\color{red} George: Still investigating \color{black}
+
+ \end{enumerate}
 
 \bibliographystyle{unsrt}
 \bibliography{bibl}
