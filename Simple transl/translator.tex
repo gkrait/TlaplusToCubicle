@@ -367,14 +367,15 @@ Spec == Init \/ []Next_<<x1, .. xn>>
 const ci : Type(ci) 
 \end{lstlisting}
 
-\emph{$Type(ci)$} is obtained by "ASSUME" expression. If \emph{$Type(ci)$} is Int, BOOLEAN or a tuple of integer or boolean values, then its translation is int,  bool or array respectively.\footnote{Indeed, it is possible to define multi-dimensional tuples in Cubicle language as done in Example \emph{$distrib\_channels.cub$} which can be found in "Examples" folder} 
+\emph{$Type(ci)$} is obtained by "ASSUME" expression. If \emph{$Type(ci)$} is Int, BOOLEAN or a tuple of integer or boolean values, then its translation is int,  bool or array respectively.\footnote{Indeed, it is possible to define multi-dimensional tuples in Cubicle language as done in Example \emph{$distrib\_channels.cub$} which can be found in "Examples" folder} \george{So far, the other TLA++ data types are still not considered in this translator.  }  
 
 \ste{Should clarify what Type(ci) can be. Int, Boolean, functions, records? And
   probably we want to handle the constant representing processes in a special
   way, mapping it to the type proc of Cubicle.}
 
+\george{Do you mean the domain of pc? if so, indeed, I have not thought about it. I am searching.}
 
-\subsection*{VARIABLES} For every variable $xi$, the type  \emph{$Type(xi)$} is obtained from the predicate \emph{$TypeOK$}. IF \emph{$TypeOK$} is Int, BOOLEAN, then the translation is: 
+\subsection*{VARIABLES} For every variable $xi$, the type  \emph{$Type(xi)$} is obtained from the predicate \emph{$TypeOK$}. If \emph{$Type(xi)$} is Int, BOOLEAN, then the translation is: 
 
 \begin{lstlisting}[language=Java]
 var xi : Type(xi) 
