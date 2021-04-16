@@ -329,8 +329,6 @@ ASSUME   (* declaring the the constants values, e.g., c1= 5   *)
 VARIABLES x1,.., xn
 
 TypeOK == 
-          /\ xn \in Set_n
-
           /\ x1 \in Set_1
           ....
           ....
@@ -373,7 +371,13 @@ const ci : Type(ci)
   probably we want to handle the constant representing processes in a special
   way, mapping it to the type proc of Cubicle.}
 
-\george{Do you mean the domain of pc? if so, indeed, I have not thought about it. I am searching.}
+\george{I am not sure how to recognize such a constant... Do you think we ask the user to declare that a constant represents processes?  }
+
+
+\subsection*{TypeOK} \george{This predicate is required to obtain the types of variables. The objects $S\_1 \dots S\_n$ are sets of integers booleans or arrays (of integers or booleans).  } 
+
+
+
 
 \subsection*{VARIABLES} For every variable $xi$, the type  \emph{$Type(xi)$} is obtained from the predicate \emph{$TypeOK$}. If \emph{$Type(xi)$} is Int, BOOLEAN, then the translation is: 
 
@@ -409,9 +413,10 @@ assuming the existence and feasibility of \emph{$Translation(I\_i)$}.
 \ste{Again, the exact form of the initializations in the subset of TLA+ that we
   are prepared to handle will have to be determined.}
 
+\george{Please see my last answer below.}
 
 \subsection*{The next-state relation} 
-We consider several cases:
+Assuming the existence and feasibility of \emph{$Translation(N\_i)$}, we consider several cases:
 
 
 \begin{enumerate}
@@ -439,6 +444,8 @@ requires {  Translation(S1) }
   One detail is that the TLA+ action will contain UNCHANGED predicates (or
   conjuncts xi' = xi) that will be ignored by Cubicle.}
 
+  \george{Please see my last answer below.}
+
 \item If  $N\_i$ is defined as:
 
 \begin{lstlisting}[language=Python]
@@ -457,6 +464,7 @@ requires {  Translation(S1) }
 
 \ste{In fact, the S1 and S2 parts contain the variables xi as above as well as
   the parameters yj, but the latter only unprimed.}
+  \george{To be discussed}
 
 \item If  $N\_i$ is defined as:
 \begin{lstlisting}[language=Python]
@@ -466,7 +474,7 @@ where $N\_i' $ is as $N\_i$  in (a) or (b), then the translation is
 \color{red} George: Still investigating \color{black}
 
 \ste{Do you have a concrete example of such an action in a specification?}
-
+\george{No,  I am very confused about the necessity and feasibility of this part. That is why it is still under progress. }
 \end{enumerate}
 
 \ste{I have the feeling that the overall shape of the translation that you
@@ -475,6 +483,8 @@ where $N\_i' $ is as $N\_i$  in (a) or (b), then the translation is
   blocks for defining the actions that make up Next). It seems to me that we
   need to proceed top-down starting from the initial and next-state predicates.
   What these are can be identified by a ``configuration'' file as used for TLC.}
+
+  \george{In fact, I agree that the current text considers only the shape you mentioned. However, do not you think that this is how to start from a high level. This is why I assume the existence and feasibility of \emph{$Translation(I\_i)$} and \emph{$Translation(N\_i)$}. In my plan, it is expected that I do not have an explicit form of $N\_i$ and $I\_i$. On the other hand, once I have a "good" global description of the rules of translation, the next step is to go a level lower which is where I expect to get a better idea about subset of TLA+ that can be translated to Cubicle. Do you agree?. }
 
 \bibliographystyle{unsrt}
 \bibliography{bibl}
