@@ -316,9 +316,53 @@
 \begin{document}
 \large
 
-
+\section*{Remarks}
   
 
+
+\subsection*{Initial state} 
+Suppuse that the spec has the vatiables $x1, \dots, xn$ of types \george{still not the complete list of types}.  
+Assume that the initial state is of the form: 
+
+\begin{lstlisting}[language=Python]
+Init == /\ I_1    
+        /\ I_2 
+        .....
+        .....
+        /\  I_n 
+\end{lstlisting}
+where $I\_i$ is of the form:
+
+ \emph{$x\_i  \text{ } = \text{ } Value_i $ }
+
+ or 
+
+ \emph{$x\_i  \text{ } \backslash in \text{ } Value_i $ },
+
+  where $Value_i$ is a set in this case. We are going to describe in details how to translate the initial state depending on the "shape" of $Value_i$: Let $h$ be the maximal dimension of the tuple variables, i.e., $h=\max\{dim(xi)\mid 1\leq i \leq n\}$\footnote{By dimension we mean the minimum number of indexes needed to parametrize $xi$.} The translation of \emph{Init}  is parametrized by $h$ variables, that is, the Cubicle intial state takes the form 
+\begin{lstlisting}[language=Python]
+init (z1 ... zh) { Trans(I_1) 
+                   &&  Trans(I_2) 
+                    ... 
+                   && Trans(I_n)}
+\end{lstlisting}
+  We are going to determine how to compute  $Trans(I\_i)$. 
+
+\begin{enumerate}
+\item If $Value_i$ is an integer or boolean value, then the translation is straightforward. 
+\item If $Value_i$ is a function with a domain $C$, where $C$ is a constant in the Spec, that is, 
+$Value_i= [x \in C  |-> Target_i]$, where $Target_i$ is a constant function parametrized by $C$, then the translation is 
+
+$Trans(I\_1)= Target_i[X_i]$ where $X_i = \{z1 \dots zi\} $ and $i=dim(C)$ 
+
+\end{enumerate}
+
+
+
+
+
+
+\color{red} George: The rest is still not ready : 
 We consider the following TLA+ Spec which we want to translate.
 
 \begin{lstlisting}[language=Python]
@@ -395,20 +439,6 @@ If $xi$ is a tuple, then the translation is
 array xi : Type(xi) 
 \end{lstlisting}
 
-\subsection*{Initial state} 
-Let $h$ be the maximal dimension of the tuple variables, i.e., $h=\max\{dim(xi)\mid 1\leq i \leq n\}$\footnote{By dimension we mean the minimum number of indexes needed to parametrize $xi$.} 
-The translation of \emph{Init} is:
-
-\begin{lstlisting}[language=Java]
-init (z1 z2 ... zh) {
-                       Translation(I_1) 
-                       && Translation(I_2)
-                       ...
-                       ...
-                       && Translation(I_n)
-                        }
-\end{lstlisting}
-assuming the existence and feasibility of \emph{$Translation(I\_i)$}.
 
 \ste{Again, the exact form of the initializations in the subset of TLA+ that we
   are prepared to handle will have to be determined.}
@@ -444,7 +474,7 @@ requires {  Translation(S1) }
   One detail is that the TLA+ action will contain UNCHANGED predicates (or
   conjuncts xi' = xi) that will be ignored by Cubicle.}
 
-  \george{Please see my last answer below.}
+  \george{Please see my last answer below.  }
 
 \item If  $N\_i$ is defined as:
 

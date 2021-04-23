@@ -6,7 +6,7 @@ type msg = Empty
 
 (* var Timer : real *)
 
-array State[proc] : state
+array state[proc] : state
 
 array Num[proc] : real
 array Aux[proc] : real
@@ -29,7 +29,7 @@ init (z z1) { State[z] = Idle &&
 unsafe (z1 z2) {
   State[z1] = Use && State[z2] = Use &&
   Channel_msg[z1,z2] = Ok2 && Channel_msg[z2,z1] = Ok2
-}
+} 
 
 
 transition t1 (z)
@@ -39,7 +39,7 @@ requires { State[z] = Idle && 0.0 < Tick }
   State[z] := Choose;
   Aux[z] := Num[z];
   
-  Channel_msg[s,r] := case
+    Channel_msg[s,r] := case
       | s = z && r <> z && Channel_msg[s,r] = Empty : Req1
       | _ : Channel_msg[s,r];
   Channel_v[s,r] :=  case
