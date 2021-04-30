@@ -1,3 +1,6 @@
+%!TEX program = Lualatex
+
+
 \documentclass{article}
 \usepackage{graphicx}
 \usepackage[large]{subfigure}
@@ -72,9 +75,15 @@
 \usepackage{color}
 \usepackage{tikz-cd}
 \usepackage{tikz}
+\usetikzlibrary{graphdrawing.trees}
 \usepackage[alphabetic,y2k]{amsrefs} 
-\usepackage[all]{xy}\SelectTips{cm}{}
+%\usepackage[all]{xy}\SelectTips{cm}{}
 \usepackage{cleveref}
+
+
+
+\usepackage{qtree}
+
 \crefname{subsection}{subsection}{subsections}
 
 \usepackage{stmaryrd}
@@ -274,12 +283,12 @@
 \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
 
 \lstdefinestyle{mystyle}{
-    backgroundcolor=\color{backcolour},   
+    backgroundcolor=\color{white},   
     commentstyle=\color{codegreen},
     keywordstyle=\color{magenta},
-    numberstyle=\large\color{codegray},
+    numberstyle=\tiny\color{codegray},
     stringstyle=\color{codepurple},
-    basicstyle=\ttfamily\Large,
+    basicstyle=\ttfamily\small,
     breakatwhitespace=false,         
     breaklines=true,                 
     captionpos=b,                    
@@ -310,13 +319,13 @@
 
 
 
-
+\usetikzlibrary{trees}
 
 
 \begin{document}
 \large
 
-\section*{Remarks}
+\section{Basics}
   
 
 
@@ -325,40 +334,131 @@ Suppuse that the spec has the vatiables $x1, \dots, xn$ of types \george{still n
 Assume that the initial state is of the form: 
 
 \begin{lstlisting}[language=Python]
-Init == /\ I_1    
-        /\ I_2 
+Init == /\ x1= Value_1  
+        /\ x2= Value_2  
         .....
         .....
-        /\  I_n 
+        /\  xn= Value_n   
 \end{lstlisting}
-where $I\_i$ is of the form:
 
- \emph{$x\_i  \text{ } = \text{ } Value_i $ }
-
- or 
-
- \emph{$x\_i  \text{ } \backslash in \text{ } Value_i $ },
-
-  where $Value_i$ is a set in this case. We are going to describe in details how to translate the initial state depending on the "shape" of $Value_i$: Let $h$ be the maximal dimension of the tuple variables, i.e., $h=\max\{dim(xi)\mid 1\leq i \leq n\}$\footnote{By dimension we mean the minimum number of indexes needed to parametrize $xi$.} The translation of \emph{Init}  is parametrized by $h$ variables, that is, the Cubicle intial state takes the form 
-\begin{lstlisting}[language=Python]
-init (z1 ... zh) { Trans(I_1) 
-                   &&  Trans(I_2) 
+We are going to describe in details how to translate the initial state depending on the "shape" of $Value_i$: Let $h$ be the maximal dimension of the tuple variables, i.e., $h=\max\{dim(xi)\mid 1\leq i \leq n\}$\footnote{By dimension we mean the minimum number of indexes needed to parametrize $xi$.} The translation of \emph{Init}  is parametrized by $h$ variables, that is, the Cubicle intial state takes the form 
+\begin{lstlisting}[language=java]
+init (z1 ... zh) { Trans(x1= Value_1) 
+                   &&  Trans(x2= Value_2) 
                     ... 
-                   && Trans(I_n)}
+                   && Trans(xn= Value_n)}
 \end{lstlisting}
-  We are going to determine how to compute  $Trans(I\_i)$. 
+  Now we determine (when possible) more explicitly  how to compute  $\emph{Trans(x2= Value\_2)}$. We consider the following cases: 
+
+
+
+
 
 \begin{enumerate}
-\item If $Value_i$ is an integer or boolean value, then the translation is straightforward. 
-\item If $Value_i$ is a function with a domain $C$, where $C$ is a constant in the Spec, that is, 
-$Value_i= [x \in C  |-> Target_i]$, where $Target_i$ is a constant function parametrized by $C$, then the translation is 
+\item  $Value\_i$ is an integer or boolean value, then the translation is straightforward. For  the case where $Value\_i$ is a string, an abstract type is already defined with  $Value\_i$ is  one of its values \gk{will refer to the related detailed part once it is ready}..
+\item  $Value\_i= [x \in C \text{  }$  |-> $\text{  }  Target_i]$, where $C$ is a constant in the Spec and $Target_i$ is a constant function (not necessarily declared as a constant) with the domain $C$. Then, $xi=Value\_i$  is translated to 
 
-$Trans(I\_1)= Target_i[X_i]$ where $X_i = \{z1 \dots zi\} $ and $i=dim(C)$ 
+$xi[Xi]=Target_i[X_i]$, where $X_i = \{z1 \dots zi\} $ and $i=dim(C)$. A condition to check is $dim(C)=dim(xi)$. The type of $Target_i[X_i]$ is integer, boolean or string \gk{still investigating about the other data types}.. For  the case where $Target_i[X_i]$ is a string, an abstract type is already defined with $Target_i[X_i]$ is  one of its values \gk{will refer to the related detailed part once it is ready}..
+
+
+\item For a constant $C$,  $\emph{case\_1, \dots, case\_k}$ are state predicates, and $\emph{Value\_i1, \dots, Value\_ik}$ are state functions,  if $xi$ is initialized as follows: 
+\begin{lstlisting}[language=Python]
+xi = [self \in C |-> CASE case_1 -> Value_i1
+                 [] case_2 -> Value_i2
+                      ....
+                 [] case_k -> Value_ik
+\end{lstlisting} 
+then the translation is of the form:
+
+\begin{lstlisting}[language=java ]
+(x_1[X1] =  Trans(Value_i1)  &&  Trans(case_1) )
+|| (x_2[X2] =  Trans(Value_i2)  &&  Trans(case_2))    
+   ...
+   ...  
+|| (x_k[Xk] =  Trans(Value_ik)  &&  Trans(case_k)) 
+\end{lstlisting}
+See \gk{refer to the corresponding part once it is ready}. for the translation of state predicates and state functions.
+
+\item As a special case $xi  \text{ }\backslash in \text{ } \{e1, \dots, ek\}$, where $ei$ is of type integer, boolean or string. \gk{still investigating about the other data types}. Then,  the translation is 
+\begin{lstlisting}[language=java]
+   x_i =  e1   
+   || x_i =e2    
+   ...
+   ...  
+   || x_i=ek  
+\end{lstlisting}
+
+
+
+
 
 \end{enumerate}
 
 
+ 
 
+\subsection*{Next state} 
+
+Assume that the Next predicate is of the form: 
+
+\begin{lstlisting}[language=Python]
+Next == \/  N1 
+        \/  N2 
+            ...
+            ...
+        \/  N_k 
+\end{lstlisting}
+
+where $Ni$ is one of the following: 
+\begin{enumerate}
+\item $Ni=$ \emph{$\backslash E \text{ } \text{ }self \backslash in \text{ } C: P(self)$}
+for a constant $C$ and $P(self)=P_p /\backslash P_n $, with $P_p$ and $P_n$ are  next-state relation and  state predicate respectively.  Then, the translation is of the form: 
+\begin{lstlisting}[language=Java]
+transition Ni(z) 
+requires {  Trans(P_p) }
+{ Trans(P_n)}
+
+\end{lstlisting}
+
+$Trans(P_p)$  and $P_n$  can be computed as in 
+\gk{will refer to the related detailed part once it is ready}..
+
+
+
+
+\end{enumerate}
+
+
+\iffalse
+
+\begin{tikzpicture}[
+  man/.style={rectangle,draw,fill=blue!20},
+  woman/.style={rectangle,draw,fill=red!20,rounded corners=.8ex},
+  grandchild/.style={grow=down,xshift=1em,anchor=west,
+    edge from parent path={(\tikzparentnode.south) |- (\tikzchildnode.west)}},
+  first/.style={level distance=6ex},
+  second/.style={level distance=12ex},
+  third/.style={level distance=18ex},
+  level 1/.style={sibling distance=5em}]
+    % Parents
+    \coordinate
+      child[grow=left] {node[man,anchor=east]{Jim}}
+      child[grow=right] {node[woman,anchor=west]{Jane}}
+      child[grow=down,level distance=0ex]
+    [edge from parent fork down]
+    % Children and grandchildren
+    child{node[man] {Alfred}
+      child[grandchild,first] {node[man]{Joe}}
+      child[grandchild,second] {node[woman]{Heather}}
+      child[grandchild,third] {node[woman] {Barbara}}}
+    child{node[woman] {Berta}
+      child[grandchild,first] {node[man]{Howard}}}
+    child {node[man] {Charles}}
+    child {node[woman]{Doris}
+      child[grandchild,first] {node[man]{Nick}}
+      child[grandchild,second] {node[woman]{Liz}}};
+\end{tikzpicture}l
+\fi
 
 
 
@@ -466,6 +566,12 @@ requires {  Translation(S1) }
 { Translation(S2(x1,..,xb,x1',..,xb') }
 
 \end{lstlisting}
+
+
+
+
+
+
 
 \ste{I presume that x1,\dots,xb are the variables? Here too we will have to fix
   the syntactic form of actions (S1 and S2 parts) that will be allowed, and then
