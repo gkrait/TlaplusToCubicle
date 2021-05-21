@@ -15,6 +15,21 @@
 \usepackage{rotating}
 
 
+\usepackage[shortlabels]{enumitem}
+
+
+\newcounter{questioncounter}
+
+\newenvironment{question}{% 
+  \refstepcounter{questioncounter}
+ \list{\thequestioncounter .}{%
+ \item
+   \begingroup
+ }%
+ \endgroup
+}{\endlist}
+
+
 
 % George: I added the following package to solve a problem in my machine about finding figures, please let me know if it does not work for you:
 \usepackage{grffile}
@@ -325,11 +340,28 @@
 \begin{document}
 \large
 
-\section{Basics}
+\section{High-level rules of translation }
   
+\subsection{Translator input}
+The input is a TLA+ Spec that has the following properties. 
+
+\subsubsection{TypeOK} The TLA+ Spec is supposed to contain an invariant \emph{TypeOK}.  This predicate is required to obtain the types of variables. In \eqref{TypeOkcodes}, the objects $S\_1 \dots S\_n$ are sets of integers booleans or arrays (of integers or booleans). Notice that the formula $xi=value\_i$ is equivalent to $xi \in Set\_i$ with $Set\_i$ is a singleton. 
 
 
-\subsection*{Initial state} 
+\begin{lstlisting}[language=Python,caption={The explicit form of the predicate \emph{TypeOK}.}, label={TypeOkcodes}] 
+VARIABLES x1,.., xn
+
+TypeOK == 
+          /\ x1 \in Set_1
+          ....
+          ....
+          /\ xn \in Set_n
+ 
+\end{lstlisting}
+
+
+
+\subsection{Initial state} 
 Suppuse that the spec has the vatiables $x1, \dots, xn$ of types \george{still not the complete list of types}.  
 Assume that the initial state is of the form: 
 
@@ -397,7 +429,7 @@ See \gk{refer to the corresponding part once it is ready}. for the translation o
 
  
 
-\subsection*{Next state} 
+\subsection{Next state} 
 
 Assume that the Next predicate is of the form: 
 
@@ -411,12 +443,11 @@ Next == \/  N1
 
 where $Ni$ is one of the following: 
 \begin{enumerate}
-\item $Ni=$ \emph{$\backslash E \text{ } \text{ }self \backslash in \text{ } C: P(self)$}
-for a constant $C$ and $P(self)=P_p /\backslash P_n $, with $P_p$ and $P_n$ are  next-state relation and  state predicate respectively.  Then, the translation is of the form: 
+\item $Ni= P_p /\backslash (xi'=P_n)$, with $P_n$ and $P_p$are state function and state predicate respectively \gk{reminder: Think about the case where $P_n$ is a next-state relation}.  Then, the translation is of the form: 
 \begin{lstlisting}[language=Java]
-transition Ni(z) 
+transition Ni() 
 requires {  Trans(P_p) }
-{ Trans(P_n)}
+{ xi:= Trans(P_n);}
 
 \end{lstlisting}
 
@@ -425,9 +456,69 @@ $Trans(P_p)$  and $P_n$  can be computed as in
 
 
 
+\item $Ni=$ \emph{$\backslash E \text{ } \text{ }z \text{ } \backslash in \text{ } Proc: P_p(z) /\backslash (xi'=P_n(z))$} 
+, with $P_n$ and $P_p$ are state function and state predicate respectively \gk{reminder to me: Think about the case where $P_n$ is a next-state relation}.  Then, the translation (with the abuse of notation for $z$) is of the form: \footnote{Clearly, the sub-formula $(xi'=P_n(z))$ in this case can be generalized to the multi-variable one. }
+\begin{lstlisting}[language=Java]
+transition Ni(z) 
+requires {  Trans(P_p(z)) }
+{ xi:= Trans(P_n(z));}
+\end{lstlisting}
+
+
+\item A generalization of (b) is when $z$ is a subset of  $Proc$. Then, the translation is analogous to the earlier case. 
+
 
 \end{enumerate}
 
+
+
+\subsection{Predicate $\&$ Quantified logic} 
+
+We discuss here the translation of sate functions, i.e., expressions containing variables and constants that are not  next-state relations (no primed variables).
+
+We consider the following cases: 
+
+\subsubsection{Simple date types}
+
+ For a variable $x$ of a simple data type (integer, boolean or string) 
+\begin{enumerate} 
+
+\item The simple (sub-)expression \emph{$x=value$}, where $x$ is a variable and  \emph{$value$} is an integer or a boolean constant. In this case, the translation is simple and straightforward.  
+
+\item  For  the (sub-)expression \emph{$x=value$}, where \emph{$value$} is a string, a Cubicle abstract type \emph{$x\_values$} is defined that encodes all values that $x$ takes in the whole TLA-Spec. 
+\begin{enumerate}
+\item If an invariant of the TLA-spec implies that $x$ takes values on a finite set of strings, that is, \emph{$x \in StringSet$}, with  \emph{$StringSet$}$=\{S1,\dots, Sk\}$, then \emph{$x\_values$} is defined as: 
+
+\begin{lstlisting}[language=Java]
+type x_type = S1 | S2 | ... | Sk
+var x_var : x_type
+
+\end{lstlisting}
+After that, every (sub-)expression of the form \emph{$x=Si$} is translated to 
+$$\emph{x\_var[j] = case | \_ : Si;}$$ \gk{I agree that it is a complicated way, but I am unable to find a more simple one.}. 
+
+\item Otherwise, we scan the whole TLA-spec looking for (sub)expressions of the form \emph{$x=value$} or \emph{$x'=value$} computing a set \emph{$StringSet$} that is dealt with the same way of the previous case. 
+  \end{enumerate}
+
+\end{enumerate}
+
+
+
+\subsubsection{Complex date types}
+
+
+
+\subsubsection{Locating  the translation of state predicates}
+
+Depending on the position of the TLA-expressions,  we its the translation: 
+
+\begin{enumerate}
+\item  (sub-)expressions appearing in the TLA++ initial state are translated to  predicates  in the initial Cubicle one.   
+\item The translation of (sub-)expressions of invariants negations are located in the unsafe predicate in the Cubicle Spec.  
+\item The (sub-)expressions in the next state are translated to the \emph{requesters} part of a Cubicle \emph{transition}. 
+
+
+\end{enumerate}
 
 \iffalse
 
@@ -503,7 +594,7 @@ Spec == Init \/ []Next_<<x1, .. xn>>
 \section*{Rules of translation}
 
  
-\subsection*{CONSTANTS} Each TLA-constant $ci$ is  translated in a straightforward  way  by:  
+\subsection{CONSTANTS} Each TLA-constant $ci$ is  translated in a straightforward  way  by:  
    
 \begin{lstlisting}[language=Java]
 const ci : Type(ci) 
