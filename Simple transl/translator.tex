@@ -89,7 +89,6 @@
 \usepackage{color}
 \usepackage{tikz-cd}
 \usepackage{tikz}
-\usetikzlibrary{graphdrawing.trees}
 \usepackage[alphabetic,y2k]{amsrefs} 
 %\usepackage[all]{xy}\SelectTips{cm}{}
 \usepackage{cleveref}
@@ -333,11 +332,12 @@
 
 
 
-\usetikzlibrary{trees}
 
 
 \begin{document}
 \large
+
+\include{Trans_Input_Gram} 
 
 \section{High-level rules of translation }
   
@@ -358,7 +358,7 @@ TypeOK ==
  
 \end{lstlisting}
 
-\subsubsection{Proc}
+\subsubsection{Proc} This constant is used to declare the processes identifiers. The user is supposed to define it as a part of the input. 
 
 \subsection{Initial state} 
 Suppose that the spec has the variables $x1, \dots, xn$ of types \george{still not the complete list of types}.  
@@ -477,7 +477,7 @@ We discuss here the translation of sate functions, i.e., expressions containing 
 
 We consider the following cases: 
 
-\subsubsection{Simple date types}
+\subsubsection{Simple date types} \label{SimType}
 
  For a variable $x$ of a simple data type (integer, boolean or string) 
 \begin{enumerate} 
@@ -494,7 +494,7 @@ var x_var : x_type
 
 \end{lstlisting}
 After that, every (sub-)expression of the form \emph{$x=Si$} is translated to 
-$$\emph{x\_var[j] = case | \_ : Si;}$$ \gk{I agree that it is a complicated way, but I am unable to find a more simple one.}. 
+$$\emph{x\_var= Si;}$$ \gk{I agree that it is a complicated way, but I am unable to find a more simple one.}. 
 
 \item Otherwise, we scan the whole TLA-spec looking for (sub)expressions of the form \emph{$x=value$} or \emph{$x'=value$} computing a set \emph{$StringSet$} that is dealt with the same way of the previous case. 
   \end{enumerate}
@@ -504,7 +504,25 @@ $$\emph{x\_var[j] = case | \_ : Si;}$$ \gk{I agree that it is a complicated way,
 
 
 \subsubsection{Complex date types}
+We restrict our selves to the following cases: 
 
+\begin{enumerate} 
+\item  For  the (sub-)expression \emph{$x=Value$}, where \emph{$Value$} of the form:
+
+$$ [c1  \text{ }\backslash in \text{ } C1 ... ck  \text{ }\backslash in \text{ } Ck \text{ }  \text|{-} >Value_{c1,\dots,ck} ],$$
+ where $Value_{c1,\dots,ck}$ is an integer, a boolean or a string value. \emph{$x=Value$} is translated to: 
+ $$ x(z1 ... zk) = Translation(Value_{c1,\dots,ck})  $$
+ where $Translation(Value_{c1,\dots,ck})$ is computed as in Sec \ref{SimType}.
+
+\item  For  the (sub-)expressions \emph{$x=Value$}, \emph{$x'=Value$} where \emph{$Value$} of the form:
+
+$$ [Value_{old}  \text{ } EXCEPT \text{ } !c1 =e1, ..., !.cn =ek \text{ }  \text{ }  \text|{-} >Value_{c1,\dots,ck} ],$$
+ where $Value_{c1,\dots,ck}$ is an integer, a boolean or a string value and $Value_{old}$ is a constant record of the same type of the one defined in (a), then the expression \emph{$x=Value$} is translated to: 
+ $$ x(z1 ... zk) = case \text{ } | \text{ } z1 = e1\text{ }  ... \text{ } zk=ek\text{ }  : Value_{c1,\dots,ck} $$
+ $$ \text{ } | \_ : Value_{old}[z1 ... zk] $$
+ 
+\item For the case $x=<<c1,...cm >> $ we do as in (a) considering  $x=[ i \in 1 ..m |-> x[i] ] $. Notice the multi-dimensional case can be handled analogously.  
+\end{enumerate} 
 
 
 \subsubsection{Locating  the translation of state predicates}
@@ -513,42 +531,11 @@ Depending on the position of the TLA-expressions,  we its the translation:
 
 \begin{enumerate}
 \item  (sub-)expressions appearing in the TLA++ initial state are translated to  predicates  in the initial Cubicle one.   
-\item The translation of (sub-)expressions of invariants negations are located in the unsafe predicate in the Cubicle Spec.  
+\item The translation of (sub-)expressions of invariant negations are located in the unsafe predicate in the Cubicle Spec.  
 \item The (sub-)expressions in the next state are translated to the \emph{requesters} part of a Cubicle \emph{transition}. 
 
 
 \end{enumerate}
-
-\iffalse
-
-\begin{tikzpicture}[
-  man/.style={rectangle,draw,fill=blue!20},
-  woman/.style={rectangle,draw,fill=red!20,rounded corners=.8ex},
-  grandchild/.style={grow=down,xshift=1em,anchor=west,
-    edge from parent path={(\tikzparentnode.south) |- (\tikzchildnode.west)}},
-  first/.style={level distance=6ex},
-  second/.style={level distance=12ex},
-  third/.style={level distance=18ex},
-  level 1/.style={sibling distance=5em}]
-    % Parents
-    \coordinate
-      child[grow=left] {node[man,anchor=east]{Jim}}
-      child[grow=right] {node[woman,anchor=west]{Jane}}
-      child[grow=down,level distance=0ex]
-    [edge from parent fork down]
-    % Children and grandchildren
-    child{node[man] {Alfred}
-      child[grandchild,first] {node[man]{Joe}}
-      child[grandchild,second] {node[woman]{Heather}}
-      child[grandchild,third] {node[woman] {Barbara}}}
-    child{node[woman] {Berta}
-      child[grandchild,first] {node[man]{Howard}}}
-    child {node[man] {Charles}}
-    child {node[woman]{Doris}
-      child[grandchild,first] {node[man]{Nick}}
-      child[grandchild,second] {node[woman]{Liz}}};
-\end{tikzpicture}l
-\fi
 
 
 
