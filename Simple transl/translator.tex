@@ -1,13 +1,17 @@
 
 
 \documentclass{article}
+
+
+
+
 \usepackage{graphicx}
 \usepackage[large]{subfigure}
 
 \usepackage{lipsum}
 \usepackage[utf8]{inputenc}
 \usepackage{csvsimple}
-\usepackage{listings}
+
 
 \usepackage{bm}
 \usepackage{soul}
@@ -69,7 +73,7 @@
 \usepackage[colorlinks=true,urlcolor=blue,linkcolor=blue,citecolor=black]{hyperref}
 
 %\addbibresource{ReadingCourse (1).bib}
-\usepackage{graphicx}
+
 \usepackage[T1]{fontenc}  
 \usepackage[utf8]{inputenc}
 \usepackage{times} 
@@ -78,17 +82,14 @@
 \usepackage{amssymb}
 \usepackage{mathtools}
 %\usepackage{amscd}     
-\usepackage{graphicx}  
 %\usepackage{hyperref}   
 %\usepackage[dvipsnames]{xcolor}  
 
-\usepackage[noend]{algorithmic}  
-\usepackage{algorithm}
+
 \usepackage{multirow}
 \usepackage{amsthm}
 \usepackage{color}
-\usepackage{tikz-cd}
-\usepackage{tikz}
+
 \usepackage[alphabetic,y2k]{amsrefs} 
 %\usepackage[all]{xy}\SelectTips{cm}{}
 \usepackage{cleveref}
@@ -107,6 +108,28 @@
 \usepackage[normalem]{ulem} %for sout
 \usepackage{lineno}
 \usepackage{mathtools}
+
+
+
+
+\usepackage[parfill]{parskip}
+\usepackage{bigstrut}
+\usepackage{cmbright}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes.geometric}
+\usetikzlibrary{shapes.multipart}
+\usetikzlibrary{positioning}
+\usetikzlibrary{trees}
+\pgfkeys{/pgf/rectangle split parts=10}
+\newlength{\MMtextNodeWidth}
+\newcommand{\MMsetTextNodeWidth}[1]{%
+  \settowidth{\MMtextNodeWidth}{#1}%
+}
+
+
+
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
 \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 
@@ -154,6 +177,19 @@
 \renewcommand{\theenumii}{\roman{enumii}}
 \renewcommand{\labelenumii}{(\theenumii)}
 
+\usepackage{listings}
+\usepackage[ ruled,vlined , titlenumbered,ruled,noend,algo2e]{algorithm2e}
+\newcommand\mycommfont[1]{\large\ttfamily\textcolor{blue}{#1}}
+\SetCommentSty{mycommfont}
+\newsavebox{\codebox}
+\newsavebox{\codeboxa}
+\newsavebox{\codeboxb}
+\newsavebox{\codeboxu}
+
+
+%\usepackage[noend]{algorithmic}  
+\usepackage{algorithm}
+
 %semiAlgorithm environment
 \makeatletter
 \newcounter{algorithmbis}
@@ -177,10 +213,10 @@
 \def\endalgorithmbis{\hfil\vskip-1em\hrule\endtrivlist}
 \makeatother
 
-\renewcommand{\algorithmiccomment}[1]{  $\triangleright$ #1}
-\renewcommand{\algorithmicrequire}{\textbf{Input:}}
-\renewcommand{\algorithmicensure}{\textbf{Output:} }
-\newcommand{\termin}{\hspace{-0.84 cm } \textbf{Termination Condition:}}
+%\renewcommand{\algorithmiccomment}[1]{  $\triangleright$ #1}
+%\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+%\renewcommand{\algorithmicensure}{\textbf{Output:} }
+%\newcommand{\termin}{\hspace{-0.84 cm } \textbf{Termination Condition:}}
 % End: Algorithm environment
 
 
@@ -258,7 +294,6 @@
 %MARC
 
 \newcommand {\R}{\mathbb R}
-\newcommand {\A}{\mathbb A}
 \newcommand {\Q}{\mathbb Q}
 \newcommand {\C}{\mathbb C}
 \newcommand {\Z}{\mathbb Z}
@@ -301,9 +336,9 @@
     keywordstyle=\color{magenta},
     numberstyle=\tiny\color{codegray},
     stringstyle=\color{codepurple},
-    basicstyle=\ttfamily\small,
+    basicstyle=\ttfamily\footnotesize,
     breakatwhitespace=false,         
-    breaklines=true,                 
+    breaklines=false,                 
     captionpos=b,                    
     keepspaces=true,                 
     numbers=left,                    
@@ -311,7 +346,7 @@
     showspaces=false,                
     showstringspaces=false,
     showtabs=false,                  
-    tabsize=2
+    tabsize=1
 }
 
 \lstset{style=mystyle}
@@ -335,16 +370,32 @@
 
 
 \begin{document}
-\large
 
-\include{Trans_Input_Gram} 
+
+
+
+
+
+
+
+
+
+
+
+
 
 \section{High-level rules of translation }
   
+
+
+
+
 \subsection{Translator input}
 The input is a TLA+ Spec that has the following properties. 
 
-\subsubsection{TypeOK} The TLA+ Spec is supposed to contain an invariant \emph{TypeOK}.  This predicate is required to obtain the types of variables. In \eqref{TypeOkcodes}, the objects $S\_1 \dots S\_n$ are sets of integers booleans or arrays (of integers or booleans). Notice that the formula $xi=value\_i$ is equivalent to $xi \in Set\_i$ with $Set\_i$ is a singleton. 
+
+
+\subsubsection{TypeOK} \label{TypeOK} The TLA+ Spec is supposed to contain an invariant \emph{TypeOK}.  This predicate is required to obtain the types of variables. In \eqref{TypeOkcodes}, the objects $S\_1 \dots S\_n$ are sets of integers boolean or arrays (of integers or booleans). Notice that the formula $xi=value\_i$ is equivalent to $xi \in Set\_i$ with $Set\_i$ is a singleton. 
 
 
 \begin{lstlisting}[language=Python,caption={The explicit form of the predicate \emph{TypeOK}.}, label={TypeOkcodes}] 
@@ -358,7 +409,8 @@ TypeOK ==
  
 \end{lstlisting}
 
-\subsubsection{Proc} This constant is used to declare the processes identifiers. The user is supposed to define it as a part of the input. 
+\subsubsection{Proc}\label{Proc} This constant is used to declare the processes identifiers. The user is supposed to define it as a part of the input. 
+
 
 \subsection{Initial state} 
 Suppose that the spec has the variables $x1, \dots, xn$ of types \george{still not the complete list of types}.  
@@ -428,6 +480,7 @@ See \gk{refer to the corresponding part once it is ready}. for the translation o
 
  
 
+
 \subsection{Next state} 
 
 Assume that the Next predicate is of the form: 
@@ -471,7 +524,7 @@ requires {  Trans(P_p(z)) }
 
 
 
-\subsection{Predicate $\&$ Quantified logic} 
+\subsection{Predicate $\&$ Quantified logic} \label{Sec:Pred-Quant}
 
 We discuss here the translation of sate functions, i.e., expressions containing variables and constants that are not  next-state relations (no primed variables).
 
@@ -537,6 +590,187 @@ Depending on the position of the TLA-expressions,  we its the translation:
 
 \end{enumerate}
 
+\section{Grammar of the fragment } \label{Grammar}
+In this section, we define the grammar of the fragment we are interested in: 
+
+
+\large
+\MMsetTextNodeWidth{99}
+
+\george{Illustration of the grammar of the file $Trans\_Input\_Gram.tla$. Not ready yet}
+
+
+
+   \begin{tikzpicture}
+      [sibling distance=10em,level distance=6em,
+      every node/.style={shape=rectangle,draw,align=center}]
+\node{Spech}
+   child{node{Init}
+      child{node{Simple$\_$Propositional}
+        child{node{Identifier }}}}
+   child{node{Next }
+      child{node{Next$\_$State$\_$Exp)}}};
+
+
+   \end{tikzpicture}
+
+\section{Translating algorithm} 
+
+\begin{lrbox}{\codebox}
+   \begin{lstlisting}[language=java]
+init (z)   { Translation(x1= Value_1) 
+             &&  Translation(x2= Value_2) 
+               ... 
+             && Translation(xn= Value_n)}
+\end{lstlisting}
+\end{lrbox}
+
+
+\begin{lrbox}{\codeboxa}
+   \begin{lstlisting}[language=java]
+transition Ti (z)  
+requires {     (* with {j1, ... , jh} = {1 <=j<= k,  Predicate_j =Predicate_i } a *)
+            Translation(Predicate_i)   }
+          {
+          Translation(xj1=Valuej1);
+            ... 
+            ...
+          Translation(xj1=Valuejh);
+          }  
+\end{lstlisting}
+\end{lrbox}
+
+
+
+\begin{lrbox}{\codeboxb}
+   \begin{lstlisting}[language=java]
+x(z) = case |  z = c : e 
+            |_ : Value_{old}[z]
+
+\end{lstlisting}
+\end{lrbox}
+
+
+
+
+\begin{lrbox}{\codeboxu}
+   \begin{lstlisting}[language=java]
+unsafe (z) = Translating(~ Invar_1) 
+            || Translating(~ Invar_2)
+               ...
+               ...
+            ||  Translating(~ Invar_s)
+
+\end{lstlisting}
+\end{lrbox}
+
+\begin{algorithm}[H]
+\SetAlgoLined
+\SetKwInOut{Input}{Input}
+\SetKwInOut{Output}{Output}
+    
+\Input{A TLA++ Spec based on the grammar of Section~\ref{Grammar} with \emph{TypeOk}  (Section~\ref{TypeOK} invariant and constant \emph{Proc} (Section~\ref{Proc}) as in Section.}
+\Output{A Cubicle Spec that is equivalent to the one in the input. }
+\setcounter{AlgoLine}{0}
+\SetKwFunction{prepa}{prepa} \SetKwFunction{algo}{algo}\SetKwFunction{proc}{proc}
+
+  \SetKwProg{inari}{Data-Type Preparation}{}{}
+         \prepa{}{
+                    \For{all variables $x_i$} {
+                       \nl Compute all $Type(x_i)$ from the TypeOk Invariant\;
+
+                       \uIf(){$Type(x_i) =String $}{ Define an abstract Cubicle-type that involves all possible values of $x_i$ 
+
+                       \george{Reminder to me: refer to the corr. part}. }
+                                               }
+                 } 
+  \SetKwProg{myalg}{Translating Init}{}{}
+  \myalg{}{
+  \tcp{Recall that Init == $ \bigwedge\limits_{i=1}^n x_i = Value_i $  }
+  \For{$i=1$ \KwTo $n$}
+      {   
+         \uIf(){$Type(Value) \in \{Integer, Boolean\} $}{
+                            \nl $Translation(x_i = Value_i) := x_i = Value_i$ \;
+                           }
+
+         \uElseIf{ $Value_i = "Text_i"$ }{
+                                  \nl $Translation(x_i = Value_i) := x_i = Text_i$ \;}  
+         \tcp{In the following, $Proc\_SubSet$ is a subset of $Proc$}
+         \uElseIf{ $Value_i = [z \text{ } \backslash  in \text{ } Proc\_SubSet \text{ } |-> \text{ } Value_{i,z} ] \text{ } $ }
+         {
+         \tcp{with $Type(Value_{i,z}) \in \{String, Boolean, String\}$}
+                                  \nl $Translation(x_i = Value_i) := x_i(z) =  Value_{i,z}$ \;
+
+                                  \george{Will consider multi-dim functions later}
+                                }                                          
+       }
+  \nl The translation of Init is: \   
+  \usebox{\codebox};}{}
+  \setcounter{AlgoLine}{0}
+  \SetKwBlock{myproc}{myproc}{}
+ \SetKwBlock{transition}{Defining Transition $T_i$}{transition}{}
+  \SetKwProg{myproc}{Translating Next}{}{}
+  \myproc{}{ 
+             \tcp{Recall that Next == $ \bigvee\limits_{i=1}^k (Predicate_i \bigwedge (x_i^{\prime}=Value_i)) $  }
+             \nl $K^{\prime}$ is an inclusion-wise maximal  subset of $\{1,\dots, k\}$ with $Predicate_i,Predicate_j$ are not equivalent for all $1\leq i\neq j \leq  k^{\prime}$  \
+
+             \ForEach{$i \in K^{\prime}$} 
+                                    {  
+                                    \nl Define a Cubicle-transition $T_i$  as follows:     \;
+                                     
+                                      \transition{
+                                      \nl Compute $Translation(Predicate_i)$ as in Section~\ref{Sec:Pred-Quant} and place it in $T_i$ "requires"-part\;
+
+                                      
+
+                                     \nl  \uIf(){$\texttt{Type}(Value_i) \in \{Integer, Boolean\} $}{
+                                          \nl $Translation(x_i^{\prime} = Value_i) := (x_i := Value_i)$ \;
+                                                                                     } \;
+                                       \uElseIf{ $Value_i = "Text_i"$ }{
+                                           \nl $Translation(x_i = Value_i) := (x_i =: Text_i$) \;
+                                                                      }  
+                                       \uElseIf(){ $[Value_{old}  \text{ } EXCEPT \text{ } ![c] =e  \text{ } ]$ } {
+
+                                                 \nl \usebox{\codeboxb}\;
+                                                                        }
+
+                                                                                
+                                    }{}  }
+            }  
+            \end{algorithm}
+
+%\SetNlSty{texttt}{(}{)}
+\SetNlSty{texttt}{(}{)}
+\begin{algorithm}  
+\SetKwProg{inaria}{Translating invariant}{}{}            
+  \LinesNumbered
+\setcounter{AlgoLine}{12}
+% This is to restore vline mode if you did not take the package as \usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+  \SetAlgoVlined
+    \SetAlgoVlined
+%This is to hide Begin keyword
+\SetKwBlock{myproc}{}{end}
+              \nl The translation of Next is:\ 
+
+              \nl \usebox{\codeboxa};
+  
+
+\inaria{}{
+\nl Translate the negation of each invariant  $Invar_1, \dots, Invar_s$ as in Section~\ref{Sec:Pred-Quant}   ;\
+
+
+\nl Define unsafe (z) as: 
+\usebox{\codeboxu}
+
+}
+
+ \Return  Cubicle-spec with the computed \emph{unsafe (z), Init (z)}  and \emph{$T_1(z),\dots,T_{|K^{\prime}|}(z)$}.
+ \caption{TLA++ - Cubicle Translator}
+\end{algorithm}
+
+\iffalse    
+
+
 
 
 \color{red} George: The rest is still not ready : 
@@ -579,7 +813,14 @@ Spec == Init \/ []Next_<<x1, .. xn>>
 
 \section*{Rules of translation}
 
- 
+ \bibliographystyle{unsrt}
+\bibliography{bibl}
+
+
+
+
+
+
 \subsection{CONSTANTS} Each TLA-constant $ci$ is  translated in a straightforward  way  by:  
    
 \begin{lstlisting}[language=Java]
@@ -684,6 +925,7 @@ requires {  Translation(S1) }
 N_i == \A y . N_i' 
 \end{lstlisting}
 where $N\_i' $ is as $N\_i$  in (a) or (b), then the translation is 
+
 \color{red} George: Still investigating \color{black}
 
 \ste{Do you have a concrete example of such an action in a specification?}
@@ -699,8 +941,9 @@ where $N\_i' $ is as $N\_i$  in (a) or (b), then the translation is
 
   \george{In fact, I agree that the current text considers only the shape you mentioned. However, do not you think that this is how to start from a high level. This is why I assume the existence and feasibility of \emph{$Translation(I\_i)$} and \emph{$Translation(N\_i)$}. In my plan, it is expected that I do not have an explicit form of $N\_i$ and $I\_i$. On the other hand, once I have a "good" global description of the rules of translation, the next step is to go a level lower which is where I expect to get a better idea about subset of TLA+ that can be translated to Cubicle. Do you agree?. }
 
-\bibliographystyle{unsrt}
-\bibliography{bibl}
 
+
+
+\fi
 \end{document}
 
