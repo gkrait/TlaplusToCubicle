@@ -20,28 +20,66 @@ Init == (tok('/\') & Simple_Propositional_Exp )^+
 Simple_Propositional_Exp == (Identifier & tok("=") & VALUE)   
                              |  (Identifier & tok("\in") & Finite_Set)
 
-Finite_Set == tok('{') & Value & ( tok(",") & Value)^*
-                                &  tok('}')
+Finite_Set == tok('{') 
+                & Value & ( tok(",") & Value)^*
+                &  tok('}') 
+              | Array 
 
 
-(* In the following, VALUE is ment to be a closed proposition *)
-VALUE == Constant | Numeral^+ | STRING 
-         | Numeral^+ & tok("...") $ Numeral^+
+(* In the following, VALUE is meant to be a closed proposition *)
+VALUE == Identifier (* I have a constant in mind *) 
+         | Numeral^+ 
+         | STRING 
          | Numeral^+ & tok(".") & Numeral^*
          | Boolean   
-         | Function  
+         | Function
+         | Array 
+         | Identifier  & tok("[") & (TERM) & tok("]")
+         | Identifier  & tok("(") & (TERM) & tok(")")
+          
 
-Function == tok(“[”)   
-                & Identifier & tok(" \in ") &  Identifier 
-                & tok(“|->”) & TERM)
+
+(* ################################################ *)
+(* ########### Defining Functions ################# *)
+(* ################################################ *)
+
+(* Algorithmic issue to be discussed with Stephan:
+     As agreed before, a Function is intended to be mainly translated w.r.t
+     the Cubicle procedures. However, I still think that it is possible 
+     and useful to consider Arrays as I define them. This can be done if 
+     we limit the number  process (number_procs). The maximal number of 
+     processes is determined by the lengths of arrays and functions in the TLA+ Spec  *)
+
+
+Function == tok(“[”)     
+                & Identifier 
+                & tok(" \in ") 
+                & (Identifier | Array) 
+                & tok(“|->”) 
+                & TERM
                 & tok(“]”) 
 
+
+
+
+(* In the following, Tok(P) means that the set of all terms of the form P  *)
+STRING == Tok (tok(" " ") & NameChar^* & tok(" " ") )  \ Tok(ReservedWord) 
+
+
+Array ==  Numeral^+ & tok("..") & Numeral^+
+          | Numeral^+ & tok("..") &  Identifier
+          | Identifier & tok("..") &  Numeral^+
+          | Identifier & tok("..") &  Identifier
 
 Identifier == Name \ Tok(ReservedWord)
 Name == Tok((NameChar^* & Letter & NameChar^*))
 NameChar  == Letter \cup Numeral \cup {"_"}  
-Letter == oneof("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+Letter == OneOf("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 Numeral   == OneOf("0123456789") 
+
+
+
+
 
 
 
@@ -54,32 +92,45 @@ Next ==  (tok('\/') & Next_State_Exp)^+
 
 
 
-Next_State_Exp ==    (tok('/\') Predicate)^*
-                  &  (tok('/\') Primed_Exp)^+
+Next_State_Exp ==    (tok('/\') & Predicate)^*
+                  &  (tok('/\') & Primed_Exp)^+
 
 (* ################################################ *)
 (* ########### Defining Predicate ################# *)
 (* ################################################ *)
  
- Predicate == (tok('\/') & Propositional_Exp)^*
-              |  tok('\/')  
-                 & ( (tok('\E') | tok('\A')) & VARIABLE )^+ 
-                 & tok(' : ') 
-                 &  Propositional_Exp 
+ Predicate ==  Propositional_Exp
+               |  tok("(") 
+                  &( (tok('\E') | tok('\A')) 
+                  & Identifier
+                  & tok("\in")
+                  & (Identifier | Array) 
+                  & tok(' : ') 
+                  &  Predicate
+                  & tok(")")
+                  
 
 
 
+(.* Fix and make it simpler *)
+Propositional_Exp ==  Simple_Propositional_Exp 
+                    | tok("(") & TERM & OPERATOR & TERM) & tok(")")
+                    | tok('~') & tok("(")   & Propositional_Exp & tok(")")
+                    | tok("(")   
+                       & Propositional_Exp  
+                       & Logical_Junctions
+                       & Propositional_Exp
+                       & tok(")")
 
-Propositional_Exp == tok('(') & (tok('/\') & Simple_Propositional_Exp )^* & tok(')')
-                    | tok('(') &  (tok('/\') & TERM & OPERATOR & TERM)^* & tok(')')
-                    | tok('(') & (tok('/\') & tok('~') & Propositional_Exp)^* & tok(')')
 
-\* sm: Note that you have to start with "/\". In particular, one has to write
-\* sm: something like "/\ ~ /\ x > 0", which is a little awkward.
 \* GK: what about now? 
 
 
+
 OPERATOR == tok("=")  |  tok("#") | tok("~=") | tok("<")  | tok("<=")
+
+
+Logical_Junctions == tok("/\") | tok("\/")
 
 
 TERM == VALUE | Open_Prpos
@@ -87,25 +138,27 @@ TERM == VALUE | Open_Prpos
 
 
 Open_Prpos == Identifier    
-             | (Identifier & tok("[") &  (VALUE | Identifier) & tok("]"))
+             | Identifier  & tok("[") & (TERM) & tok("]")
+             | Identifier  & tok("(") & (TERM) & tok(")")
+             (* generalize it more? *)
              
-             
+
+            
 
 (* ################################################ *)
 (* ########### Defining Primed_Exp ################ *)
 (* ################################################ *)
 
 
-Primed_Exp == (tok('/\') & VARIABLE &   tok(' ' ') & tok("=")  & TERM )^+
-              
-              | (tok('/\') & VARIABLE &   tok(' ' ') &  tok("=") & Function )^+
-
-              | (tok('/\') & VARIABLE &   tok(' ' ') &  tok("=") & Function_Except )^+
+Primed_Exp ==   (Identifier 
+                & tok(' ' ') 
+                & tok("=")  
+                & (TERM | Function_Except    )^+
 
 
 
              
-Function_Except == tok("[") &  (Identifier| VALUE)  & tok("EXCEPT") 
+Function_Except == tok("[") &  Identifier  & tok("EXCEPT") 
                    & (tok('![') &  Identifier & tok(']=') & TERM )^+  
                    & tok("]")
 
