@@ -388,14 +388,33 @@
   
 
 
-
+This section is dedicated to describe the rules of the translator we define. Based on these rules.  
 
 \subsection{Translator input}
 The input is a TLA+ Spec that has the following properties. 
 
+
+\subsubsection{Proc}\label{Proc} This constant is a set of integers and strings which  is used to declare the processes identifiers. The user is supposed to define it as a part of the input.  
+
+\subsubsection{TypeOK} \label{TypeOK} As mentioned before, the TLA+ Spec is supposed to contain an invariant \emph{TypeOK}.  This predicate is required to obtain the types of variables. In Listing \eqref{TypeOkcodes}, the objects $Set\_1 \dots Set\_n$ are sets of integers boolean or function sets. For the last case, $Set\_i$ is of the form $[ Proc\_Subset \text{   -->  }  Target_i]$ where $Proc\_Subset$ is a subset of $Proc$ and $Target_i$ is a set of integers, boolean or strings. 
+ Notice that the formula $xi=value\_i$ is equivalent to $xi \in Set\_i$ with $Set\_i$ is a singleton. Hence, we allow $xi=value\_i$ syntactically \footnote{Note that for the case of functions, we have the form $xi=  [Obj \text{   }\backslash in \text{   } Proc\_Subset \text{   |-->  }  \text{Expression}(Obj)] $ }.
+
+
+\begin{lstlisting}[language=Python,caption={The explicit form of the predicate \emph{TypeOK}.}, label={TypeOkcodes}] 
+VARIABLES x1,.., xn
+
+TypeOK == 
+          /\ x1 \in Set_1
+          ....
+          ....
+          /\ xn \in Set_n
+ 
+\end{lstlisting}
+
+
 \subsubsection{Structure} \label{Structure}
-We are going to assume that the TLA+ Spec has as simple structure. In particular,
- no labels are used as sub-expressions of (resp. next-) state relations or invariants. If any,
+We are going to assume that the TLA+ Spec has a simple structure. In particular,
+ no labeled predicates are used as sub-expressions of (resp. next-) state relations or invariants. If any,
  we simply expand all expressions to get the following: 
 
 
@@ -405,8 +424,7 @@ CONSTANTS c1, .. , cm
 
 VARIABLES x1,.., xn
 
-TypeOK == 
-          /\ x1 \in Set_1
+TypeOK == /\ x1 \in Set_1
           ....
           ....
           /\ xn \in Set_n
@@ -432,59 +450,135 @@ Next == \/  N1
 Spec == Init \/ []Next_<<x1, .. xn>>        
 \end{lstlisting}
 
-We are going to  give a more precise form later on.
-\subsubsection{TypeOK} \label{TypeOK} The TLA+ Spec is supposed to contain an invariant \emph{TypeOK}.  This predicate is required to obtain the types of variables. In \eqref{TypeOkcodes}, the objects $S\_1 \dots S\_n$ are sets of integers boolean or arrays (of integers or booleans). Notice that the formula $xi=value\_i$ is equivalent to $xi \in Set\_i$ with $Set\_i$ is a singleton. 
+ We are going to  give a more precise form later on.
 
 
-\begin{lstlisting}[language=Python,caption={The explicit form of the predicate \emph{TypeOK}.}, label={TypeOkcodes}] 
-VARIABLES x1,.., xn
+\subsection{Predicate $\&$ Quantified logic} \label{Sec:Pred-Quant}
 
-TypeOK == 
-          /\ x1 \in Set_1
-          ....
-          ....
-          /\ xn \in Set_n
- 
+We discuss here the translation of state predicates, i.e., boolean-value expressions containing variables and constants that are not  next-state relations (no primed variables).
+
+We consider the following cases: 
+
+\subsubsection{Simple date types} \label{SimType}
+
+ For a variable $x$ of a simple data type (integer, boolean or string) 
+\begin{enumerate} 
+
+\item The simple (sub-)expression \emph{$x=value$}, where $x$ is a variable and  \emph{$value$} is an integer or a boolean constant. In this case, the translation is simple and straightforward.  
+
+\item  For  the (sub-)expression \emph{$x=value$}, where \emph{$value$} is a string, a Cubicle abstract type  is defined that encodes all values of string-type variables. To compute the values, we recognize two cases: 
+\begin{enumerate}
+\item If the TypeOk invariant states that  $x$ takes values on a finite set of strings, that is, \emph{$x \in StringSet_x$}, then we are done with this case.
+
+
+
+\item Otherwise, we scan the whole TLA-spec looking for (sub)expressions of the form \emph{$x=value$} or \emph{$x'=value$} computing a set \emph{$StringSet_x$}.
+
+  \end{enumerate}
+
+
+After computing StringSet of all string-type variables, we define $\operatorname{String\_values}=\{S1,\dots, Sk\}$ that is the union of all \emph{$StringSet_x$}. In the Cubicle spec, we define an abstract type \emph{$String\_type$} and \emph{$x\_i$} for each string-type variable as follows: 
+
+\begin{lstlisting}[language=Java]
+String_type = S1 | S2 | ... | Sk
+var x : String_type
+
 \end{lstlisting}
+After that, every (sub-)expression of the form \emph{$x=Si$} is translated to 
+$$\emph{x= Si;}$$ 
 
-\subsubsection{Proc}\label{Proc} This constant is used to declare the processes identifiers. The user is supposed to define it as a part of the input. 
+
+\end{enumerate}
+
+
+
+\subsubsection{Complex date types}
+We restrict our selves to the following cases: 
+
+\begin{enumerate} 
+\item  For  the (sub-)expression \emph{$x=Value$}, where \emph{$Value$} of the form:
+
+$$ [c1 ... ck \text{ }\backslash in \text{ } Proc\_Subset \text{ }  \text{  |-->  } Value_{c1,\dots,ck} ],$$
+ where $Value_{c1,\dots,ck}$ is an integer, a boolean or a string value. \emph{$x=Value$} is translated to: 
+ $$ x(z1 ... zk) = Translation(Value_{c1,\dots,ck})  $$
+ where $Translation(Value_{c1,\dots,ck})$ is computed as in Sec \ref{SimType}.
+
+\item  For  the (sub-)expressions \emph{$x=Value$}, \emph{$x'=Value$} where \emph{$Value$} of the form:
+
+$$ [Value_{old}  \text{ } EXCEPT \text{ } ![c1] =e1, ..., ![ck] =ek \text{ }  ],$$
+ where $e1,\dots,ek$ are integers,  booleans or strings values and $Value_{old}$ is a constant function of the same type of the one defined in (a), then the expression \emph{$x=Value$} is translated to: 
+
+\begin{align*}
+x(z) &= case\\
+& | \text{ } z = c1 : e1 \\
+& | \text{ } z = c2 : e2 \\
+&  ... ... \\
+& |\text{ }  z = ck : ek \\
+& | \_ : Value_{old};
+\end{align*}
+
+
+%\begin{align*}
+
+% x(z1 ... zk) = case \text{ } | \text{ } z1 = e1  \\
+% \text{ }  ... \text{ } \\
+%  zk=ek\text{ }  : Value_{c1,\dots,ck} 
+%  \text{ } | \_ : Value_{old}[z1 ... zk] 
+%  \end{align*}
+ 
+\end{enumerate} 
+
+
+\subsubsection{Locating  the translation of state predicates}
+
+Depending on the position of the TLA-expressions,  we its the translation: 
+
+\begin{enumerate}
+\item  (sub-)expressions appearing in the TLA++ initial state are translated to  predicates  in the initial Cubicle one.   
+\item The translation of (sub-)expressions of invariant negations are located in the unsafe predicate in the Cubicle Spec.  
+\item The (sub-)expressions in the next state are translated to the \emph{requesters} part of a Cubicle \emph{transition}. 
+
+
+\end{enumerate}
+
+
 
 
 \subsection{Initial state} 
-Suppose that the spec has the variables $x1, \dots, xn$ of types \george{still not the complete list of types}.  
-Assume that the initial state is of the form: 
+Suppose that the spec has the variables $x1, \dots, xn$ of types determined by the invariant TypeOK as described in Sec~\ref{TypeOK}.  We consider the following form of the initial state:
 
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}
 Init == /\ x1= Value_1  
         /\ x2= Value_2  
         .....
         .....
         /\  xn= Value_n   
 \end{lstlisting}
-
+\george{The blue parts of the rest concern the multi-dimensional case. I keep them, however, I ignore  them in the algorithm and the grammar for the moment.  }
+\color{blue}
 We are going to describe in details how to translate the initial state depending on the "shape" of $Value_i$: Let $h$ be the maximal dimension of the tuple variables, i.e., $h=\max\{dim(xi)\mid 1\leq i \leq n\}$\footnote{By dimension we mean the minimum number of indexes needed to parametrize $xi$.} The translation of \emph{Init}  is parametrized by $h$ variables, that is, the Cubicle intial state takes the form 
 \begin{lstlisting}[language=java]
-init (z1 ... zh) { Trans(x1= Value_1) 
-                   &&  Trans(x2= Value_2) 
+init (z1 ... zh)   { Translation(x1= Value_1) 
+                   &&  Translation(x2= Value_2) 
                     ... 
-                   && Trans(xn= Value_n)}
-\end{lstlisting}
-  Now we determine (when possible) more explicitly  how to compute  $\emph{Trans(x2= Value\_2)}$. We consider the following cases: 
+                   && Translation(xn= Value_n)  }
+\end{lstlisting} \color{black}
+  Now we determine (when possible) more explicitly  how to compute  $\emph{Trans(xi= Value\_i)}$. We consider the following cases: 
 
 
 
 
 
 \begin{enumerate}
-\item  $Value\_i$ is an integer or boolean value, then the translation is straightforward. For  the case where $Value\_i$ is a string, an abstract type is already defined with  $Value\_i$ is  one of its values \gk{will refer to the related detailed part once it is ready}..
-\item  $Value\_i= [x \in C \text{  }$  |-> $\text{  }  Target_i]$, where $C$ is a constant in the Spec and $Target_i$ is a constant function (not necessarily declared as a constant) with the domain $C$. Then, $xi=Value\_i$  is translated to 
+\item  \emph{$Value\_i$} is an integer or boolean value, then the translation is straightforward. For  the case where \emph{$Value\_i$} is a string, an abstract type is already defined with  \emph{$Value\_i$} is  one of its values (Section~\ref{Sec:Pred-Quant}). 
+\item  \color{blue} $Value\_i= [Obj \text{  }\backslash in \text{  }  Proc\_Subset \text{  |--> } Target_i]$, where  $Target_i$ is a constant function (not necessarily declared as a constant\footnote{For example, $Value\_i= [Obj \text{  }\backslash in \text{  }  Proc\_Subset \text{  |--> } k]$ with $k$ is an integer.}) with the domain $Proc\_Subset$. Then, $xi=Value\_i$  is translated to 
 
-$xi[Xi]=Target_i[X_i]$, where $X_i = \{z1 \dots zi\} $ and $i=dim(C)$. A condition to check is $dim(C)=dim(xi)$. The type of $Target_i[X_i]$ is integer, boolean or string \gk{still investigating about the other data types}.. For  the case where $Target_i[X_i]$ is a string, an abstract type is already defined with $Target_i[X_i]$ is  one of its values \gk{will refer to the related detailed part once it is ready}..
+$xi[Xi]=Target_i[X_i]$, where $X_i = \{z1 \dots zi\} $ and $i=dim(Proc\_Subset)$. A condition to check is $dim(Proc\_Subset)=dim(xi)$. The type of $Target_i[X_i]$ is integer, boolean or string. Again, for the case where $Target_i[X_i]$ is a string, an abstract type is already defined with $Target_i[X_i]$ is  one of its values (Sec~\ref{Sec:Pred-Quant}).\color{black} 
 
 
-\item For a constant $C$,  $\emph{case\_1, \dots, case\_k}$ are state predicates, and $\emph{Value\_i1, \dots, Value\_ik}$ are state functions,  if $xi$ is initialized as follows: 
+\item For a constant $Proc\_Subset$,  $\emph{case\_1, \dots, case\_k}$ are state predicates, and $\emph{Value\_i1, \dots, Value\_ik}$ are state functions of integer, boolean or string type,  if $xi$ is initialized as follows: 
 \begin{lstlisting}[language=Python]
-xi = [self \in C |-> CASE case_1 -> Value_i1
+xi = [self \in Proc\_Subset |-> CASE case_1 -> Value_i1
                  [] case_2 -> Value_i2
                       ....
                  [] case_k -> Value_ik
@@ -498,9 +592,9 @@ then the translation is of the form:
    ...  
 || (x_k[Xk] =  Trans(Value_ik)  &&  Trans(case_k)) 
 \end{lstlisting}
-See \gk{refer to the corresponding part once it is ready}. for the translation of state predicates and state functions.
+See Sec~\ref{Sec:Pred-Quant} for the translation  and the restrictions on the  state predicates $\emph{case\_1, \dots, case\_k}$ and state functions.
 
-\item As a special case $xi  \text{ }\backslash in \text{ } \{e1, \dots, ek\}$, where $ei$ is of type integer, boolean or string. \gk{still investigating about the other data types}. Then,  the translation is 
+\item As a special case $xi  \text{ }\backslash in \text{ } \{e1, \dots, ek\}$, where $ei$ is of type integer, boolean or string. Then,  the translation is 
 \begin{lstlisting}[language=java]
    x_i =  e1   
    || x_i =e2    
@@ -533,7 +627,7 @@ Next == \/  N1
 
 where $Ni$ is one of the following: 
 \begin{enumerate}
-\item $Ni= P_p /\backslash (xi'=P_n)$, with $P_n$ and $P_p$are state function and state predicate respectively \gk{reminder: Think about the case where $P_n$ is a next-state relation}.  Then, the translation is of the form: 
+\item $Ni= P_p /\backslash (xi'=P_n)$, with $P_n$ and $P_p$ are state function and state predicate respectively.  Then, the translation is of the form: 
 \begin{lstlisting}[language=Java]
 transition Ni() 
 requires {  Trans(P_p) }
@@ -541,173 +635,107 @@ requires {  Trans(P_p) }
 
 \end{lstlisting}
 
-$Trans(P_p)$  and $P_n$  can be computed as in 
-\gk{will refer to the related detailed part once it is ready}..
+$Trans(P_p)$  and $P_n$  can be computed as in Sec~\ref{Sec:Pred-Quant}
 
 
 
-\item $Ni=$ \emph{$\backslash E \text{ } \text{ }z \text{ } \backslash in \text{ } Proc: P_p(z) /\backslash (xi'=P_n(z))$} 
-, with $P_n$ and $P_p$ are state function and state predicate respectively \gk{reminder to me: Think about the case where $P_n$ is a next-state relation}.  Then, the translation (with the abuse of notation for $z$) is of the form: \footnote{Clearly, the sub-formula $(xi'=P_n(z))$ in this case can be generalized to the multi-variable one. }
+
+\item $Ni=$ \emph{$\backslash E \text{ } \text{ }z \text{ } \backslash in \text{ } Proc\_Subset: P_p(z) /\backslash (xi'=P_n(z))$,} 
+ with $P_n$ and $P_p$ are state function and state predicate respectively. Then, the translation (with the abuse of notation for $z$) is of the form: \footnote{Clearly, the sub-formula $(xi'=P_n(z))$ in this case can be generalized to the multi-variable one. }
 \begin{lstlisting}[language=Java]
 transition Ni(z) 
 requires {  Trans(P_p(z)) }
-{ xi:= Trans(P_n(z));}
+{ Trans(xi = P_n(z))}
 \end{lstlisting}
 
 
-\item A generalization of (b) is when $z$ is a subset of  $Proc$. Then, the translation is analogous to the earlier case. 
 
 
-\end{enumerate}
-
-
-
-\subsection{Predicate $\&$ Quantified logic} \label{Sec:Pred-Quant}
-
-We discuss here the translation of sate functions, i.e., expressions containing variables and constants that are not  next-state relations (no primed variables).
-
-We consider the following cases: 
-
-\subsubsection{Simple date types} \label{SimType}
-
- For a variable $x$ of a simple data type (integer, boolean or string) 
-\begin{enumerate} 
-
-\item The simple (sub-)expression \emph{$x=value$}, where $x$ is a variable and  \emph{$value$} is an integer or a boolean constant. In this case, the translation is simple and straightforward.  
-
-\item  For  the (sub-)expression \emph{$x=value$}, where \emph{$value$} is a string, a Cubicle abstract type  is defined that encodes all values of string-type variables. To compute the values, we recognize two cases: 
-\begin{enumerate}
-\item If the TypeOk invariant states that  $x$ takes values on a finite set of strings, that is, \emph{$x \in StringSet_x$}, then we are done with this case.
-
-
-
-\item Otherwise, we scan the whole TLA-spec looking for (sub)expressions of the form \emph{$x=value$} or \emph{$x'=value$} computing a set \emph{$StringSet_x$}.
-
- that is dealt with the same way of the previous case. 
-  \end{enumerate}
-
-
-After computing StringSet of all string-type variables, we define $\operatorname{String\_values}=\{S1,\dots, Sk\}$ that is the union of all \emph{$StringSet_x$}. In the Cubicle spec, we define an abstract type \emph{$String\_type$} and \emph{$x\_i$} for each string-type variable as follows: 
-
-\begin{lstlisting}[language=Java]
-String_type = S1 | S2 | ... | Sk
-var x : String_type
-
+\item \george{The idea of Case(c) is a remark that you mentioned on a meeting. I hope that I understood it collectedly. I still do not considered it in the Algo, until you confirm it.  }Suppose we have that: 
+\begin{lstlisting}[language=Java] 
+Ni== \E z \in Proc : (\A y \in Proc : x[y]'= Value_y)
 \end{lstlisting}
-After that, every (sub-)expression of the form \emph{$x=Si$} is translated to 
-$$\emph{x= Si;}$$ 
+where $Value_y$ is an integer, boolean or string.  Then the translation of $Ni$ is computed as in the case: 
+\begin{lstlisting}[language=Java] 
+Ni== x'=[y \in  |-> Value_y ]
+\end{lstlisting}
 
-
-\end{enumerate}
-
-
-
-\subsubsection{Complex date types}
-We restrict our selves to the following cases: 
-
-\begin{enumerate} 
-\item  For  the (sub-)expression \emph{$x=Value$}, where \emph{$Value$} of the form:
-
-$$ [c1  \text{ }\backslash in \text{ } C1 ... ck  \text{ }\backslash in \text{ } Ck \text{ }  \text|{-} >Value_{c1,\dots,ck} ],$$
- where $Value_{c1,\dots,ck}$ is an integer, a boolean or a string value. \emph{$x=Value$} is translated to: 
- $$ x(z1 ... zk) = Translation(Value_{c1,\dots,ck})  $$
- where $Translation(Value_{c1,\dots,ck})$ is computed as in Sec \ref{SimType}.
-
-\item  For  the (sub-)expressions \emph{$x=Value$}, \emph{$x'=Value$} where \emph{$Value$} of the form:
-
-$$ [Value_{old}  \text{ } EXCEPT \text{ } !c1 =e1, ..., !.cn =ek \text{ }  \text{ }  \text|{-} >Value_{c1,\dots,ck} ],$$
- where $Value_{c1,\dots,ck}$ is an integer, a boolean or a string value and $Value_{old}$ is a constant record of the same type of the one defined in (a), then the expression \emph{$x=Value$} is translated to: 
- $$ x(z1 ... zk) = case \text{ } | \text{ } z1 = e1\text{ }  ... \text{ } zk=ek\text{ }  : Value_{c1,\dots,ck} $$
- $$ \text{ } | \_ : Value_{old}[z1 ... zk] $$
- 
-\item For the case $x=<<c1,...cm >> $ we do as in (a) considering  $x=[ i \in 1 ..m |-> x[i] ] $. Notice the multi-dimensional case can be handled analogously.  
-\end{enumerate} 
-
-
-\subsubsection{Locating  the translation of state predicates}
-
-Depending on the position of the TLA-expressions,  we its the translation: 
-
-\begin{enumerate}
-\item  (sub-)expressions appearing in the TLA++ initial state are translated to  predicates  in the initial Cubicle one.   
-\item The translation of (sub-)expressions of invariant negations are located in the unsafe predicate in the Cubicle Spec.  
-\item The (sub-)expressions in the next state are translated to the \emph{requesters} part of a Cubicle \emph{transition}. 
-
+\color{blue}
+\item A generalization of (b) is the multivariable case $z1, \dots, zk$ can be analogously done. 
+\color{black}
 
 \end{enumerate}
+
 
 
 
 
 \section{Grammar of the fragment } \label{Grammar}
-In this section, we define the grammar of the fragment we are interested in: 
+Since the illustration of codes below is still too bad, I suggest to read the grammar details in $"TlaplusToCubicle/grammer/Trans\_Input\_Gram.tla"$ until I find a way to improve it as a Latex environment. 
 
-\begin{lstlisting}[language=java]
+\begin{lstlisting}
 ------------------------------ MODULE FragGram ------------------------------
-( * We use  BNFGrammars
- https://github.com/tlaplus/Examples/blob/master/specifications/SpecifyingSystems/Syntax/BNFGrammars.tla * ) 
+( * We use  BNFGrammars https://github.com/tlaplus/Examples/blob/master/specifications/SpecifyingSystems/Syntax/BNFGrammars.tla * ) 
 
-Spec == Init & tok("\/") & tok("[][") & Next & tok("]_") & VARIABLES
+
+
+Spec == Init 
+        & tok("\/") 
+        & tok("[][") 
+        & Next 
+        & tok("]_") 
+        & VARIABLES
 
 
 VARIABLES == tok("<<")  
-             &(  Identifier & ( tok(",") & Identifier )^*  ) 
+             & ( Identifier 
+             & (tok(",") & Identifier)^* ) 
              & tok(">>")
+
 
 (* ############################################################################################ *)
 (* ########### Defining the Init part ######################################################### *)
 (* ############################################################################################ *)
 
-Init == (tok('/\') & Simple_Propositional_Exp )^+
-Simple_Propositional_Exp == (Identifier & tok("=") & VALUE)   
+Init == (tok('/\') & Simple_Propositional_Exp)^+
+Simple_Propositional_Exp ==  (Identifier & tok("=") & VALUE)   
                              |  (Identifier & tok("\in") & Finite_Set)
 
 Finite_Set == tok('{') 
-                & Value & ( tok(",") & Value)^*
+                & Value 
+                & (tok(",") & Value)^*
                 &  tok('}') 
-              | Array 
+              | Numeral^+ & tok("..") & Numeral^+
+              | Numeral^+ & tok("..") &  Identifier
+              | Identifier & tok("..") &  Numeral^+
+              | Identifier & tok("..") &  Identifier  
+ 
 
-
-(* In the following, VALUE is meant to be a closed proposition *)
 VALUE == Identifier (* I have a constant in mind *) 
          | Numeral^+ 
-         | STRING 
          | Numeral^+ & tok(".") & Numeral^*
+         | STRING 
          | Boolean   
          | Function
-         | Array 
          | Identifier  & tok("[") & (TERM) & tok("]")
          | Identifier  & tok("(") & (TERM) & tok(")")
           
-(* ################################################ *)
-(* ########### Defining Functions ################# *)
-(* ################################################ *)
-
-(* Algorithmic issue to be discussed with Stephan:
-     As agreed before, a Function is intended to be mainly translated w.r.t
-     the Cubicle procedures. However, I still think that it is possible 
-     and useful to consider Arrays as I define them. This can be done if 
-     we limit the number  process (number_procs). The maximal number of 
-     processes is determined by the lengths of arrays and functions in the TLA+ Spec  *)
 
 Function == tok('[')     
                 & Identifier 
-                & tok('\in') 
-                & (Identifier | Array) 
+                & tok(' \in ') 
+                & Identifier  (* I have a subset of Proc in mind*)
                 & tok('|->') 
                 & TERM
                 & tok(']') 
 
+
 (* In the following, Tok(P) means that the set of all terms of the form P  *)
-STRING == Tok (tok(" " ") & NameChar^* & tok(" " ") )  \ Tok(ReservedWord) 
+STRING == Tok (tok(" " ") & NameChar^* & tok(" " ") )  \ ReservedWords (* The same ReservedWords defined in TLAPlusGrammar.tla *)
 
+Boolean == tok("True") | tok("False")
 
-Array ==  Numeral^+ & tok("..") & Numeral^+
-          | Numeral^+ & tok("..") &  Identifier
-          | Identifier & tok("..") &  Numeral^+
-          | Identifier & tok("..") &  Identifier
-
-Identifier == Name \ Tok(ReservedWord)
+Identifier == Name \ ReservedWords
 Name == Tok((NameChar^* & Letter & NameChar^*))
 NameChar  == Letter \cup Numeral \cup {"_"}  
 Letter == OneOf("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -720,44 +748,47 @@ Numeral   == OneOf("0123456789")
 
 Next ==  (tok('\/') & Next_State_Exp)^+
 
+
 Next_State_Exp ==    (tok('/\') & Predicate)^*
-                  &  (tok('/\') & Primed_Exp)^+
+                     & (tok('/\') & Primed_Exp)^+
 
 (* ################################################ *)
 (* ########### Defining Predicate ################# *)
 (* ################################################ *)
  
- Predicate ==  Propositional_Exp
+ Predicate ==  Propositional_Exp         
                |  tok("(") 
-                  &( (tok('\E') | tok('\A')) 
-                  & Identifier
+                  & (tok('\E') | tok('\A'))  
+                  & Identifier (* For the moment, let us stay in the one-variable case *)
                   & tok("\in")
-                  & (Identifier | Array) 
+                  & Identifier  (* I have a subset of Proc in mind *)
                   & tok(' : ') 
-                  &  Predicate
+                  & Predicate
                   & tok(")")
                   
-(.* Fix and make it simpler *)
 Propositional_Exp ==  Simple_Propositional_Exp 
-                    | tok("(") & TERM & OPERATOR & TERM) & tok(")")
-                    | tok('~') & tok("(")   & Propositional_Exp & tok(")")
-                    | tok("(")   
-                       & Propositional_Exp  
-                       & Logical_Junctions
-                       & Propositional_Exp
-                       & tok(")")
-
-
-\* GK: what about now? 
-
+                      | tok("(") & TERM & OPERATOR & TERM & tok(")")
+                      | tok('~') & tok("(")   & Propositional_Exp & tok(")")
+                      | tok("(")   
+                        & Propositional_Exp  
+                        & Logical_Junctions
+                        & Propositional_Exp
+                        & tok(")")
 
 
 OPERATOR == tok("=")  |  tok("#") | tok("~=") | tok("<")  | tok("<=")
+
+
 Logical_Junctions == tok("/\") | tok("\/")
+
+
 TERM == VALUE | Open_Prpos
+
+
+
 Open_Prpos == Identifier    
-             | Identifier  & tok("[") & (TERM) & tok("]")
-             | Identifier  & tok("(") & (TERM) & tok(")")
+             | Identifier  & tok("[") & TERM & tok("]")
+             | Identifier  & tok("(") & TERM & tok(")")
              (* generalize it more? *)
              
 (* ################################################ *)
@@ -765,18 +796,17 @@ Open_Prpos == Identifier
 (* ################################################ *)
 
 
-Primed_Exp ==   (Identifier 
+Primed_Exp ==   Identifier 
                 & tok(' ' ') 
                 & tok("=")  
-                & (TERM | Function_Except    )^+
-
-
-
+                & (TERM | Function_Except)
              
-Function_Except == tok("[") &  Identifier  & tok("EXCEPT") 
-                   & (tok('![') &  Identifier & tok(']=') & TERM )^+  
+Function_Except == tok("[") 
+                   &  Identifier  
+                   & tok("EXCEPT") 
+                   & ( tok('![') &  Identifier & tok(']=') & TERM 
+                     & (tok('![') &  Identifier & tok(']=') & TERM )^+ ) 
                    & tok("]")
-
 \end{lstlisting}
 
 
@@ -850,7 +880,7 @@ unsafe (z) = Translating(~ Invar_1)
                     \nl $\operatorname{String\_values}:= \{\}$
 
                    \nl \For{all variables $x_i$} {
-                       \nl Compute all $Type(x_i)$ from the TypeOk Invariant\
+                       \nl Compute all $Type(x_i)$ from Invariant TypeOk \
 
                     \nl   \uIf(){$Type(x_i) =String $}
 
@@ -868,8 +898,8 @@ unsafe (z) = Translating(~ Invar_1)
 
          \uElseIf{ $Value_i = "Text_i"$ }{
                                   \nl $Translation(x_i = Value_i) := x_i = Text_i$ \;}  
-         \tcp{In the following, $Proc$ is a subset of $Proc$}
-         \uElseIf{ $Value_i = [z \text{ } \backslash  in \text{ } Proc \text{ } |-> \text{ } Value_{i,z} ] \text{ } $ }
+         \tcp{In the following, $Proc\_Subset$ is a subset of $Proc$}
+         \uElseIf{ $Value_i = [z \text{ } \backslash  in \text{ } Proc\_Subset \text{ } |-> \text{ } Value_{i,z} ] \text{ } $ }
          {
          \tcp{with $Type(Value_{i,z}) \in \{Integer, Boolean, String\}$}
                                   \nl $Translation(x_i = Value_i) := x_i(z) =  Value_{i,z}$ \;
@@ -945,6 +975,11 @@ unsafe (z) = Translating(~ Invar_1)
   
 
 \inaria{}{
+\tcp{Recall that $Invar\_k ==  \backslash E \text{ } Obj \text{ } \backslash  in \text{ } Proc : P(Obj), $  }
+\tcp{where $P$ is a proposition respecting the rules of Sec~\ref{Sec:Pred-Quant} }
+\george{next step: considering invariants with $Obj1,Obj2 in Proc$}
+
+
 \nl Translate the negation of each invariant  $Invar_1, \dots, Invar_s$ as in Section~\ref{Sec:Pred-Quant}   ;\
 
 
