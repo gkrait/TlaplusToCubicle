@@ -1,0 +1,25 @@
+
+(ocamllex
+  (modules lexer2)
+)
+
+(menhir
+  (modules parser)
+  (flags -la 2)
+)
+
+(executable
+  (name calc)
+)
+
+(rule
+  (with-stdout-to calc.out
+  (with-stdin-from calc.in
+    (run ./calc.exe)
+  ))
+)
+
+(rule
+  (alias test)
+  (action (diff calc.exp calc.out))
+)

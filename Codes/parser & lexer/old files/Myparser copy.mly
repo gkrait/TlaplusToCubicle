@@ -10,9 +10,6 @@ open Lexing;;
 open Parsezen;;
 
 
-
-
-
 %}
 
 %token SPACE " "
@@ -53,8 +50,9 @@ open Parsezen;;
 %%
 
 main:
-| tf = temporal_formula EOL 
-    { tf }
+
+|  temporal_formula  EOL {} 
+    
 
 let  temporal_formula:= 
 | predicate
@@ -81,9 +79,8 @@ primed_exp:
 | p=propositional_exp {p}
 | q=quantifier identifier IN  identifier COLON p=predicate {q::p}
 | OPEN q= quantifier identifier IN identifier COLON p=predicate CLOSE {q::p}
+| q= quantifier identifier IN identifier COLON p=predicate  {q::p}
 
-let delimited(opening, x, closing) ==
-  OPEN ; ~ = x ; CLOSE ; <>
 
 
 let unary_op ==
@@ -154,7 +151,8 @@ numeral:
 
 
 let located(x) ==
-  ~ = x; { { loc = $loc; value = x } }
+| ~ = x; { { loc = $loc; value = x } }
 
-
+let delimited(opening, x, closing) ==
+  OPEN ; ~ = x ; CLOSE ; <>
 
