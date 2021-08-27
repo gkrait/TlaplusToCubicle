@@ -1,0 +1,736 @@
+State 0:
+## Known stack suffix:
+##
+## LR(1) items:
+start' -> . start [ # ]
+## Transitions:
+-- On IDENTIFIER shift to state 1
+-- On tla_file shift to state 54
+-- On start shift to state 58
+-- On definition shift to state 57
+## Reductions:
+
+State 1:
+## Known stack suffix:
+## IDENTIFIER
+## LR(1) items:
+definition -> IDENTIFIER . ASSIGN temporal_formula SEMICOLON [ IDENTIFIER EOF ]
+definition -> IDENTIFIER . ASSIGN expr SEMICOLON [ IDENTIFIER EOF ]
+## Transitions:
+-- On ASSIGN shift to state 2
+## Reductions:
+
+State 2:
+## Known stack suffix:
+## IDENTIFIER ASSIGN
+## LR(1) items:
+definition -> IDENTIFIER ASSIGN . temporal_formula SEMICOLON [ IDENTIFIER EOF ]
+definition -> IDENTIFIER ASSIGN . expr SEMICOLON [ IDENTIFIER EOF ]
+## Transitions:
+-- On LPAR shift to state 3
+-- On IDENTIFIER shift to state 17
+-- On FORALL shift to state 21
+-- On EXISTS shift to state 26
+-- On term shift to state 5
+-- On temporal_formula shift to state 45
+-- On proposition shift to state 31
+-- On predicate shift to state 51
+-- On factor shift to state 10
+-- On expr shift to state 52
+## Reductions:
+
+State 3:
+## Known stack suffix:
+## LPAR
+## LR(1) items:
+factor -> LPAR . expr RPAR [ Smaller STAR SLASH SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND ]
+## Transitions:
+-- On LPAR shift to state 3
+-- On IDENTIFIER shift to state 4
+-- On term shift to state 5
+-- On factor shift to state 10
+-- On expr shift to state 11
+## Reductions:
+
+State 4:
+## Known stack suffix:
+## IDENTIFIER
+## LR(1) items:
+factor -> IDENTIFIER . [ Smaller STAR SLASH SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND ]
+## Transitions:
+## Reductions:
+-- On Smaller STAR SLASH SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND
+--   reduce production factor -> IDENTIFIER
+
+State 5:
+## Known stack suffix:
+## term
+## LR(1) items:
+expr -> term . [ Smaller SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND ]
+term -> term . STAR factor [ Smaller STAR SLASH SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND ]
+term -> term . SLASH factor [ Smaller STAR SLASH SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND ]
+## Transitions:
+-- On STAR shift to state 6
+-- On SLASH shift to state 8
+## Reductions:
+-- On Smaller SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND
+--   reduce production expr -> term
+
+State 6:
+## Known stack suffix:
+## term STAR
+## LR(1) items:
+term -> term STAR . factor [ Smaller STAR SLASH SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND ]
+## Transitions:
+-- On LPAR shift to state 3
+-- On IDENTIFIER shift to state 4
+-- On factor shift to state 7
+## Reductions:
+
+State 7:
+## Known stack suffix:
+## term STAR factor
+## LR(1) items:
+term -> term STAR factor . [ Smaller STAR SLASH SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND ]
+## Transitions:
+## Reductions:
+-- On Smaller STAR SLASH SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND
+--   reduce production term -> term STAR factor
+
+State 8:
+## Known stack suffix:
+## term SLASH
+## LR(1) items:
+term -> term SLASH . factor [ Smaller STAR SLASH SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND ]
+## Transitions:
+-- On LPAR shift to state 3
+-- On IDENTIFIER shift to state 4
+-- On factor shift to state 9
+## Reductions:
+
+State 9:
+## Known stack suffix:
+## term SLASH factor
+## LR(1) items:
+term -> term SLASH factor . [ Smaller STAR SLASH SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND ]
+## Transitions:
+## Reductions:
+-- On Smaller STAR SLASH SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND
+--   reduce production term -> term SLASH factor
+
+State 10:
+## Known stack suffix:
+## factor
+## LR(1) items:
+term -> factor . [ Smaller STAR SLASH SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND ]
+## Transitions:
+## Reductions:
+-- On Smaller STAR SLASH SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND
+--   reduce production term -> factor
+
+State 11:
+## Known stack suffix:
+## LPAR expr
+## LR(1) items:
+expr -> expr . PLUS term [ RPAR PLUS MINUS ]
+expr -> expr . MINUS term [ RPAR PLUS MINUS ]
+factor -> LPAR expr . RPAR [ Smaller STAR SLASH SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND ]
+## Transitions:
+-- On RPAR shift to state 12
+-- On PLUS shift to state 13
+-- On MINUS shift to state 15
+## Reductions:
+
+State 12:
+## Known stack suffix:
+## LPAR expr RPAR
+## LR(1) items:
+factor -> LPAR expr RPAR . [ Smaller STAR SLASH SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND ]
+## Transitions:
+## Reductions:
+-- On Smaller STAR SLASH SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND
+--   reduce production factor -> LPAR expr RPAR
+
+State 13:
+## Known stack suffix:
+## expr PLUS
+## LR(1) items:
+expr -> expr PLUS . term [ Smaller SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND ]
+## Transitions:
+-- On LPAR shift to state 3
+-- On IDENTIFIER shift to state 4
+-- On term shift to state 14
+-- On factor shift to state 10
+## Reductions:
+
+State 14:
+## Known stack suffix:
+## expr PLUS term
+## LR(1) items:
+expr -> expr PLUS term . [ Smaller SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND ]
+term -> term . STAR factor [ Smaller STAR SLASH SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND ]
+term -> term . SLASH factor [ Smaller STAR SLASH SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND ]
+## Transitions:
+-- On STAR shift to state 6
+-- On SLASH shift to state 8
+## Reductions:
+-- On Smaller SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND
+--   reduce production expr -> expr PLUS term
+
+State 15:
+## Known stack suffix:
+## expr MINUS
+## LR(1) items:
+expr -> expr MINUS . term [ Smaller SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND ]
+## Transitions:
+-- On LPAR shift to state 3
+-- On IDENTIFIER shift to state 4
+-- On term shift to state 16
+-- On factor shift to state 10
+## Reductions:
+
+State 16:
+## Known stack suffix:
+## expr MINUS term
+## LR(1) items:
+expr -> expr MINUS term . [ Smaller SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND ]
+term -> term . STAR factor [ Smaller STAR SLASH SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND ]
+term -> term . SLASH factor [ Smaller STAR SLASH SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND ]
+## Transitions:
+-- On STAR shift to state 6
+-- On SLASH shift to state 8
+## Reductions:
+-- On Smaller SEMICOLON RPAR PLUS OR MINUS Larger EQUAL AND
+--   reduce production expr -> expr MINUS term
+
+State 17:
+## Known stack suffix:
+## IDENTIFIER
+## LR(1) items:
+factor -> IDENTIFIER . [ Smaller STAR SLASH SEMICOLON PLUS MINUS Larger EQUAL ]
+temporal_formula -> IDENTIFIER . PRIME EQUAL expr [ SEMICOLON OR AND ]
+## Transitions:
+-- On PRIME shift to state 18
+## Reductions:
+-- On Smaller STAR SLASH SEMICOLON PLUS MINUS Larger EQUAL
+--   reduce production factor -> IDENTIFIER
+
+State 18:
+## Known stack suffix:
+## IDENTIFIER PRIME
+## LR(1) items:
+temporal_formula -> IDENTIFIER PRIME . EQUAL expr [ SEMICOLON OR AND ]
+## Transitions:
+-- On EQUAL shift to state 19
+## Reductions:
+
+State 19:
+## Known stack suffix:
+## IDENTIFIER PRIME EQUAL
+## LR(1) items:
+temporal_formula -> IDENTIFIER PRIME EQUAL . expr [ SEMICOLON OR AND ]
+## Transitions:
+-- On LPAR shift to state 3
+-- On IDENTIFIER shift to state 4
+-- On term shift to state 5
+-- On factor shift to state 10
+-- On expr shift to state 20
+## Reductions:
+
+State 20:
+## Known stack suffix:
+## IDENTIFIER PRIME EQUAL expr
+## LR(1) items:
+expr -> expr . PLUS term [ SEMICOLON PLUS OR MINUS AND ]
+expr -> expr . MINUS term [ SEMICOLON PLUS OR MINUS AND ]
+temporal_formula -> IDENTIFIER PRIME EQUAL expr . [ SEMICOLON OR AND ]
+## Transitions:
+-- On PLUS shift to state 13
+-- On MINUS shift to state 15
+## Reductions:
+-- On SEMICOLON OR AND
+--   reduce production temporal_formula -> IDENTIFIER PRIME EQUAL expr
+
+State 21:
+## Known stack suffix:
+## FORALL
+## LR(1) items:
+predicate -> FORALL . IDENTIFIER IN IDENTIFIER COLON predicate [ SEMICOLON OR AND ]
+## Transitions:
+-- On IDENTIFIER shift to state 22
+## Reductions:
+
+State 22:
+## Known stack suffix:
+## FORALL IDENTIFIER
+## LR(1) items:
+predicate -> FORALL IDENTIFIER . IN IDENTIFIER COLON predicate [ SEMICOLON OR AND ]
+## Transitions:
+-- On IN shift to state 23
+## Reductions:
+
+State 23:
+## Known stack suffix:
+## FORALL IDENTIFIER IN
+## LR(1) items:
+predicate -> FORALL IDENTIFIER IN . IDENTIFIER COLON predicate [ SEMICOLON OR AND ]
+## Transitions:
+-- On IDENTIFIER shift to state 24
+## Reductions:
+
+State 24:
+## Known stack suffix:
+## FORALL IDENTIFIER IN IDENTIFIER
+## LR(1) items:
+predicate -> FORALL IDENTIFIER IN IDENTIFIER . COLON predicate [ SEMICOLON OR AND ]
+## Transitions:
+-- On COLON shift to state 25
+## Reductions:
+
+State 25:
+## Known stack suffix:
+## FORALL IDENTIFIER IN IDENTIFIER COLON
+## LR(1) items:
+predicate -> FORALL IDENTIFIER IN IDENTIFIER COLON . predicate [ SEMICOLON OR AND ]
+## Transitions:
+-- On LPAR shift to state 3
+-- On IDENTIFIER shift to state 4
+-- On FORALL shift to state 21
+-- On EXISTS shift to state 26
+-- On term shift to state 5
+-- On proposition shift to state 31
+-- On predicate shift to state 44
+-- On factor shift to state 10
+-- On expr shift to state 36
+## Reductions:
+
+State 26:
+## Known stack suffix:
+## EXISTS
+## LR(1) items:
+predicate -> EXISTS . IDENTIFIER IN IDENTIFIER COLON predicate [ SEMICOLON OR AND ]
+## Transitions:
+-- On IDENTIFIER shift to state 27
+## Reductions:
+
+State 27:
+## Known stack suffix:
+## EXISTS IDENTIFIER
+## LR(1) items:
+predicate -> EXISTS IDENTIFIER . IN IDENTIFIER COLON predicate [ SEMICOLON OR AND ]
+## Transitions:
+-- On IN shift to state 28
+## Reductions:
+
+State 28:
+## Known stack suffix:
+## EXISTS IDENTIFIER IN
+## LR(1) items:
+predicate -> EXISTS IDENTIFIER IN . IDENTIFIER COLON predicate [ SEMICOLON OR AND ]
+## Transitions:
+-- On IDENTIFIER shift to state 29
+## Reductions:
+
+State 29:
+## Known stack suffix:
+## EXISTS IDENTIFIER IN IDENTIFIER
+## LR(1) items:
+predicate -> EXISTS IDENTIFIER IN IDENTIFIER . COLON predicate [ SEMICOLON OR AND ]
+## Transitions:
+-- On COLON shift to state 30
+## Reductions:
+
+State 30:
+## Known stack suffix:
+## EXISTS IDENTIFIER IN IDENTIFIER COLON
+## LR(1) items:
+predicate -> EXISTS IDENTIFIER IN IDENTIFIER COLON . predicate [ SEMICOLON OR AND ]
+## Transitions:
+-- On LPAR shift to state 3
+-- On IDENTIFIER shift to state 4
+-- On FORALL shift to state 21
+-- On EXISTS shift to state 26
+-- On term shift to state 5
+-- On proposition shift to state 31
+-- On predicate shift to state 43
+-- On factor shift to state 10
+-- On expr shift to state 36
+## Reductions:
+
+State 31:
+## Known stack suffix:
+## proposition
+## LR(1) items:
+predicate -> proposition . [ SEMICOLON OR AND ]
+proposition -> proposition . AND proposition [ SEMICOLON OR AND ]
+proposition -> proposition . OR proposition [ SEMICOLON OR AND ]
+## Transitions:
+-- On OR shift to state 32
+-- On AND shift to state 34
+## Reductions:
+-- On SEMICOLON OR AND
+--   reduce production predicate -> proposition
+** Conflict on OR AND
+
+State 32:
+## Known stack suffix:
+## proposition OR
+## LR(1) items:
+proposition -> proposition OR . proposition [ SEMICOLON OR AND ]
+## Transitions:
+-- On LPAR shift to state 3
+-- On IDENTIFIER shift to state 4
+-- On term shift to state 5
+-- On proposition shift to state 33
+-- On factor shift to state 10
+-- On expr shift to state 36
+## Reductions:
+
+State 33:
+## Known stack suffix:
+## proposition OR proposition
+## LR(1) items:
+proposition -> proposition . AND proposition [ SEMICOLON OR AND ]
+proposition -> proposition . OR proposition [ SEMICOLON OR AND ]
+proposition -> proposition OR proposition . [ SEMICOLON OR AND ]
+## Transitions:
+-- On OR shift to state 32
+-- On AND shift to state 34
+## Reductions:
+-- On SEMICOLON OR AND
+--   reduce production proposition -> proposition OR proposition
+** Conflict on OR AND
+
+State 34:
+## Known stack suffix:
+## proposition AND
+## LR(1) items:
+proposition -> proposition AND . proposition [ SEMICOLON OR AND ]
+## Transitions:
+-- On LPAR shift to state 3
+-- On IDENTIFIER shift to state 4
+-- On term shift to state 5
+-- On proposition shift to state 35
+-- On factor shift to state 10
+-- On expr shift to state 36
+## Reductions:
+
+State 35:
+## Known stack suffix:
+## proposition AND proposition
+## LR(1) items:
+proposition -> proposition . AND proposition [ SEMICOLON OR AND ]
+proposition -> proposition AND proposition . [ SEMICOLON OR AND ]
+proposition -> proposition . OR proposition [ SEMICOLON OR AND ]
+## Transitions:
+-- On OR shift to state 32
+-- On AND shift to state 34
+## Reductions:
+-- On SEMICOLON OR AND
+--   reduce production proposition -> proposition AND proposition
+** Conflict on OR AND
+
+State 36:
+## Known stack suffix:
+## expr
+## LR(1) items:
+expr -> expr . PLUS term [ Smaller PLUS MINUS Larger EQUAL ]
+expr -> expr . MINUS term [ Smaller PLUS MINUS Larger EQUAL ]
+proposition -> expr . EQUAL expr [ SEMICOLON OR AND ]
+proposition -> expr . Larger expr [ SEMICOLON OR AND ]
+proposition -> expr . Smaller expr [ SEMICOLON OR AND ]
+## Transitions:
+-- On Smaller shift to state 37
+-- On PLUS shift to state 13
+-- On MINUS shift to state 15
+-- On Larger shift to state 39
+-- On EQUAL shift to state 41
+## Reductions:
+
+State 37:
+## Known stack suffix:
+## expr Smaller
+## LR(1) items:
+proposition -> expr Smaller . expr [ SEMICOLON OR AND ]
+## Transitions:
+-- On LPAR shift to state 3
+-- On IDENTIFIER shift to state 4
+-- On term shift to state 5
+-- On factor shift to state 10
+-- On expr shift to state 38
+## Reductions:
+
+State 38:
+## Known stack suffix:
+## expr Smaller expr
+## LR(1) items:
+expr -> expr . PLUS term [ SEMICOLON PLUS OR MINUS AND ]
+expr -> expr . MINUS term [ SEMICOLON PLUS OR MINUS AND ]
+proposition -> expr Smaller expr . [ SEMICOLON OR AND ]
+## Transitions:
+-- On PLUS shift to state 13
+-- On MINUS shift to state 15
+## Reductions:
+-- On SEMICOLON OR AND
+--   reduce production proposition -> expr Smaller expr
+
+State 39:
+## Known stack suffix:
+## expr Larger
+## LR(1) items:
+proposition -> expr Larger . expr [ SEMICOLON OR AND ]
+## Transitions:
+-- On LPAR shift to state 3
+-- On IDENTIFIER shift to state 4
+-- On term shift to state 5
+-- On factor shift to state 10
+-- On expr shift to state 40
+## Reductions:
+
+State 40:
+## Known stack suffix:
+## expr Larger expr
+## LR(1) items:
+expr -> expr . PLUS term [ SEMICOLON PLUS OR MINUS AND ]
+expr -> expr . MINUS term [ SEMICOLON PLUS OR MINUS AND ]
+proposition -> expr Larger expr . [ SEMICOLON OR AND ]
+## Transitions:
+-- On PLUS shift to state 13
+-- On MINUS shift to state 15
+## Reductions:
+-- On SEMICOLON OR AND
+--   reduce production proposition -> expr Larger expr
+
+State 41:
+## Known stack suffix:
+## expr EQUAL
+## LR(1) items:
+proposition -> expr EQUAL . expr [ SEMICOLON OR AND ]
+## Transitions:
+-- On LPAR shift to state 3
+-- On IDENTIFIER shift to state 4
+-- On term shift to state 5
+-- On factor shift to state 10
+-- On expr shift to state 42
+## Reductions:
+
+State 42:
+## Known stack suffix:
+## expr EQUAL expr
+## LR(1) items:
+expr -> expr . PLUS term [ SEMICOLON PLUS OR MINUS AND ]
+expr -> expr . MINUS term [ SEMICOLON PLUS OR MINUS AND ]
+proposition -> expr EQUAL expr . [ SEMICOLON OR AND ]
+## Transitions:
+-- On PLUS shift to state 13
+-- On MINUS shift to state 15
+## Reductions:
+-- On SEMICOLON OR AND
+--   reduce production proposition -> expr EQUAL expr
+
+State 43:
+## Known stack suffix:
+## EXISTS IDENTIFIER IN IDENTIFIER COLON predicate
+## LR(1) items:
+predicate -> EXISTS IDENTIFIER IN IDENTIFIER COLON predicate . [ SEMICOLON OR AND ]
+## Transitions:
+## Reductions:
+-- On SEMICOLON OR AND
+--   reduce production predicate -> EXISTS IDENTIFIER IN IDENTIFIER COLON predicate
+
+State 44:
+## Known stack suffix:
+## FORALL IDENTIFIER IN IDENTIFIER COLON predicate
+## LR(1) items:
+predicate -> FORALL IDENTIFIER IN IDENTIFIER COLON predicate . [ SEMICOLON OR AND ]
+## Transitions:
+## Reductions:
+-- On SEMICOLON OR AND
+--   reduce production predicate -> FORALL IDENTIFIER IN IDENTIFIER COLON predicate
+
+State 45:
+## Known stack suffix:
+## IDENTIFIER ASSIGN temporal_formula
+## LR(1) items:
+definition -> IDENTIFIER ASSIGN temporal_formula . SEMICOLON [ IDENTIFIER EOF ]
+temporal_formula -> temporal_formula . OR temporal_formula [ SEMICOLON OR AND ]
+temporal_formula -> temporal_formula . AND temporal_formula [ SEMICOLON OR AND ]
+## Transitions:
+-- On SEMICOLON shift to state 46
+-- On OR shift to state 47
+-- On AND shift to state 49
+## Reductions:
+
+State 46:
+## Known stack suffix:
+## IDENTIFIER ASSIGN temporal_formula SEMICOLON
+## LR(1) items:
+definition -> IDENTIFIER ASSIGN temporal_formula SEMICOLON . [ IDENTIFIER EOF ]
+## Transitions:
+## Reductions:
+-- On IDENTIFIER EOF
+--   reduce production definition -> IDENTIFIER ASSIGN temporal_formula SEMICOLON
+
+State 47:
+## Known stack suffix:
+## temporal_formula OR
+## LR(1) items:
+temporal_formula -> temporal_formula OR . temporal_formula [ SEMICOLON OR AND ]
+## Transitions:
+-- On LPAR shift to state 3
+-- On IDENTIFIER shift to state 17
+-- On FORALL shift to state 21
+-- On EXISTS shift to state 26
+-- On term shift to state 5
+-- On temporal_formula shift to state 48
+-- On proposition shift to state 31
+-- On predicate shift to state 51
+-- On factor shift to state 10
+-- On expr shift to state 36
+## Reductions:
+
+State 48:
+## Known stack suffix:
+## temporal_formula OR temporal_formula
+## LR(1) items:
+temporal_formula -> temporal_formula . OR temporal_formula [ SEMICOLON OR AND ]
+temporal_formula -> temporal_formula OR temporal_formula . [ SEMICOLON OR AND ]
+temporal_formula -> temporal_formula . AND temporal_formula [ SEMICOLON OR AND ]
+## Transitions:
+-- On OR shift to state 47
+-- On AND shift to state 49
+## Reductions:
+-- On SEMICOLON OR AND
+--   reduce production temporal_formula -> temporal_formula OR temporal_formula
+** Conflict on OR AND
+
+State 49:
+## Known stack suffix:
+## temporal_formula AND
+## LR(1) items:
+temporal_formula -> temporal_formula AND . temporal_formula [ SEMICOLON OR AND ]
+## Transitions:
+-- On LPAR shift to state 3
+-- On IDENTIFIER shift to state 17
+-- On FORALL shift to state 21
+-- On EXISTS shift to state 26
+-- On term shift to state 5
+-- On temporal_formula shift to state 50
+-- On proposition shift to state 31
+-- On predicate shift to state 51
+-- On factor shift to state 10
+-- On expr shift to state 36
+## Reductions:
+
+State 50:
+## Known stack suffix:
+## temporal_formula AND temporal_formula
+## LR(1) items:
+temporal_formula -> temporal_formula . OR temporal_formula [ SEMICOLON OR AND ]
+temporal_formula -> temporal_formula . AND temporal_formula [ SEMICOLON OR AND ]
+temporal_formula -> temporal_formula AND temporal_formula . [ SEMICOLON OR AND ]
+## Transitions:
+-- On OR shift to state 47
+-- On AND shift to state 49
+## Reductions:
+-- On SEMICOLON OR AND
+--   reduce production temporal_formula -> temporal_formula AND temporal_formula
+** Conflict on OR AND
+
+State 51:
+## Known stack suffix:
+## predicate
+## LR(1) items:
+temporal_formula -> predicate . [ SEMICOLON OR AND ]
+## Transitions:
+## Reductions:
+-- On SEMICOLON OR AND
+--   reduce production temporal_formula -> predicate
+
+State 52:
+## Known stack suffix:
+## IDENTIFIER ASSIGN expr
+## LR(1) items:
+definition -> IDENTIFIER ASSIGN expr . SEMICOLON [ IDENTIFIER EOF ]
+expr -> expr . PLUS term [ Smaller SEMICOLON PLUS MINUS Larger EQUAL ]
+expr -> expr . MINUS term [ Smaller SEMICOLON PLUS MINUS Larger EQUAL ]
+proposition -> expr . EQUAL expr [ SEMICOLON OR AND ]
+proposition -> expr . Larger expr [ SEMICOLON OR AND ]
+proposition -> expr . Smaller expr [ SEMICOLON OR AND ]
+## Transitions:
+-- On Smaller shift to state 37
+-- On SEMICOLON shift to state 53
+-- On PLUS shift to state 13
+-- On MINUS shift to state 15
+-- On Larger shift to state 39
+-- On EQUAL shift to state 41
+## Reductions:
+
+State 53:
+## Known stack suffix:
+## IDENTIFIER ASSIGN expr SEMICOLON
+## LR(1) items:
+definition -> IDENTIFIER ASSIGN expr SEMICOLON . [ IDENTIFIER EOF ]
+## Transitions:
+## Reductions:
+-- On IDENTIFIER EOF
+--   reduce production definition -> IDENTIFIER ASSIGN expr SEMICOLON
+
+State 54:
+## Known stack suffix:
+## tla_file
+## LR(1) items:
+start -> tla_file . EOF [ # ]
+tla_file -> tla_file . tla_file [ IDENTIFIER EOF ]
+## Transitions:
+-- On IDENTIFIER shift to state 1
+-- On EOF shift to state 55
+-- On tla_file shift to state 56
+-- On definition shift to state 57
+## Reductions:
+
+State 55:
+## Known stack suffix:
+## tla_file EOF
+## LR(1) items:
+start -> tla_file EOF . [ # ]
+## Transitions:
+## Reductions:
+-- On #
+--   reduce production start -> tla_file EOF
+
+State 56:
+## Known stack suffix:
+## tla_file tla_file
+## LR(1) items:
+tla_file -> tla_file . tla_file [ IDENTIFIER EOF ]
+tla_file -> tla_file tla_file . [ IDENTIFIER EOF ]
+## Transitions:
+-- On IDENTIFIER shift to state 1
+-- On tla_file shift to state 56
+-- On definition shift to state 57
+## Reductions:
+-- On IDENTIFIER EOF
+--   reduce production tla_file -> tla_file tla_file
+** Conflict on IDENTIFIER
+
+State 57:
+## Known stack suffix:
+## definition
+## LR(1) items:
+tla_file -> definition . [ IDENTIFIER EOF ]
+## Transitions:
+## Reductions:
+-- On IDENTIFIER EOF
+--   reduce production tla_file -> definition
+
+State 58:
+## Known stack suffix:
+## start
+## LR(1) items:
+start' -> start . [ # ]
+## Transitions:
+## Reductions:
+-- On #
+--   accept start
+

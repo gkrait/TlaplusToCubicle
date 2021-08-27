@@ -1,0 +1,179 @@
+
+** Conflict (shift/reduce) in state 56.
+** Token involved: IDENTIFIER
+** This state is reached from start after reading:
+
+tla_file tla_file
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+start 
+tla_file EOF 
+(?)
+
+** In state 56, looking ahead at IDENTIFIER, shifting is permitted
+** because of the following sub-derivation:
+
+tla_file tla_file 
+         tla_file tla_file 
+                  definition 
+                  . IDENTIFIER ASSIGN temporal_formula SEMICOLON 
+
+** In state 56, looking ahead at IDENTIFIER, reducing production
+** tla_file -> tla_file tla_file
+** is permitted because of the following sub-derivation:
+
+tla_file tla_file // lookahead token appears because tla_file can begin with IDENTIFIER
+tla_file tla_file . 
+
+** Conflict (shift/reduce) in state 50.
+** Tokens involved: OR AND
+** The following explanations concentrate on token OR.
+** This state is reached from start after reading:
+
+IDENTIFIER ASSIGN temporal_formula AND temporal_formula
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+start 
+tla_file EOF 
+definition 
+IDENTIFIER ASSIGN temporal_formula SEMICOLON 
+                  (?)
+
+** In state 50, looking ahead at OR, shifting is permitted
+** because of the following sub-derivation:
+
+temporal_formula AND temporal_formula 
+                     temporal_formula . OR temporal_formula 
+
+** In state 50, looking ahead at OR, reducing production
+** temporal_formula -> temporal_formula AND temporal_formula
+** is permitted because of the following sub-derivation:
+
+temporal_formula OR temporal_formula // lookahead token appears
+temporal_formula AND temporal_formula . 
+
+** Conflict (shift/reduce) in state 48.
+** Tokens involved: OR AND
+** The following explanations concentrate on token OR.
+** This state is reached from start after reading:
+
+IDENTIFIER ASSIGN temporal_formula OR temporal_formula
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+start 
+tla_file EOF 
+definition 
+IDENTIFIER ASSIGN temporal_formula SEMICOLON 
+                  (?)
+
+** In state 48, looking ahead at OR, shifting is permitted
+** because of the following sub-derivation:
+
+temporal_formula OR temporal_formula 
+                    temporal_formula . OR temporal_formula 
+
+** In state 48, looking ahead at OR, reducing production
+** temporal_formula -> temporal_formula OR temporal_formula
+** is permitted because of the following sub-derivation:
+
+temporal_formula OR temporal_formula // lookahead token appears
+temporal_formula OR temporal_formula . 
+
+** Conflict (shift/reduce) in state 35.
+** Tokens involved: OR AND
+** The following explanations concentrate on token OR.
+** This state is reached from start after reading:
+
+IDENTIFIER ASSIGN proposition AND proposition
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+start 
+tla_file EOF 
+definition 
+IDENTIFIER ASSIGN temporal_formula SEMICOLON 
+                  predicate 
+                  proposition 
+                  (?)
+
+** In state 35, looking ahead at OR, reducing production
+** proposition -> proposition AND proposition
+** is permitted because of the following sub-derivation:
+
+proposition OR proposition // lookahead token appears
+proposition AND proposition . 
+
+** In state 35, looking ahead at OR, shifting is permitted
+** because of the following sub-derivation:
+
+proposition AND proposition 
+                proposition . OR proposition 
+
+** Conflict (shift/reduce) in state 33.
+** Tokens involved: OR AND
+** The following explanations concentrate on token OR.
+** This state is reached from start after reading:
+
+IDENTIFIER ASSIGN proposition OR proposition
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+start 
+tla_file EOF 
+definition 
+IDENTIFIER ASSIGN temporal_formula SEMICOLON 
+                  predicate 
+                  proposition 
+                  (?)
+
+** In state 33, looking ahead at OR, shifting is permitted
+** because of the following sub-derivation:
+
+proposition OR proposition 
+               proposition . OR proposition 
+
+** In state 33, looking ahead at OR, reducing production
+** proposition -> proposition OR proposition
+** is permitted because of the following sub-derivation:
+
+proposition OR proposition // lookahead token appears
+proposition OR proposition . 
+
+** Conflict (shift/reduce) in state 31.
+** Tokens involved: OR AND
+** The following explanations concentrate on token OR.
+** This state is reached from start after reading:
+
+IDENTIFIER ASSIGN proposition
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+start 
+tla_file EOF 
+definition 
+IDENTIFIER ASSIGN temporal_formula SEMICOLON 
+                  (?)
+
+** In state 31, looking ahead at OR, reducing production
+** predicate -> proposition
+** is permitted because of the following sub-derivation:
+
+temporal_formula OR temporal_formula // lookahead token appears
+predicate // lookahead token is inherited
+proposition . 
+
+** In state 31, looking ahead at OR, shifting is permitted
+** because of the following sub-derivation:
+
+predicate 
+proposition 
+proposition . OR proposition 
