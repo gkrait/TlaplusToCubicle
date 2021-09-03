@@ -7,13 +7,25 @@ type binop =
 
 type exp = 
   | Var of string
+  | Func_img of exp * exp 
+  | INT of string
   | Binop of exp * binop * exp
+  | Open_exp of string * string list 
+  | Func_def of exp * exp * exp 
+
+type ldef_sides=
+| DEFIN of exp 
+
+
+
 
 
 type uni=
 |  Col 
 | Prim
 | NEWL
+
+
 
 
 type coparism =
@@ -33,6 +45,7 @@ type prop =
 | Equality of exp * coparism * exp 
 | Inequality of exp * coparism * exp
 | Coposition of prop * logicalop * prop 
+| Open_prop of ldef_sides* string list 
 
 
 
@@ -45,22 +58,25 @@ type pred =
 | Prop of prop
 | Existence of quanti * exp * coparism * exp * uni * pred
 | Universal of quanti * exp * coparism * exp * uni * pred
+| Pred_Comp of pred * logicalop * pred 
 
 
 
 type temp=
 | Predec of pred
-| Prime of exp * uni * coparism * exp 
+| Prime of exp * string list * exp 
 | Mix of temp * logicalop * temp
 
-type assig_value=
+
+type rdef_sides=
 | Expr of exp 
 | Stat of temp 
 
 
 type definition =
-| Statment of exp * logicalop * assig_value * uni
-| Value of exp * logicalop * assig_value * uni
+| Statment of ldef_sides * string list * logicalop * rdef_sides * uni
+| Value of ldef_sides *  string list *  logicalop * rdef_sides * uni
+
 
 
 type tla_fil = 
@@ -71,5 +87,7 @@ type tla_fil =
 
 
 type obj_info = 
-| ElE of   exp *  string *  assig_value *string
+| ElE of   ldef_sides  * string list * string *  rdef_sides * string
+
+
 

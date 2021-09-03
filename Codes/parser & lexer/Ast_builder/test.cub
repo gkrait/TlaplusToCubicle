@@ -1,0 +1,11 @@
+array A[proc] : int
+
+init (z) { A[z] = 1 } 
+
+
+unsafe (z) { A[z] > 10 }
+
+
+transition t1 (z)
+requires { A[z] < 10 }
+{ A[z] :=  A[z] +1 }

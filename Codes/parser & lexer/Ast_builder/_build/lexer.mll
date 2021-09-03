@@ -6,12 +6,14 @@
 
 let id = ['a'-'z' 'A'-'Z' '_'] ['a'-'z' 'A'-'Z' '0'-'9' '_']*
 
+let nu = ['0'-'9'] ['0'-'9']*
+
 (* Helpers *)
   let ne  = "\n"
   let tab   = "\009"
   let cr    = "\013"
   let lf    = "\010"
-  let eol   =  ne| cr | lf | cr lf 
+  let eol   =   cr | lf | cr lf 
 
 (* Tokens *)
 
@@ -28,17 +30,19 @@ rule token = parse
   | "="                  { EQUAL }
   | ">"                  { Larger }
   | "<"                  { Smaller }
-  | "\\/"                { AND }
-  | "/\\"                { OR }
-  | "@"                {  FORALL }
-  | "$"                { EXISTS  }
+  | "/\\"                  { AND }
+  | "\\/"                 { OR }
+  | "\\A"                {  FORALL }
+  | "\\E"                { EXISTS  }
   | ":"                  { COLON }
-  | "^"                  { IN }
-  | "["                 { PRIME }
-  | ("x" | "y" | "z")    { IDENTIFIER (get lexbuf) }
+  | "\\in"                  { IN }
+  | "'"                 { PRIME }
   | ';'                { SEMICOLON }
   |"=="                  { ASSIGN }
-  | id
-    { IDENTIFIER (Lexing.lexeme lexbuf) }
- 
+  | nu                   { Num (Lexing.lexeme lexbuf)}
+  | id                   { IDENTIFIER (Lexing.lexeme lexbuf)  }
+  | "["                   { SLPAR }
+  | "]"                   { SRPAR }    
+  | "|->"                 { ARROW }
+  | ","                  { COMMA }   
 

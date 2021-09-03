@@ -4,12 +4,15 @@
 type token = 
   | Smaller
   | STAR
+  | SRPAR
+  | SLPAR
   | SLASH
   | SEMICOLON
   | RPAR
   | PRIME
   | PLUS
   | OR
+  | Num of (string)
   | MINUS
   | Larger
   | LPAR
@@ -19,8 +22,10 @@ type token =
   | EXISTS
   | EQUAL
   | EOF
+  | COMMA
   | COLON
   | ASSIGN
+  | ARROW
   | AND
 
 (* This exception is raised by the monolithic API functions. *)

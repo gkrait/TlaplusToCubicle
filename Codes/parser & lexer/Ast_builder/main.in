@@ -1,3 +1,8 @@
-z== x[=y \\/ $ x ^ y: x+y = y-z /\\ x+y > y-z \\/ x+y < y-z   
+zss== x' =y+1 \\/ $ ssx ^ y: x+dy = y-z+1 /\\ xdd2+y > y-z-5 \\/ xss+y < y-z ; x==y ;x==y+y ; z==x >y ; 
 
-    
+
+
+
+"x==\\A x  \\in Proc :   x=1   ;
+Change== x < 10 /\\ x =x+1  ;
+s == \\A x \\in Proc :  Init \\/ c ; "

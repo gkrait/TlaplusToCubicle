@@ -1,5 +1,5 @@
 
-** Conflict (shift/reduce) in state 56.
+** Conflict (shift/reduce) in state 113.
 ** Token involved: IDENTIFIER
 ** This state is reached from start after reading:
 
@@ -12,7 +12,7 @@ start
 tla_file EOF 
 (?)
 
-** In state 56, looking ahead at IDENTIFIER, shifting is permitted
+** In state 113, looking ahead at IDENTIFIER, shifting is permitted
 ** because of the following sub-derivation:
 
 tla_file tla_file 
@@ -20,14 +20,43 @@ tla_file tla_file
                   definition 
                   . IDENTIFIER ASSIGN temporal_formula SEMICOLON 
 
-** In state 56, looking ahead at IDENTIFIER, reducing production
+** In state 113, looking ahead at IDENTIFIER, reducing production
 ** tla_file -> tla_file tla_file
 ** is permitted because of the following sub-derivation:
 
 tla_file tla_file // lookahead token appears because tla_file can begin with IDENTIFIER
 tla_file tla_file . 
 
-** Conflict (shift/reduce) in state 50.
+** Conflict (shift/reduce) in state 95.
+** Tokens involved: OR AND
+** The following explanations concentrate on token OR.
+** This state is reached from start after reading:
+
+IDENTIFIER ASSIGN predicate
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+start 
+tla_file EOF 
+definition 
+IDENTIFIER ASSIGN temporal_formula SEMICOLON 
+                  (?)
+
+** In state 95, looking ahead at OR, shifting is permitted
+** because of the following sub-derivation:
+
+predicate 
+predicate . OR predicate 
+
+** In state 95, looking ahead at OR, reducing production
+** temporal_formula -> predicate
+** is permitted because of the following sub-derivation:
+
+temporal_formula OR temporal_formula // lookahead token appears
+predicate . 
+
+** Conflict (shift/reduce) in state 93.
 ** Tokens involved: OR AND
 ** The following explanations concentrate on token OR.
 ** This state is reached from start after reading:
@@ -43,20 +72,20 @@ definition
 IDENTIFIER ASSIGN temporal_formula SEMICOLON 
                   (?)
 
-** In state 50, looking ahead at OR, shifting is permitted
+** In state 93, looking ahead at OR, shifting is permitted
 ** because of the following sub-derivation:
 
 temporal_formula AND temporal_formula 
                      temporal_formula . OR temporal_formula 
 
-** In state 50, looking ahead at OR, reducing production
+** In state 93, looking ahead at OR, reducing production
 ** temporal_formula -> temporal_formula AND temporal_formula
 ** is permitted because of the following sub-derivation:
 
 temporal_formula OR temporal_formula // lookahead token appears
 temporal_formula AND temporal_formula . 
 
-** Conflict (shift/reduce) in state 48.
+** Conflict (shift/reduce) in state 91.
 ** Tokens involved: OR AND
 ** The following explanations concentrate on token OR.
 ** This state is reached from start after reading:
@@ -72,20 +101,140 @@ definition
 IDENTIFIER ASSIGN temporal_formula SEMICOLON 
                   (?)
 
-** In state 48, looking ahead at OR, shifting is permitted
+** In state 91, looking ahead at OR, shifting is permitted
 ** because of the following sub-derivation:
 
 temporal_formula OR temporal_formula 
                     temporal_formula . OR temporal_formula 
 
-** In state 48, looking ahead at OR, reducing production
+** In state 91, looking ahead at OR, reducing production
 ** temporal_formula -> temporal_formula OR temporal_formula
 ** is permitted because of the following sub-derivation:
 
 temporal_formula OR temporal_formula // lookahead token appears
 temporal_formula OR temporal_formula . 
 
-** Conflict (shift/reduce) in state 35.
+** Conflict (shift/reduce) in state 87.
+** Tokens involved: OR AND
+** The following explanations concentrate on token OR.
+** This state is reached from start after reading:
+
+IDENTIFIER ASSIGN FORALL IDENTIFIER IN IDENTIFIER COLON predicate
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+start 
+tla_file EOF 
+definition 
+IDENTIFIER ASSIGN temporal_formula SEMICOLON 
+                  predicate 
+                  (?)
+
+** In state 87, looking ahead at OR, reducing production
+** predicate -> FORALL IDENTIFIER IN IDENTIFIER COLON predicate
+** is permitted because of the following sub-derivation:
+
+predicate OR predicate // lookahead token appears
+FORALL IDENTIFIER IN IDENTIFIER COLON predicate . 
+
+** In state 87, looking ahead at OR, shifting is permitted
+** because of the following sub-derivation:
+
+FORALL IDENTIFIER IN IDENTIFIER COLON predicate 
+                                      predicate . OR predicate 
+
+** Conflict (shift/reduce) in state 86.
+** Tokens involved: OR AND
+** The following explanations concentrate on token OR.
+** This state is reached from start after reading:
+
+IDENTIFIER ASSIGN predicate AND predicate
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+start 
+tla_file EOF 
+definition 
+IDENTIFIER ASSIGN temporal_formula SEMICOLON 
+                  predicate 
+                  (?)
+
+** In state 86, looking ahead at OR, shifting is permitted
+** because of the following sub-derivation:
+
+predicate AND predicate 
+              predicate . OR predicate 
+
+** In state 86, looking ahead at OR, reducing production
+** predicate -> predicate AND predicate
+** is permitted because of the following sub-derivation:
+
+predicate OR predicate // lookahead token appears
+predicate AND predicate . 
+
+** Conflict (shift/reduce) in state 84.
+** Tokens involved: OR AND
+** The following explanations concentrate on token OR.
+** This state is reached from start after reading:
+
+IDENTIFIER ASSIGN predicate OR predicate
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+start 
+tla_file EOF 
+definition 
+IDENTIFIER ASSIGN temporal_formula SEMICOLON 
+                  predicate 
+                  (?)
+
+** In state 84, looking ahead at OR, shifting is permitted
+** because of the following sub-derivation:
+
+predicate OR predicate 
+             predicate . OR predicate 
+
+** In state 84, looking ahead at OR, reducing production
+** predicate -> predicate OR predicate
+** is permitted because of the following sub-derivation:
+
+predicate OR predicate // lookahead token appears
+predicate OR predicate . 
+
+** Conflict (shift/reduce) in state 82.
+** Tokens involved: OR AND
+** The following explanations concentrate on token OR.
+** This state is reached from start after reading:
+
+IDENTIFIER ASSIGN EXISTS IDENTIFIER IN IDENTIFIER COLON predicate
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+start 
+tla_file EOF 
+definition 
+IDENTIFIER ASSIGN temporal_formula SEMICOLON 
+                  predicate 
+                  (?)
+
+** In state 82, looking ahead at OR, reducing production
+** predicate -> EXISTS IDENTIFIER IN IDENTIFIER COLON predicate
+** is permitted because of the following sub-derivation:
+
+predicate OR predicate // lookahead token appears
+EXISTS IDENTIFIER IN IDENTIFIER COLON predicate . 
+
+** In state 82, looking ahead at OR, shifting is permitted
+** because of the following sub-derivation:
+
+EXISTS IDENTIFIER IN IDENTIFIER COLON predicate 
+                                      predicate . OR predicate 
+
+** Conflict (shift/reduce) in state 74.
 ** Tokens involved: OR AND
 ** The following explanations concentrate on token OR.
 ** This state is reached from start after reading:
@@ -103,20 +252,20 @@ IDENTIFIER ASSIGN temporal_formula SEMICOLON
                   proposition 
                   (?)
 
-** In state 35, looking ahead at OR, reducing production
+** In state 74, looking ahead at OR, reducing production
 ** proposition -> proposition AND proposition
 ** is permitted because of the following sub-derivation:
 
 proposition OR proposition // lookahead token appears
 proposition AND proposition . 
 
-** In state 35, looking ahead at OR, shifting is permitted
+** In state 74, looking ahead at OR, shifting is permitted
 ** because of the following sub-derivation:
 
 proposition AND proposition 
                 proposition . OR proposition 
 
-** Conflict (shift/reduce) in state 33.
+** Conflict (shift/reduce) in state 72.
 ** Tokens involved: OR AND
 ** The following explanations concentrate on token OR.
 ** This state is reached from start after reading:
@@ -134,20 +283,20 @@ IDENTIFIER ASSIGN temporal_formula SEMICOLON
                   proposition 
                   (?)
 
-** In state 33, looking ahead at OR, shifting is permitted
+** In state 72, looking ahead at OR, shifting is permitted
 ** because of the following sub-derivation:
 
 proposition OR proposition 
                proposition . OR proposition 
 
-** In state 33, looking ahead at OR, reducing production
+** In state 72, looking ahead at OR, reducing production
 ** proposition -> proposition OR proposition
 ** is permitted because of the following sub-derivation:
 
 proposition OR proposition // lookahead token appears
 proposition OR proposition . 
 
-** Conflict (shift/reduce) in state 31.
+** Conflict (shift/reduce) in state 70.
 ** Tokens involved: OR AND
 ** The following explanations concentrate on token OR.
 ** This state is reached from start after reading:
@@ -161,19 +310,114 @@ start
 tla_file EOF 
 definition 
 IDENTIFIER ASSIGN temporal_formula SEMICOLON 
+                  predicate 
                   (?)
 
-** In state 31, looking ahead at OR, reducing production
+** In state 70, looking ahead at OR, reducing production
 ** predicate -> proposition
 ** is permitted because of the following sub-derivation:
 
-temporal_formula OR temporal_formula // lookahead token appears
-predicate // lookahead token is inherited
+predicate OR predicate // lookahead token appears
 proposition . 
 
-** In state 31, looking ahead at OR, shifting is permitted
+** In state 70, looking ahead at OR, shifting is permitted
 ** because of the following sub-derivation:
 
-predicate 
 proposition 
 proposition . OR proposition 
+
+** Conflict (reduce/reduce) in state 49.
+** Token involved: SEMICOLON
+** This state is reached from start after reading:
+
+IDENTIFIER ASSIGN IDENTIFIER LPAR varlist RPAR
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+start 
+tla_file EOF 
+definition 
+(?)
+
+** In state 49, looking ahead at SEMICOLON, reducing production
+** factor -> IDENTIFIER LPAR varlist RPAR
+** is permitted because of the following sub-derivation:
+
+IDENTIFIER ASSIGN expr SEMICOLON // lookahead token appears
+                  term // lookahead token is inherited
+                  factor // lookahead token is inherited
+                  IDENTIFIER LPAR varlist RPAR . 
+
+** In state 49, looking ahead at SEMICOLON, reducing production
+** proposition -> IDENTIFIER LPAR varlist RPAR
+** is permitted because of the following sub-derivation:
+
+IDENTIFIER ASSIGN temporal_formula SEMICOLON // lookahead token appears
+                  predicate // lookahead token is inherited
+                  proposition // lookahead token is inherited
+                  IDENTIFIER LPAR varlist RPAR . 
+
+** Conflict (reduce/reduce) in state 40.
+** Token involved: SEMICOLON
+** This state is reached from start after reading:
+
+IDENTIFIER ASSIGN IDENTIFIER SLPAR varlist SRPAR
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+start 
+tla_file EOF 
+definition 
+(?)
+
+** In state 40, looking ahead at SEMICOLON, reducing production
+** factor -> IDENTIFIER SLPAR varlist SRPAR
+** is permitted because of the following sub-derivation:
+
+IDENTIFIER ASSIGN expr SEMICOLON // lookahead token appears
+                  term // lookahead token is inherited
+                  factor // lookahead token is inherited
+                  IDENTIFIER SLPAR varlist SRPAR . 
+
+** In state 40, looking ahead at SEMICOLON, reducing production
+** proposition -> IDENTIFIER SLPAR varlist SRPAR
+** is permitted because of the following sub-derivation:
+
+IDENTIFIER ASSIGN temporal_formula SEMICOLON // lookahead token appears
+                  predicate // lookahead token is inherited
+                  proposition // lookahead token is inherited
+                  IDENTIFIER SLPAR varlist SRPAR . 
+
+** Conflict (reduce/reduce) in state 37.
+** Token involved: SEMICOLON
+** This state is reached from start after reading:
+
+IDENTIFIER ASSIGN IDENTIFIER
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+start 
+tla_file EOF 
+definition 
+(?)
+
+** In state 37, looking ahead at SEMICOLON, reducing production
+** factor -> IDENTIFIER
+** is permitted because of the following sub-derivation:
+
+IDENTIFIER ASSIGN expr SEMICOLON // lookahead token appears
+                  term // lookahead token is inherited
+                  factor // lookahead token is inherited
+                  IDENTIFIER . 
+
+** In state 37, looking ahead at SEMICOLON, reducing production
+** proposition -> IDENTIFIER
+** is permitted because of the following sub-derivation:
+
+IDENTIFIER ASSIGN temporal_formula SEMICOLON // lookahead token appears
+                  predicate // lookahead token is inherited
+                  proposition // lookahead token is inherited
+                  IDENTIFIER . 

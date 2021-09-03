@@ -1,6 +1,6 @@
 ### Starting build.
 # Target: main.ml.depends, tags: { extension:ml, file:main.ml, ocaml, ocamldep, quiet }
-/Users/georgekrait/.opam/4.12.0/bin/ocamldep.opt -modules main.ml > main.ml.depends
+/Users/georgekrait/.opam/4.12.0/bin/ocamldep.opt -modules main.ml > main.ml.depends # cached
 # Target: lexer.mll, tags: { extension:mll, file:lexer.mll, lexer, ocaml, ocamllex, quiet }
 /Users/georgekrait/.opam/4.12.0/bin/ocamllex.opt -q lexer.mll # cached
 # Target: lexer.ml.depends, tags: { extension:ml, file:lexer.ml, ocaml, ocamldep, quiet }
@@ -20,20 +20,106 @@ menhir -v --ocamlc /Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt --infer parser
 # Target: lexer.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:lexer.cmo, file:lexer.ml, implem, ocaml, quiet }
 /Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt -c -o lexer.cmo lexer.ml # cached
 # Target: Tree_builder.ml.depends, tags: { extension:ml, file:Tree_builder.ml, ocaml, ocamldep, quiet }
-/Users/georgekrait/.opam/4.12.0/bin/ocamldep.opt -modules Tree_builder.ml > Tree_builder.ml.depends # cached
+/Users/georgekrait/.opam/4.12.0/bin/ocamldep.opt -modules Tree_builder.ml > Tree_builder.ml.depends
+# Target: cubicle_tree.ml.depends, tags: { extension:ml, file:cubicle_tree.ml, ocaml, ocamldep, quiet }
+/Users/georgekrait/.opam/4.12.0/bin/ocamldep.opt -modules cubicle_tree.ml > cubicle_tree.ml.depends # cached
+# Target: cubicle_tree.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:cubicle_tree.cmo, file:cubicle_tree.ml, implem, ocaml, quiet }
+/Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt -c -o cubicle_tree.cmo cubicle_tree.ml # cached
 # Target: Tree_builder.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:Tree_builder.cmo, file:Tree_builder.ml, implem, ocaml, quiet }
-/Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt -c -o Tree_builder.cmo Tree_builder.ml # cached
+/Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt -c -o Tree_builder.cmo Tree_builder.ml
++ /Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt -c -o Tree_builder.cmo Tree_builder.ml
+File "Tree_builder.ml", line 178, characters 27-28:
+178 |                          | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") ) 
+                                 ^
+Warning 11 [redundant-case]: this match case is unused.
+File "Tree_builder.ml", line 179, characters 22-23:
+179 |                     | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )     
+                            ^
+Warning 11 [redundant-case]: this match case is unused.
+File "Tree_builder.ml", line 180, characters 17-18:
+180 |                | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )     
+                       ^
+Warning 11 [redundant-case]: this match case is unused.
+File "Tree_builder.ml", line 182, characters 10-11:
+182 |         | _ ->  Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )  end  
+                ^
+Warning 11 [redundant-case]: this match case is unused.
+File "Tree_builder.ml", lines 174-182, characters 61-89:
+174 | .............................................................match l2 with
+175 |                          |  Func_def (x,proc, value) ->  match value with
+176 |                                   | Ast.INT (num) ->   Cubicle_tree.ElE ("Init", Cubicle_tree.Var (v), Cubicle_tree.INT(num) )  
+177 |                                   | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") ) 
+178 |                          | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") ) 
+179 |                     | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )     
+180 |                | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )     
+181 | 
+182 |         | _ ->  Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") ).......
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+(Var _|Func_img (_, _)|INT _|Binop (_, _, _)|Open_exp (_, _))
+File "Tree_builder.ml", lines 173-182, characters 64-89:
+173 | ................................................................match prop with
+174 |                     | Ast.Equality (Ast.Var (v) ,eq,l2) ->   match l2 with
+175 |                          |  Func_def (x,proc, value) ->  match value with
+176 |                                   | Ast.INT (num) ->   Cubicle_tree.ElE ("Init", Cubicle_tree.Var (v), Cubicle_tree.INT(num) )  
+177 |                                   | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") ) 
+178 |                          | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") ) 
+179 |                     | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )     
+180 |                | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )     
+181 | 
+182 |         | _ ->  Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") ).......
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+Equality
+  ((Func_img (_, _)|INT _|Binop (_, _, _)|Open_exp (_, _)|Func_def (_, _, _)),
+  _, _)
+File "Tree_builder.ml", lines 172-182, characters 24-89:
+172 | ........................match assig with  
+173 |                | Ast.Stat  (  Ast.Predec( Ast.Prop  prop ) )->  match prop with
+174 |                     | Ast.Equality (Ast.Var (v) ,eq,l2) ->   match l2 with
+175 |                          |  Func_def (x,proc, value) ->  match value with
+176 |                                   | Ast.INT (num) ->   Cubicle_tree.ElE ("Init", Cubicle_tree.Var (v), Cubicle_tree.INT(num) )  
+...
+179 |                     | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )     
+180 |                | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )     
+181 | 
+182 |         | _ ->  Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") ).......
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+Stat
+  (Predec
+     (Existence (_, _, _, _, _, _)|Universal (_, _, _, _, _, _)|
+     Pred_Comp (_, _, _)))
+File "Tree_builder.ml", lines 171-182, characters 0-94:
+171 | begin  match str1 with                
+172 |         | "statment" -> match assig with  
+173 |                | Ast.Stat  (  Ast.Predec( Ast.Prop  prop ) )->  match prop with
+174 |                     | Ast.Equality (Ast.Var (v) ,eq,l2) ->   match l2 with
+175 |                          |  Func_def (x,proc, value) ->  match value with
+...
+179 |                     | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )     
+180 |                | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )     
+181 | 
+182 |         | _ ->  Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )  end..
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+""
+File "Tree_builder.ml", lines 187-190, characters 24-22:
+187 | ........................(Cubicle_tree.ElE (str1  , Cubicle_tree.Var (v), Cubicle_tree.INT(num))) =
+188 |      match str1 with 
+189 |      | "Init" ->   "Init (" ^ "z"  ^ ") = { " ^  v ^ "(" ^ "z" ^ ")=" ^ num  ^ " }" 
+190 |      | _ ->  "Init ss".
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+ElE
+  (_, Var _,
+  (Var _|Func_img (_, _)|Binop (_, _, _)|Open_exp (_, _)|Func_def (_, _, _)))
 # Target: main.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:main.cmo, file:main.ml, implem, ocaml, quiet }
 /Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt -c -o main.cmo main.ml
-+ /Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt -c -o main.cmo main.ml
-File "main.ml", line 13, characters 9-12:
-13 |     let  res =Tree_builder.parse_tla tla in 
-              ^^^
-Warning 26 [unused-var]: unused variable res.
 # Target: parser.ml.depends, tags: { extension:ml, file:parser.ml, ocaml, ocamldep, quiet }
 /Users/georgekrait/.opam/4.12.0/bin/ocamldep.opt -modules parser.ml > parser.ml.depends # cached
 # Target: parser.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:parser.cmo, file:parser.ml, implem, ocaml, quiet }
-/Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt -c -o parser.cmo parser.ml
+/Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt -c -o parser.cmo parser.ml # cached
 # Target: main.byte, tags: { byte, dont_link_with, extension:byte, file:main.byte, link, ocaml, program, quiet }
-/Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt ast.cmo Tree_builder.cmo parser.cmo lexer.cmo main.cmo -o main.byte
+/Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt ast.cmo cubicle_tree.cmo Tree_builder.cmo parser.cmo lexer.cmo main.cmo -o main.byte
 # Compilation successful.
