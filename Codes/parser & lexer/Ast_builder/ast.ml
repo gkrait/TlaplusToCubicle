@@ -14,7 +14,7 @@ type exp =
   | Func_def of exp * exp * exp 
 
 type ldef_sides=
-| DEFIN of exp 
+| DEFIN of string 
 
 
 

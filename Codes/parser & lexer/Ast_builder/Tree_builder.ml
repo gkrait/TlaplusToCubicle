@@ -71,7 +71,7 @@ let rec print_prop prop= match prop with
       print_log oper ;
       print_prop prop2;
          end         
-  | Ast.Open_prop (Ast.DEFIN(v),var_list) -> begin print_exp v; print_string "(" ; print_Strlist var_list; print_string ")"; end  
+  | Ast.Open_prop (Ast.DEFIN(v),var_list) -> begin print_string v; print_string "(" ; print_Strlist var_list; print_string ")"; end  
 
 
 
@@ -121,7 +121,7 @@ let rec print_pred pred= match pred with
 
 let rec parse_def def = match def with 
 | Ast.Value (exp1, var_list,logicalop , exp2 , uni) -> Ast.ElE ( exp1 ,var_list, "value",  exp2, "not leaf" )  
-| Ast.Statment (exp1 ,var_list, logicalop , temp , uni) ->  Ast.ElE  (exp1  , var_list, "statment" , temp, "not leaf" )  
+| Ast.Statment (exp1 ,var_list, logicalop , temp , uni) ->  Ast.ElE (exp1  , var_list, "statment" , temp, "not leaf" )  
 
  
 
@@ -133,7 +133,7 @@ let rec parse_tla fil=match fil with
 
 let rec print_obj  (Ast.ElE (Ast.DEFIN(v),var_list,str1,assig,str2) )=
  begin 
-   print_exp  v; print_string "(" ; print_Strlist var_list; print_string ")";
+   print_string  v; print_string "(" ; print_Strlist var_list; print_string ")";
    print_string  (" is assigned to   ") ;
    match assig with 
     | Ast.Expr (expr2) -> print_exp   expr2;
@@ -163,30 +163,82 @@ let rec print_Objs fil =
 (*             translating     *)
 
 
+let rec trans_equality  eq  = let Ast.Equality(l1 ,equa ,l2) =eq   in 
+  match l1 with 
+  | Ast.Var x1 ->
+    begin  
+      match l2 with 
+                 | Ast.Func_def(x,proc, value) ->  begin match value with
+                                            | Ast.INT (num) ->    Cubicle_tree.ELEstat ("unprime  equality integer" ,
+                                                     Cubicle_tree.Equality(Cubicle_tree.Var(x1), Cubicle_tree.INT(num) )) 
+                                            | Ast.Var v -> Cubicle_tree.ELEstat ("unprime  equality string", 
+                                                  Cubicle_tree.Equality(Cubicle_tree.Var(x1), Cubicle_tree.Var(v) ) )  end 
+                                            | _ -> Cubicle_tree.ELEstat( "uncovered", Cubicle_tree.Equality(Cubicle_tree.Var("x"), Cubicle_tree.Var("x") ))
+    end 
+  | Ast.Func_img  ( exp1 , exp2)  -> begin  let Ast.Var(a)  = exp1 in     
+        match l2 with 
+                  | Ast.INT (num) -> Cubicle_tree.ELEstat("unprime  equality integer function image" ,
+                                                     Cubicle_tree.Equality(Cubicle_tree.Var(a), Cubicle_tree.INT(num) ) ) 
+                   | Ast.Var v ->  
+                   Cubicle_tree.ELEstat ("unprime  equality string function image", 
+                         Cubicle_tree.Equality(Cubicle_tree.Var(a), Cubicle_tree.Var(v) ))  end
+
+
+                                       
+  | _ -> Cubicle_tree.ELEstat( "uncovered", Cubicle_tree.Equality(Cubicle_tree.Var("x"), Cubicle_tree.Var("x") ))                                                                   
 
 
 
-let rec trans_obj  (Ast.ElE (Ast.DEFIN(v),var_list,str1,assig,str2) ) =  
- 
-begin  match str1 with                
-        | "statment" -> match assig with  
-               | Ast.Stat  (  Ast.Predec( Ast.Prop  prop ) )->  match prop with
-                    | Ast.Equality (Ast.Var (v) ,eq,l2) ->   match l2 with
-                         |  Func_def (x,proc, value) ->  match value with
-                                  | Ast.INT (num) ->   Cubicle_tree.ElE ("Init", Cubicle_tree.Var (v), Cubicle_tree.INT(num) )  
-                                  | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") ) 
-                         | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") ) 
-                    | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )     
-               | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )     
+let rec change_log_type log= match log with 
+| Ast.Conj -> Cubicle_tree.Conj
+| Ast.Disjun -> Cubicle_tree.Disjun
 
-        | _ ->  Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )  end  
- 
+
+
+
+let rec trans_prop prop = match prop with 
+| Ast.Equality (exp1 , com , exp2) ->  (trans_equality (Ast.Equality (exp1 , com , exp2)))
+| Ast.Inequality (exp1 , com , exp2) ->      let  Cubicle_tree.ELEstat ( str, Cubicle_tree.Equality(l1,l2)) = (trans_equality (Ast.Equality (exp1 , com , exp2))) in 
+                                                       Cubicle_tree.ELEstat ("unprime  inequality",Cubicle_tree.Inequality(l1, l2)  )
+| Ast.Coposition  (prop1 , logicalop , prop2) ->  let  Cubicle_tree.ELEstat (str1,stat1) =  trans_prop  prop1  in 
+                                                 let   Cubicle_tree.ELEstat (str2,stat2)=  trans_prop  prop2 in
+                                                 let log = change_log_type logicalop in 
+                                                  Cubicle_tree.ELEstat("proposition", Cubicle_tree.Coposition(stat1,log ,stat2) ) 
+                                                
+| _ ->  Cubicle_tree.ELEstat( "uncovered", Cubicle_tree.Equality(Cubicle_tree.Var("x"), Cubicle_tree.Var("x") ))
+
+
+
+let rec trans_obj obj = let Ast.ElE ( exp1 ,var_list, str1,  Ast.Stat (prop1), str2 ) =obj in 
+   match prop1 with 
+| Ast.Predec(Ast.Prop prop2 ) ->  trans_prop prop2
+| _ ->  (Cubicle_tree.ELEstat( "uncovered", Cubicle_tree.Equality(Cubicle_tree.Var("x"), Cubicle_tree.Var("x") )))
+
+
+(*
+let rec trans_pred pred = match pred with 
+   |  Ast.Prop prop ->  
+   | Ast.Universal (quanti , exp1 , coparism , exp2 , uni , pred1) *)
+
+
+
+
+
+
+ (*
+
+let rec trans_temp tf =  match tf with 
+  | Ast.Predec pred -> trans_pred pred
+  | Ast.Prime  (exp1 , varlist , exp2) -> 
+  | Ast.Mix  (temp1 , logicalop , temp2) ->  
+
+*)
+
      
 
 
-let rec print_Cubobj    (Cubicle_tree.ElE (str1  , Cubicle_tree.Var (v), Cubicle_tree.INT(num))) =
-     match str1 with 
-     | "Init" ->   "Init (" ^ "z"  ^ ") = { " ^  v ^ "(" ^ "z" ^ ")=" ^ num  ^ " }" 
+let rec print_Cubobj   cub_obj = match cub_obj with 
+     | Cubicle_tree.ELEstat(str,stat ) ->   "Init (" ^ "z"  ^ ") = { " ^  str ^ "(" ^ "z" ^ ")=" ^ str  ^ " }" 
      | _ ->  "Init ss" 
 
 

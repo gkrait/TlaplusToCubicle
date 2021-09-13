@@ -28,98 +28,92 @@ menhir -v --ocamlc /Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt --infer parser
 # Target: Tree_builder.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:Tree_builder.cmo, file:Tree_builder.ml, implem, ocaml, quiet }
 /Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt -c -o Tree_builder.cmo Tree_builder.ml
 + /Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt -c -o Tree_builder.cmo Tree_builder.ml
-File "Tree_builder.ml", line 178, characters 27-28:
-178 |                          | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") ) 
-                                 ^
-Warning 11 [redundant-case]: this match case is unused.
-File "Tree_builder.ml", line 179, characters 22-23:
-179 |                     | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )     
-                            ^
-Warning 11 [redundant-case]: this match case is unused.
-File "Tree_builder.ml", line 180, characters 17-18:
-180 |                | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )     
-                       ^
-Warning 11 [redundant-case]: this match case is unused.
-File "Tree_builder.ml", line 182, characters 10-11:
-182 |         | _ ->  Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )  end  
-                ^
-Warning 11 [redundant-case]: this match case is unused.
-File "Tree_builder.ml", lines 174-182, characters 61-89:
-174 | .............................................................match l2 with
-175 |                          |  Func_def (x,proc, value) ->  match value with
-176 |                                   | Ast.INT (num) ->   Cubicle_tree.ElE ("Init", Cubicle_tree.Var (v), Cubicle_tree.INT(num) )  
-177 |                                   | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") ) 
-178 |                          | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") ) 
-179 |                     | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )     
-180 |                | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )     
-181 | 
-182 |         | _ ->  Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") ).......
+File "Tree_builder.ml", lines 171-175, characters 51-122:
+171 | ...................................................begin match value with
+172 |                                             | Ast.INT (num) ->    Cubicle_tree.ELEstat ("unprime  equality integer" ,
+173 |                                                      Cubicle_tree.Equality(Cubicle_tree.Var(x1), Cubicle_tree.INT(num) )) 
+174 |                                             | Ast.Var v -> Cubicle_tree.ELEstat ("unprime  equality string", 
+175 |                                                   Cubicle_tree.Equality(Cubicle_tree.Var(x1), Cubicle_tree.Var(v) ) )  end.
 Warning 8 [partial-match]: this pattern-matching is not exhaustive.
 Here is an example of a case that is not matched:
-(Var _|Func_img (_, _)|INT _|Binop (_, _, _)|Open_exp (_, _))
-File "Tree_builder.ml", lines 173-182, characters 64-89:
-173 | ................................................................match prop with
-174 |                     | Ast.Equality (Ast.Var (v) ,eq,l2) ->   match l2 with
-175 |                          |  Func_def (x,proc, value) ->  match value with
-176 |                                   | Ast.INT (num) ->   Cubicle_tree.ElE ("Init", Cubicle_tree.Var (v), Cubicle_tree.INT(num) )  
-177 |                                   | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") ) 
-178 |                          | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") ) 
-179 |                     | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )     
-180 |                | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )     
-181 | 
-182 |         | _ ->  Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") ).......
+(Func_img (_, _)|Binop (_, _, _)|Open_exp (_, _)|Func_def (_, _, _))
+File "Tree_builder.ml", lines 179-184, characters 8-90:
+179 | ........match l2 with 
+180 |                   | Ast.INT (num) -> Cubicle_tree.ELEstat("unprime  equality integer function image" ,
+181 |                                                      Cubicle_tree.Equality(Cubicle_tree.Var(a), Cubicle_tree.INT(num) ) ) 
+182 |                    | Ast.Var v ->  
+183 |                    Cubicle_tree.ELEstat ("unprime  equality string function image", 
+184 |                          Cubicle_tree.Equality(Cubicle_tree.Var(a), Cubicle_tree.Var(v) )).....
 Warning 8 [partial-match]: this pattern-matching is not exhaustive.
 Here is an example of a case that is not matched:
-Equality
-  ((Func_img (_, _)|INT _|Binop (_, _, _)|Open_exp (_, _)|Func_def (_, _, _)),
-  _, _)
-File "Tree_builder.ml", lines 172-182, characters 24-89:
-172 | ........................match assig with  
-173 |                | Ast.Stat  (  Ast.Predec( Ast.Prop  prop ) )->  match prop with
-174 |                     | Ast.Equality (Ast.Var (v) ,eq,l2) ->   match l2 with
-175 |                          |  Func_def (x,proc, value) ->  match value with
-176 |                                   | Ast.INT (num) ->   Cubicle_tree.ElE ("Init", Cubicle_tree.Var (v), Cubicle_tree.INT(num) )  
+(Func_img (_, _)|Binop (_, _, _)|Open_exp (_, _)|Func_def (_, _, _))
+File "Tree_builder.ml", lines 178-184, characters 37-95:
+178 | .....................................begin  let Ast.Var(a)  = exp1 in     
+179 |         match l2 with 
+180 |                   | Ast.INT (num) -> Cubicle_tree.ELEstat("unprime  equality integer function image" ,
+181 |                                                      Cubicle_tree.Equality(Cubicle_tree.Var(a), Cubicle_tree.INT(num) ) ) 
+182 |                    | Ast.Var v ->  
+183 |                    Cubicle_tree.ELEstat ("unprime  equality string function image", 
+184 |                          Cubicle_tree.Equality(Cubicle_tree.Var(a), Cubicle_tree.Var(v) ))  end
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+(Func_img (_, _)|INT _|Binop (_, _, _)|Open_exp (_, _)|Func_def (_, _, _))
+File "Tree_builder.ml", lines 166-188, characters 30-113:
+166 | ..............................let Ast.Equality(l1 ,equa ,l2) =eq   in 
+167 |   match l1 with 
+168 |   | Ast.Var x1 ->
+169 |     begin  
+170 |       match l2 with 
 ...
-179 |                     | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )     
-180 |                | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )     
-181 | 
-182 |         | _ ->  Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") ).......
+185 | 
+186 | 
+187 |                                        
+188 |   | _ -> Cubicle_tree.ELEstat( "uncovered", Cubicle_tree.Equality(Cubicle_tree.Var("x"), Cubicle_tree.Var("x") ))...................................................................
 Warning 8 [partial-match]: this pattern-matching is not exhaustive.
 Here is an example of a case that is not matched:
-Stat
-  (Predec
-     (Existence (_, _, _, _, _, _)|Universal (_, _, _, _, _, _)|
-     Pred_Comp (_, _, _)))
-File "Tree_builder.ml", lines 171-182, characters 0-94:
-171 | begin  match str1 with                
-172 |         | "statment" -> match assig with  
-173 |                | Ast.Stat  (  Ast.Predec( Ast.Prop  prop ) )->  match prop with
-174 |                     | Ast.Equality (Ast.Var (v) ,eq,l2) ->   match l2 with
-175 |                          |  Func_def (x,proc, value) ->  match value with
-...
-179 |                     | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )     
-180 |                | _  -> Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )     
-181 | 
-182 |         | _ ->  Cubicle_tree.ElE ("Init", Cubicle_tree.Var ("z"), Cubicle_tree.INT("4") )  end..
+(Inequality (_, _, _)|Coposition (_, _, _)|Open_prop (DEFIN _, _))
+File "Tree_builder.ml", lines 192-194, characters 29-35:
+192 | .............................match log with 
+193 | | Ast.Conj -> Cubicle_tree.Conj
+194 | | Ast.Disjun -> Cubicle_tree.Disjun
 Warning 8 [partial-match]: this pattern-matching is not exhaustive.
 Here is an example of a case that is not matched:
-""
-File "Tree_builder.ml", lines 187-190, characters 24-22:
-187 | ........................(Cubicle_tree.ElE (str1  , Cubicle_tree.Var (v), Cubicle_tree.INT(num))) =
-188 |      match str1 with 
-189 |      | "Init" ->   "Init (" ^ "z"  ^ ") = { " ^  v ^ "(" ^ "z" ^ ")=" ^ num  ^ " }" 
-190 |      | _ ->  "Init ss".
+ASSIG
+File "Tree_builder.ml", lines 201-202, characters 45-133:
+201 | .............................................let  Cubicle_tree.ELEstat ( str, Cubicle_tree.Equality(l1,l2)) = (trans_equality (Ast.Equality (exp1 , com , exp2))) in 
+202 |                                                        Cubicle_tree.ELEstat ("unprime  inequality",Cubicle_tree.Inequality(l1, l2)  )
 Warning 8 [partial-match]: this pattern-matching is not exhaustive.
 Here is an example of a case that is not matched:
-ElE
-  (_, Var _,
-  (Var _|Func_img (_, _)|Binop (_, _, _)|Open_exp (_, _)|Func_def (_, _, _)))
+ELEstat (_, (Inequality (_, _)|Coposition (_, _, _)))
+File "Tree_builder.ml", lines 204-206, characters 49-129:
+204 | .................................................let   Cubicle_tree.ELEstat (str2,stat2)=  trans_prop  prop2 in
+205 |                                                  let log = change_log_type logicalop in 
+206 |                                                   Cubicle_tree.ELEstat("proposition", Cubicle_tree.Coposition(stat1,log ,stat2) ).
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+ElEassig (_, _, _)
+File "Tree_builder.ml", lines 203-206, characters 50-129:
+203 | ..................................................let  Cubicle_tree.ELEstat (str1,stat1) =  trans_prop  prop1  in 
+204 |                                                  let   Cubicle_tree.ELEstat (str2,stat2)=  trans_prop  prop2 in
+205 |                                                  let log = change_log_type logicalop in 
+206 |                                                   Cubicle_tree.ELEstat("proposition", Cubicle_tree.Coposition(stat1,log ,stat2) ).
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+ElEassig (_, _, _)
+File "Tree_builder.ml", lines 212-215, characters 24-114:
+212 | ........................let Ast.ElE ( exp1 ,var_list, str1,  Ast.Stat (prop1), str2 ) =obj in 
+213 |    match prop1 with 
+214 | | Ast.Predec(Ast.Prop prop2 ) ->  trans_prop prop2
+215 | | _ ->  (Cubicle_tree.ELEstat( "uncovered", Cubicle_tree.Equality(Cubicle_tree.Var("x"), Cubicle_tree.Var("x") )))
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+ElE (DEFIN _, _, _, Expr _, _)
 # Target: main.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:main.cmo, file:main.ml, implem, ocaml, quiet }
 /Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt -c -o main.cmo main.ml
 # Target: parser.ml.depends, tags: { extension:ml, file:parser.ml, ocaml, ocamldep, quiet }
-/Users/georgekrait/.opam/4.12.0/bin/ocamldep.opt -modules parser.ml > parser.ml.depends # cached
+/Users/georgekrait/.opam/4.12.0/bin/ocamldep.opt -modules parser.ml > parser.ml.depends
 # Target: parser.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:parser.cmo, file:parser.ml, implem, ocaml, quiet }
-/Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt -c -o parser.cmo parser.ml # cached
+/Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt -c -o parser.cmo parser.ml
 # Target: main.byte, tags: { byte, dont_link_with, extension:byte, file:main.byte, link, ocaml, program, quiet }
 /Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt ast.cmo cubicle_tree.cmo Tree_builder.cmo parser.cmo lexer.cmo main.cmo -o main.byte
 # Compilation successful.

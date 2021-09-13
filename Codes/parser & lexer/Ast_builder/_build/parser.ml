@@ -332,7 +332,7 @@ and _menhir_goto_temporal_formula : _menhir_env -> 'ttv_tail -> _menhir_state ->
              in
             
 # 25 "parser.mly"
-                                                                           (Ast.Statment (Ast.DEFIN (Ast.Var _1), _2 , Ast.ASSIG , Ast.Stat _4, Ast.NEWL ) )
+                                                                           (Ast.Statment (Ast.DEFIN ( _1), _2 , Ast.ASSIG , Ast.Stat _4, Ast.NEWL ) )
 # 337 "parser.ml"
              in
             _menhir_goto_definition _menhir_env _menhir_stack _menhir_s _v
@@ -415,7 +415,7 @@ and _menhir_goto_temporal_formula : _menhir_env -> 'ttv_tail -> _menhir_state ->
              in
             
 # 25 "parser.mly"
-                                                                           (Ast.Statment (Ast.DEFIN (Ast.Var _1), _2 , Ast.ASSIG , Ast.Stat _4, Ast.NEWL ) )
+                                                                           (Ast.Statment (Ast.DEFIN ( _1), _2 , Ast.ASSIG , Ast.Stat _4, Ast.NEWL ) )
 # 420 "parser.ml"
              in
             _menhir_goto_definition _menhir_env _menhir_stack _menhir_s _v
@@ -450,7 +450,7 @@ and _menhir_goto_temporal_formula : _menhir_env -> 'ttv_tail -> _menhir_state ->
              in
             
 # 25 "parser.mly"
-                                                                           (Ast.Statment (Ast.DEFIN (Ast.Var _1), _2 , Ast.ASSIG , Ast.Stat _4, Ast.NEWL ) )
+                                                                           (Ast.Statment (Ast.DEFIN ( _1), _2 , Ast.ASSIG , Ast.Stat _4, Ast.NEWL ) )
 # 455 "parser.ml"
              in
             _menhir_goto_definition _menhir_env _menhir_stack _menhir_s _v
@@ -792,7 +792,7 @@ and _menhir_goto_expr : _menhir_env -> 'ttv_tail -> _menhir_state -> (Ast.exp) -
              in
             
 # 26 "parser.mly"
-                                                                (Ast.Value (Ast.DEFIN (Ast.Var _1) ,_2,Ast.ASSIG , Ast.Expr _4 , Ast.NEWL ) )
+                                                                (Ast.Value (Ast.DEFIN ( _1) ,_2,Ast.ASSIG , Ast.Expr _4 , Ast.NEWL ) )
 # 797 "parser.ml"
              in
             _menhir_goto_definition _menhir_env _menhir_stack _menhir_s _v
@@ -833,7 +833,7 @@ and _menhir_goto_expr : _menhir_env -> 'ttv_tail -> _menhir_state -> (Ast.exp) -
              in
             
 # 26 "parser.mly"
-                                                                (Ast.Value (Ast.DEFIN (Ast.Var _1) ,_2,Ast.ASSIG , Ast.Expr _4 , Ast.NEWL ) )
+                                                                (Ast.Value (Ast.DEFIN ( _1) ,_2,Ast.ASSIG , Ast.Expr _4 , Ast.NEWL ) )
 # 838 "parser.ml"
              in
             _menhir_goto_definition _menhir_env _menhir_stack _menhir_s _v
@@ -874,7 +874,7 @@ and _menhir_goto_expr : _menhir_env -> 'ttv_tail -> _menhir_state -> (Ast.exp) -
              in
             
 # 26 "parser.mly"
-                                                                (Ast.Value (Ast.DEFIN (Ast.Var _1) ,_2,Ast.ASSIG , Ast.Expr _4 , Ast.NEWL ) )
+                                                                (Ast.Value (Ast.DEFIN ( _1) ,_2,Ast.ASSIG , Ast.Expr _4 , Ast.NEWL ) )
 # 879 "parser.ml"
              in
             _menhir_goto_definition _menhir_env _menhir_stack _menhir_s _v
@@ -1122,7 +1122,7 @@ and _menhir_reduce28 : _menhir_env -> ((('ttv_tail * _menhir_state * (
      in
     
 # 60 "parser.mly"
-                                               (Ast.Open_prop (Ast.DEFIN (Ast.Var _1),_2) )
+                                               (Ast.Open_prop (Ast.DEFIN(_1),_2) )
 # 1127 "parser.ml"
      in
     _menhir_goto_proposition _menhir_env _menhir_stack _menhir_s _v
@@ -1145,7 +1145,7 @@ and _menhir_reduce29 : _menhir_env -> ((('ttv_tail * _menhir_state * (
      in
     
 # 60 "parser.mly"
-                                               (Ast.Open_prop (Ast.DEFIN (Ast.Var _1),_2) )
+                                               (Ast.Open_prop (Ast.DEFIN(_1),_2) )
 # 1150 "parser.ml"
      in
     _menhir_goto_proposition _menhir_env _menhir_stack _menhir_s _v
@@ -1735,7 +1735,7 @@ and _menhir_reduce27 : _menhir_env -> 'ttv_tail * _menhir_state * (
      in
     
 # 60 "parser.mly"
-                                               (Ast.Open_prop (Ast.DEFIN (Ast.Var _1),_2) )
+                                               (Ast.Open_prop (Ast.DEFIN(_1),_2) )
 # 1740 "parser.ml"
      in
     _menhir_goto_proposition _menhir_env _menhir_stack _menhir_s _v

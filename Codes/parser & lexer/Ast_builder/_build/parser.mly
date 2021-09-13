@@ -6,7 +6,7 @@
 %token <string> IDENTIFIER 
 %token <string> Num
 
-%left TOK_NOT Quantification
+
 
 
 
@@ -22,8 +22,8 @@ tla_file:
 
 
 definition:
-| IDENTIFIER optional_varlist( varlist)  ASSIGN temporal_formula SEMICOLON {Ast.Statment (Ast.DEFIN (Ast.Var $1), $2 , Ast.ASSIG , Ast.Stat $4, Ast.NEWL ) }
-| IDENTIFIER optional_varlist( varlist)  ASSIGN  expr SEMICOLON {Ast.Value (Ast.DEFIN (Ast.Var $1) ,$2,Ast.ASSIG , Ast.Expr $4 , Ast.NEWL ) }
+| IDENTIFIER optional_varlist( varlist)  ASSIGN temporal_formula SEMICOLON {Ast.Statment (Ast.DEFIN ( $1), $2 , Ast.ASSIG , Ast.Stat $4, Ast.NEWL ) }
+| IDENTIFIER optional_varlist( varlist)  ASSIGN  expr SEMICOLON {Ast.Value (Ast.DEFIN ( $1) ,$2,Ast.ASSIG , Ast.Expr $4 , Ast.NEWL ) }
 
 
 %inline optional_varlist(x):
@@ -57,7 +57,7 @@ proposition
 : expr EQUAL expr      { Ast.Equality ($1,Ast.EQ,$3) }
 | expr Larger expr     { Ast.Inequality ($1,Ast.Greater,$3) }
 | expr Smaller expr    { Ast.Inequality ($1,Ast.Less,$3) }
-|  IDENTIFIER    optional_varlist(varlist)     {Ast.Open_prop (Ast.DEFIN (Ast.Var $1),$2) }
+|  IDENTIFIER    optional_varlist(varlist)     {Ast.Open_prop (Ast.DEFIN($1),$2) }
 | proposition AND proposition  { Ast.Coposition ($1,Ast.Conj,$3)  }
 | proposition OR proposition  { Ast.Coposition ($1,Ast.Disjun,$3)  }
 

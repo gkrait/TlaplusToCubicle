@@ -15,6 +15,44 @@ type exp =
 
 
 
+type coparism =
+| EQ
+| Greater
+| Less
+| Inclus
 
-  type obj_info = 
-| ElE of   string  * exp * exp
+
+type logicalop =
+| Conj 
+| Disjun
+
+
+
+
+type prop= 
+| Equality of exp  * exp 
+| Inequality of exp  * exp 
+| Coposition of prop * logicalop * prop 
+
+
+type pred =
+| Prop of prop
+| Existence of  exp * exp * pred
+| Universal of  exp * exp * pred
+
+
+
+type obj_info = 
+| ElEassig of   string * exp *  prop
+| ELEstat of string  *  prop
+
+
+
+
+
+
+
+
+
+
+

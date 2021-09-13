@@ -6,7 +6,7 @@ let  lexbuf = Lexing.from_channel  chan  in  *)
 
 
 let  lexbuf =  Lexing.from_string 
-"Init == A=[x \\in Proc |-> 1];
+"A== x=3; 
   "
     in
 
