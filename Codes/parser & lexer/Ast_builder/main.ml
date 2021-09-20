@@ -6,7 +6,9 @@ let  lexbuf = Lexing.from_channel  chan  in  *)
 
 
 let  lexbuf =  Lexing.from_string 
-"A== x=3; 
+" VARIABLES [x1,x2] ;
+CONSTANTS [y1 , y2] ; 
+A== x=3; 
   "
     in
 

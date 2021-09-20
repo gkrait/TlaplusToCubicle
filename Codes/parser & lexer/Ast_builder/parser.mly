@@ -4,21 +4,31 @@
 %token PLUS MINUS STAR SLASH EQUAL Larger Smaller OR AND  EXISTS FORALL
 %token LPAR RPAR COLON IN PRIME SEMICOLON ASSIGN SLPAR  SRPAR ARROW COMMA
 %token <string> IDENTIFIER 
-%token <string> Num
+%token <string> Num VARIABLES CONSTANTS
 
 
 
 
 
-%start <Ast.tla_fil> start
+%start <Ast.tla_file> start
 %%
 
 /* Productions */
 start : tla_file EOF       { $1 };
 
-tla_file: 
-| definition   {Ast.Definition ($1) }
-| tla_file  tla_file {Ast.MulDef ($1, $2)}
+tla_file:
+| declaration SEMICOLON declaration SEMICOLON  tla_file_taile { Ast.File ( Ast.VARI ($1),  Ast.CONS ($3), $5  ) }
+
+tla_file_taile : 
+|  definition   {Ast.Definition ($1) }
+| tla_file_taile  tla_file_taile {Ast.MulDef ($1, $2)}
+
+
+
+declaration:
+| VARIABLES  optional_varlist(varlist)  { $2 }
+| CONSTANTS optional_varlist(varlist)     { $2 }
+ 
 
 
 definition:

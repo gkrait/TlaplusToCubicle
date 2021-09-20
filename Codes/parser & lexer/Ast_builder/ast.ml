@@ -79,10 +79,17 @@ type definition =
 
 
 
-type tla_fil = 
+type tla_file_taile = 
 | Definition of definition  
-| MulDef  of tla_fil * tla_fil
+| MulDef  of tla_file_taile * tla_file_taile
 
+
+type declarat= 
+| VARI of string list 
+| CONS  of string list 
+
+type tla_file = 
+| File of declarat * declarat *  tla_file_taile  
 
 
 

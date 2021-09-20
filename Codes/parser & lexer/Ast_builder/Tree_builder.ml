@@ -1,6 +1,4 @@
 
-
-
 let print_op op = match op with
   | Ast.Add -> print_string "+"
   | Ast.Sub -> print_string "-"
@@ -117,18 +115,19 @@ let rec print_pred pred= match pred with
     end 
 
 
-
-
 let rec parse_def def = match def with 
 | Ast.Value (exp1, var_list,logicalop , exp2 , uni) -> Ast.ElE ( exp1 ,var_list, "value",  exp2, "not leaf" )  
 | Ast.Statment (exp1 ,var_list, logicalop , temp , uni) ->  Ast.ElE (exp1  , var_list, "statment" , temp, "not leaf" )  
 
  
 
-let rec parse_tla fil=match fil with   
+let rec parse_tla_taile fil = match fil with 
 | Ast.Definition def -> parse_def def:: []
-| Ast.MulDef (tla_fil1 , tla_fil2) -> parse_tla tla_fil1 @   parse_tla tla_fil2
+| Ast.MulDef (tla_fil1 , tla_fil2) -> parse_tla_taile tla_fil1 @   parse_tla_taile tla_fil2 
 
+
+let rec parse_tla  (Ast.File(Ast.VARI (var), Ast.CONS(con) , fil  ))   =
+parse_tla_taile fil 
 
 
 let rec print_obj  (Ast.ElE (Ast.DEFIN(v),var_list,str1,assig,str2) )=
@@ -155,8 +154,6 @@ let rec print_Objs fil =
     end 
       done; 
   end
-
-
 
 
 
@@ -245,7 +242,6 @@ let rec print_Cubobj   cub_obj = match cub_obj with
 let rec translate fil =
    let  obj_list=   parse_tla fil in 
    let  l= List.length obj_list in 
-
    begin
       for i= 0 to l-1 do 
         let  obji= List.nth  obj_list i in 

@@ -44,5 +44,7 @@ rule token = parse
   | "["                   { SLPAR }
   | "]"                   { SRPAR }    
   | "|->"                 { ARROW }
-  | ","                  { COMMA }   
+  | ","                  { COMMA }  
+  | "VARIABLES"          {VARIABLES (Lexing.lexeme lexbuf)} 
+  | "CONSTANTS"          {CONSTANTS (Lexing.lexeme lexbuf)}
 
