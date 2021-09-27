@@ -10,8 +10,6 @@ type exp =
   | Func_img of exp * exp 
   | INT of string
   | Binop of exp * binop * exp
-  | Open_exp of string * string list 
-  | Func_def of exp * exp * exp 
 
 
 
@@ -41,10 +39,24 @@ type pred =
 | Universal of  exp * exp * pred
 
 
+type primed_equality=
+| Primed_assig of exp * exp  
+| Cases of exp * exp * exp * exp 
+
+
+type temp = 
+| Pred of pred 
+| Primed of primed_equality 
+| Combination of temp * logicalop * temp  
+
+
 
 type obj_info = 
-| ElEassig of   string * exp *  prop
+| ElEassig of   string * primed_equality 
 | ELEstat of string  *  prop
+| ELEMix of string  *  temp 
+
+
 
 
 
