@@ -2,9 +2,9 @@
 
 %token EOF
 %token PLUS MINUS STAR SLASH EQUAL Larger Smaller OR AND  EXISTS FORALL
-%token LPAR RPAR COLON IN PRIME SEMICOLON ASSIGN SLPAR  SRPAR ARROW COMMA
+%token LPAR RPAR COLON IN PRIME SEMICOLON ASSIGN SLPAR  SRPAR ARROW COMMA  Exclamation EXCEPT
 %token <string> IDENTIFIER 
-%token <string> Num VARIABLES CONSTANTS
+%token <string> Num VARs CONS 
 
 
 
@@ -17,18 +17,20 @@
 start : tla_file EOF       { $1 };
 
 tla_file:
-| declaration SEMICOLON declaration SEMICOLON  tla_file_taile { Ast.File ( Ast.VARI ($1),  Ast.CONS ($3), $5  ) }
+| declaration  declaration   tla_file_taile { Ast.File ( Ast.VARI ($1),  Ast.CONS ($2), $3  ) }
 
 tla_file_taile : 
-|  definition   {Ast.Definition ($1) }
-| tla_file_taile  tla_file_taile {Ast.MulDef ($1, $2)}
+| definition+ {Ast.MulDef ($1)} /* put as list of defs  */ 
+/*|  definition   {Ast.Definition  ($1)  } */
+
 
 
 
 declaration:
-| VARIABLES  optional_varlist(varlist)  { $2 }
-| CONSTANTS optional_varlist(varlist)     { $2 }
+| VARs  varlist SEMICOLON { $2 }
+| CONS varlist  SEMICOLON   { $2 }
  
+
 
 
 definition:
@@ -36,10 +38,24 @@ definition:
 | IDENTIFIER optional_varlist( varlist)  ASSIGN  expr SEMICOLON {Ast.Value (Ast.DEFIN ( $1) ,$2,Ast.ASSIG , Ast.Expr $4 , Ast.NEWL ) }
 
 
+/*
+definition:
+| IDENTIFIER optional_varlist( varlist)  ASSIGN state_function SEMICOLON {Ast.Statment (Ast.DEFIN ( $1), $2 , Ast.ASSIG , $4, Ast.NEWL ) }
+*/
+
+
+
 %inline optional_varlist(x):
 | {[]}
+| paranth(x) {$1}
+
+paranth(x) :
 | LPAR  x  RPAR  { $2}
 | SLPAR  x  SRPAR  {$2}
+
+%inline  state_function:
+| expr {$1}
+| temporal_formula {$1}
 
 
  temporal_formula:
@@ -51,8 +67,10 @@ definition:
 
 primed_eq:
 | IDENTIFIER optional_varlist( varlist) PRIME  EQUAL expr { Ast.Prime ( Ast.Var $1, $2 , $5 ) }
+| IDENTIFIER optional_varlist( varlist)  PRIME  EQUAL func_excep {Ast.Func_except(Ast.Var($1),$2,$5) };
 
-
+func_excep :
+| SLPAR expr EXCEPT Exclamation  SLPAR expr SRPAR EQUAL  expr  SRPAR {Ast.Func_exception($2,$6,$9 ) }
 
  predicate:
 | proposition {Ast.Prop $1 }
@@ -83,7 +101,8 @@ varlist:
 expr:
   |  expr PLUS term    { Ast.Binop ($1,Ast.Add,$3) }
   |  expr MINUS term   { Ast.Binop ($1,Ast.Sub,$3) }
-  |  term              { $1 };
+  |  term              { $1 }
+  | expr  paranth(expr) { Ast.Func_img ($1,$2)} 
 
 
 term
