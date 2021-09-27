@@ -15,6 +15,11 @@ let nu = ['0'-'9'] ['0'-'9']*
   let lf    = "\010"
   let eol   =   cr | lf | cr lf 
 
+
+let key =  "VARIABLES"
+let con =  "CONSTANTS"
+
+
 (* Tokens *)
 
 rule token = parse
@@ -45,6 +50,18 @@ rule token = parse
   | "]"                   { SRPAR }    
   | "|->"                 { ARROW }
   | ","                  { COMMA }  
-  | "VARIABLES"          {VARIABLES (Lexing.lexeme lexbuf)} 
-  | "CONSTANTS"          {CONSTANTS (Lexing.lexeme lexbuf)}
+  | "$"              {VARs (Lexing.lexeme lexbuf) } 
+  | "@"              {CONS (Lexing.lexeme lexbuf)} 
+  | "!"               {Exclamation}
+  | "?"               {EXCEPT}
+
+
+
+
+
+
+
+
+
+
 
