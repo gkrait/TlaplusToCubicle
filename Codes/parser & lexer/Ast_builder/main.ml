@@ -6,21 +6,18 @@ let  lexbuf = Lexing.from_channel  chan  in  *)
 
 
 let  lexbuf =  Lexing.from_string 
-" VARIABLES [x1,x2] ;
-CONSTANTS [y1 , y2] ; 
-A== x=3; 
-  "
+" VARIABLES x,e ;
+CONSTANTS y,t ;
+Init == x1=[obj \\in proc |-> 1 ];  
+Next==  a'=[a  EXCEPT ![t]=2 ]   ;
+"
     in
 
 
+(*     *)
 
-try
- (* let xval = int_of_string (Sys.argv.(1)) in *)
- (* let yval = int_of_string (Sys.argv.(2)) in *)
- (* let zval = int_of_string (Sys.argv.(3)) in *)
- (* let env  = (xval,yval,zval) in *) 
-  let  tla = Parser.start Lexer.token lexbuf in (* parse input *)
-    Tree_builder.translate tla
+try   let  tla = Parser.start Lexer.token lexbuf in (* parse input *)
+    Tree_builder.translate tla 
 
   
 with

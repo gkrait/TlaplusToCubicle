@@ -10,14 +10,13 @@ type exp =
   | Func_img of exp * exp 
   | INT of string
   | Binop of exp * binop * exp
-  | Open_exp of string * string list 
   | Func_def of exp * exp * exp 
+  | Func_exception of exp * exp * exp 
+
+
 
 type ldef_sides=
 | DEFIN of string 
-
-
-
 
 
 type uni=
@@ -62,9 +61,11 @@ type pred =
 
 
 
+
 type temp=
 | Predec of pred
 | Prime of exp * string list * exp 
+| Func_except of exp * string list * exp 
 | Mix of temp * logicalop * temp
 
 
@@ -81,7 +82,7 @@ type definition =
 
 type tla_file_taile = 
 | Definition of definition  
-| MulDef  of tla_file_taile * tla_file_taile
+| MulDef  of definition list 
 
 
 type declarat= 
@@ -89,7 +90,7 @@ type declarat=
 | CONS  of string list 
 
 type tla_file = 
-| File of declarat * declarat *  tla_file_taile  
+| File of declarat * declarat * tla_file_taile  
 
 
 

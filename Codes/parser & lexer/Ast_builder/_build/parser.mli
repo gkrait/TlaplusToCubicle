@@ -2,6 +2,7 @@
 (* The type of tokens. *)
 
 type token = 
+  | VARs of (string)
   | Smaller
   | STAR
   | SRPAR
@@ -19,9 +20,13 @@ type token =
   | IN
   | IDENTIFIER of (string)
   | FORALL
+  | Exclamation
   | EXISTS
+  | EXCEPT
   | EQUAL
   | EOF
+  | DEFINITION_NAME of (string)
+  | CONS of (string)
   | COMMA
   | COLON
   | ASSIGN
@@ -34,4 +39,4 @@ exception Error
 
 (* The monolithic API. *)
 
-val start: (Lexing.lexbuf -> token) -> Lexing.lexbuf -> (Ast.tla_fil)
+val start: (Lexing.lexbuf -> token) -> Lexing.lexbuf -> (Ast.tla_file)

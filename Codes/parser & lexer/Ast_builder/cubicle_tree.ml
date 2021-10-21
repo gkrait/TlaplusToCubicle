@@ -66,5 +66,3 @@ type obj_info =
 
 
 
-
-

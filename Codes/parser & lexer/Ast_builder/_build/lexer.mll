@@ -2,10 +2,27 @@
 {
   open Parser
   let get = Lexing.lexeme
+
+type token_ =
+    | BOF                               (* beginning of file *)
+    | ID of string                      (* identifiers *)
+    | OP of string                      (* operators *)
+    | KWD of string                     (* keywords *)
+    | NUM of string * string            (* numbers *)
+    | STR of string                     (* strings *)
+    | PUNCT of string                   (* misc. punctuation *)
+    | ST of [`Star | `Plus | `Num of int] * string * int
+
+
+
+
+
+
 }
 
-let id = ['a'-'z' 'A'-'Z' '_'] ['a'-'z' 'A'-'Z' '0'-'9' '_']*
-
+let id = ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_']*
+let def = ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '_']*
+let newline  = ('\r' | '\n' | "\r\n")
 let nu = ['0'-'9'] ['0'-'9']*
 
 (* Helpers *)
@@ -15,9 +32,30 @@ let nu = ['0'-'9'] ['0'-'9']*
   let lf    = "\010"
   let eol   =   cr | lf | cr lf 
 
-(* Tokens *)
 
-rule token = parse
+let whitesp  = [' ']
+let tab      = '\t'
+
+
+let letter   = ['a'-'z' 'A'-'Z']
+let numeral  = ['0'-'9']
+let namechar = (letter | numeral | '_')
+let name     = namechar* letter namechar*
+
+let keyword = (
+  "ASSUME"|"ASSUMPTION"|"AXIOM"|"BOOLEAN"|"CASE"|"CHOOSE"|"CONSTANT"
+  |"CONSTANTS"|"BY"|"DEF"|"DEFINE"|"DEFS"|"LAMBDA"|"OBVIOUS"|"ELSE"
+  |"EXCEPT"|"EXTENDS"|"IF"|"IN"|"INSTANCE"|"LET"|"HAVE"|"TRUE"|"FALSE"
+  |"HIDE"|"PROOF"|"PROVE"|"STATE"|"OMITTED"|"LOCAL"|"MODULE"|"OTHER"
+  |"THEN"|"THEOREM"|"UNCHANGED"|"QED"|"RECURSIVE"|"WITNESS"|"STRING"
+  |"SUFFICES"|"ACTION"|"LEMMA"|"COROLLARY"|"VARIABLE"|"VARIABLES"|"WITH"
+  |"TAKE"
+  |"USE"|"PICK"|"NEW"|"TEMPORAL"|"PROPOSITION"|"ONLY")
+
+
+
+(* Tokens *)
+rule  token = parse
   | eol                  { token lexbuf }
   | (" " | tab)          { token lexbuf }
   | eof                  { EOF }
@@ -40,9 +78,24 @@ rule token = parse
   | ';'                { SEMICOLON }
   |"=="                  { ASSIGN }
   | nu                   { Num (Lexing.lexeme lexbuf)}
+  |"VARIABLES"                  { VARs (Lexing.lexeme lexbuf)}
+  |"CONSTANTS"                  { CONS (Lexing.lexeme lexbuf)}
+  | "EXCEPT"               {EXCEPT}
   | id                   { IDENTIFIER (Lexing.lexeme lexbuf)  }
+  | def                  { DEFINITION_NAME (Lexing.lexeme lexbuf)  }
   | "["                   { SLPAR }
   | "]"                   { SRPAR }    
   | "|->"                 { ARROW }
-  | ","                  { COMMA }   
+  | ","                  { COMMA }  
+  | "!"               {Exclamation}
+
+
+
+
+
+
+
+
+
+
 

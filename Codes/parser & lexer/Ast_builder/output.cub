@@ -1,1 +1,5 @@
-Init (z) = { uncovered(z)=uncovered }
+Next  ==  transition Next (z) 
+ 
+          requires { [A<10]} 
+ 
+          {A[j] := case | j = t : 2 | _ :  A[j]; && A2 := 2}
