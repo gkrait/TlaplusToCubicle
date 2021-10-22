@@ -1,10 +1,10 @@
 ### Starting build.
 # Target: main.ml.depends, tags: { extension:ml, file:main.ml, ocaml, ocamldep, quiet }
-/Users/georgekrait/.opam/4.12.0/bin/ocamldep.opt -modules main.ml > main.ml.depends
+/Users/georgekrait/.opam/4.12.0/bin/ocamldep.opt -modules main.ml > main.ml.depends # cached
 # Target: lexer.mll, tags: { extension:mll, file:lexer.mll, lexer, ocaml, ocamllex, quiet }
-/Users/georgekrait/.opam/4.12.0/bin/ocamllex.opt -q lexer.mll
+/Users/georgekrait/.opam/4.12.0/bin/ocamllex.opt -q lexer.mll # cached
 # Target: lexer.ml.depends, tags: { extension:ml, file:lexer.ml, ocaml, ocamldep, quiet }
-/Users/georgekrait/.opam/4.12.0/bin/ocamldep.opt -modules lexer.ml > lexer.ml.depends
+/Users/georgekrait/.opam/4.12.0/bin/ocamldep.opt -modules lexer.ml > lexer.ml.depends # cached
 # Target: parser.mly.depends, tags: { extension:mly, file:parser.mly, infer, menhir_ocamldep, ocaml, ocamldep, quiet }
 menhir -v --raw-depend --ocamldep '/Users/georgekrait/.opam/4.12.0/bin/ocamldep.opt -modules' parser.mly > parser.mly.depends # cached
 # Target: ast.ml.depends, tags: { extension:ml, file:ast.ml, ocaml, ocamldep, quiet }
@@ -17,8 +17,10 @@ menhir -v --ocamlc /Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt --infer parser
 /Users/georgekrait/.opam/4.12.0/bin/ocamldep.opt -modules parser.mli > parser.mli.depends # cached
 # Target: parser.cmi, tags: { byte, compile, extension:mli, file:parser.mli, interf, ocaml, quiet }
 /Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt -c -o parser.cmi parser.mli # cached
+# Target: lexer.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:lexer.cmo, file:lexer.ml, implem, ocaml, quiet }
+/Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt -c -o lexer.cmo lexer.ml # cached
 # Target: Tree_builder.ml.depends, tags: { extension:ml, file:Tree_builder.ml, ocaml, ocamldep, quiet }
-/Users/georgekrait/.opam/4.12.0/bin/ocamldep.opt -modules Tree_builder.ml > Tree_builder.ml.depends # cached
+/Users/georgekrait/.opam/4.12.0/bin/ocamldep.opt -modules Tree_builder.ml > Tree_builder.ml.depends
 # Target: cub_print.ml.depends, tags: { extension:ml, file:cub_print.ml, ocaml, ocamldep, quiet }
 /Users/georgekrait/.opam/4.12.0/bin/ocamldep.opt -modules cub_print.ml > cub_print.ml.depends # cached
 # Target: cubicle_tree.ml.depends, tags: { extension:ml, file:cubicle_tree.ml, ocaml, ocamldep, quiet }
@@ -28,9 +30,216 @@ menhir -v --ocamlc /Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt --infer parser
 # Target: cub_print.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:cub_print.cmo, file:cub_print.ml, implem, ocaml, quiet }
 /Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt -c -o cub_print.cmo cub_print.ml # cached
 # Target: Tree_builder.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:Tree_builder.cmo, file:Tree_builder.ml, implem, ocaml, quiet }
-/Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt -c -o Tree_builder.cmo Tree_builder.ml # cached
-# Target: lexer.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:lexer.cmo, file:lexer.ml, implem, ocaml, quiet }
-/Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt -c -o lexer.cmo lexer.ml
+/Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt -c -o Tree_builder.cmo Tree_builder.ml
++ /Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt -c -o Tree_builder.cmo Tree_builder.ml
+File "Tree_builder.ml", lines 13-39, characters 24-7:
+13 | ........................match exp with
+14 |   | Ast.Var v -> 
+15 |     print_string v
+16 |   | Ast.INT  (num)-> print_string num  
+17 |   | Ast.Func_img (var1,var2) -> 
+...
+36 |       print_exp var1; print_string " \\in ";
+37 |       print_exp var2; print_string " |-> ";
+38 |       print_exp exp; print_string " ]";
+39 |     end
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+Func_exception (_, _, _)
+File "Tree_builder.ml", lines 98-114, characters 26-7:
+ 98 | ..........................match temp with               
+ 99 | | Ast.Predec pred -> print_pred pred
+100 | | Ast.Prime (exp1 ,var_list ,  exp2 ) ->
+101 |    begin
+102 |     print_exp exp1 ;
+...
+111 |      print_log logicalop ;
+112 |      print_newline () ;
+113 |      print_temp temp2 ;
+114 |     end.
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+Func_except (_, _, _)
+File "Tree_builder.ml", lines 129-138, characters 30-20:
+129 | ..............................match fil with 
+130 | | Ast.MulDef (defns_list) -> begin  let n=(List.length defns_list) in 
+131 |          match  n  with 
+132 |       | 0 -> []
+133 |       | 1 ->   parse_def (List.nth defns_list 0)  ::[]
+134 |       | _ ->   let sub= (sublist defns_list 1 (n-1) )  in 
+135 |                   let img_sub=    parse_tla_taile  (Ast.MulDef (sub)) in 
+136 |                     let head = [parse_def (List.nth defns_list 0 )] in 
+137 |                         head @ img_sub;
+138 |                  end.
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+Definition _
+File "Tree_builder.ml", lines 141-144, characters 19-19:
+141 | ...................(Ast.File(Ast.VARI (var), Ast.CONS(con) , fil  ))   =
+142 | let b= ("\narray ") ^(List.nth  var 0) ^("[proc] : int \n \n") in 
+143 | let a= (print_string   b)  in  
+144 | parse_tla_taile fil.
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+File (VARI _, VARI _, _)
+File "Tree_builder.ml", lines 185-191, characters 8-90:
+185 | ........match l2 with 
+186 |                   | Ast.INT (num) -> Cubicle_tree.ELEstat("unprime  equality integer function image" ,
+187 |                                                      Cubicle_tree.Equality(Cubicle_tree.Func_img( Cubicle_tree.Var(a), Cubicle_tree.Var("z") ),
+188 |                                                       Cubicle_tree.INT(num) ) ) 
+189 |                    | Ast.Var v ->  
+190 |                    Cubicle_tree.ELEstat ("unprime  equality string function image", 
+191 |                          Cubicle_tree.Equality(Cubicle_tree.Var(a), Cubicle_tree.Var(v) )).....
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+(Func_img (_, _)|Binop (_, _, _)|Func_def (_, _, _)|Func_exception (_, _, _))
+File "Tree_builder.ml", lines 184-191, characters 38-95:
+184 | ......................................begin  let Ast.Var(a)  = exp1 in     
+185 |         match l2 with 
+186 |                   | Ast.INT (num) -> Cubicle_tree.ELEstat("unprime  equality integer function image" ,
+187 |                                                      Cubicle_tree.Equality(Cubicle_tree.Func_img( Cubicle_tree.Var(a), Cubicle_tree.Var("z") ),
+188 |                                                       Cubicle_tree.INT(num) ) ) 
+189 |                    | Ast.Var v ->  
+190 |                    Cubicle_tree.ELEstat ("unprime  equality string function image", 
+191 |                          Cubicle_tree.Equality(Cubicle_tree.Var(a), Cubicle_tree.Var(v) ))  end
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+(Func_img (_, _)|INT _|Binop (_, _, _)|Func_def (_, _, _)|
+Func_exception (_, _, _))
+File "Tree_builder.ml", lines 194-212, characters 6-54:
+194 | ......begin  
+195 |        match l2 with 
+196 |                  | Ast.Func_def(x,proc, value) ->  begin match value with
+197 |                                             | Ast.INT num ->    Cubicle_tree.ELEstat ("unprime function equality integer" ,
+198 |                                                     Cubicle_tree.Equality( Cubicle_tree.Func_img(Cubicle_tree.Var(x1) , Cubicle_tree.Var("z") )   , (* here assuming one variable case and Proc is the usual one *)
+...
+209 |                                                   Cubicle_tree.Equality(Cubicle_tree.Var(x1), Cubicle_tree.INT(num) ) ) 
+210 |                  | Ast.Binop (exp1 , bi , exp2)-> Cubicle_tree.ELEstat ("Uncovered unprime mix exp", 
+211 |                                                   Cubicle_tree.Equality(Cubicle_tree.Var(x1), Cubicle_tree.Var ("z") ) )                                                                    
+212 |                                                    end
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+(Func_img (_, _)|Func_exception (_, _, _))
+File "Tree_builder.ml", lines 181-219, characters 30-113:
+181 | ..............................let Ast.Equality(l1 ,equa ,l2) =eq   in 
+182 |   match l1 with 
+183 |     
+184 |    | Ast.Func_img  ( exp1 , exp2)  -> begin  let Ast.Var(a)  = exp1 in     
+185 |         match l2 with 
+...
+216 | 
+217 | 
+218 |                                        
+219 |   | _ -> Cubicle_tree.ELEstat( "uncovered", Cubicle_tree.Equality(Cubicle_tree.Var("x"), Cubicle_tree.Var("x") ))...................................................................
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+(Inequality (_, _, _)|Coposition (_, _, _)|Open_prop (DEFIN _, _))
+File "Tree_builder.ml", lines 223-225, characters 29-35:
+223 | .............................match log with 
+224 | | Ast.Conj -> Cubicle_tree.Conj
+225 | | Ast.Disjun -> Cubicle_tree.Disjun
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+ASSIG
+File "Tree_builder.ml", lines 232-233, characters 45-133:
+232 | .............................................let  Cubicle_tree.ELEstat ( str, Cubicle_tree.Equality(l1,l2)) = (trans_equality (Ast.Equality (exp1 , com , exp2))) in 
+233 |                                                        Cubicle_tree.ELEstat ("unprime  inequality",Cubicle_tree.Inequality(l1, l2)  )
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+ELEstat (_, (Inequality (_, _)|Coposition (_, _, _)))
+File "Tree_builder.ml", lines 235-237, characters 49-129:
+235 | .................................................let   Cubicle_tree.ELEstat (str2,stat2)=  trans_prop  prop2 in
+236 |                                                  let log = change_log_type logicalop in 
+237 |                                                   Cubicle_tree.ELEstat("proposition", Cubicle_tree.Coposition(stat1,log ,stat2) ).
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+(ElEassig (_, _)|ELEMix (_, _))
+File "Tree_builder.ml", lines 234-237, characters 50-129:
+234 | ..................................................let  Cubicle_tree.ELEstat (str1,stat1) =  trans_prop  prop1  in 
+235 |                                                  let   Cubicle_tree.ELEstat (str2,stat2)=  trans_prop  prop2 in
+236 |                                                  let log = change_log_type logicalop in 
+237 |                                                   Cubicle_tree.ELEstat("proposition", Cubicle_tree.Coposition(stat1,log ,stat2) ).
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+(ElEassig (_, _)|ELEMix (_, _))
+File "Tree_builder.ml", lines 247-249, characters 32-36:
+247 | ................................match biop with 
+248 |   | Ast.Conj -> Cubicle_tree.Conj 
+249 |  | Ast.Disjun -> Cubicle_tree.Disjun.
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+ASSIG
+File "Tree_builder.ml", lines 253-257, characters 30-84:
+253 | ..............................match expr with 
+254 |  | Ast.Var(v) -> Cubicle_tree.Var(v)
+255 |  | Ast.INT(n) -> Cubicle_tree.INT(n)
+256 |  | Ast.Binop(e1, bio , e2) -> Cubicle_tree.Binop(tla_to_cub_exp(e1), tla_to_cub_biop bio , tla_to_cub_exp(e2))
+257 |  | Ast.Func_img(e1,e2) -> Cubicle_tree.Func_img(tla_to_cub_exp e1,tla_to_cub_exp e2)
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+(Func_def (_, _, _)|Func_exception (_, _, _))
+File "Tree_builder.ml", lines 264-280, characters 12-66:
+264 | ............match pred1 with 
+265 |                 | Ast.Prop pro -> begin match  pro with 
+266 |                        |  Ast.Equality  (exp1 , coparism , exp2)  ->
+267 |                            let l1=tla_to_cub_exp exp1 in 
+268 |                             let l2=tla_to_cub_exp exp2 in 
+...
+277 |                         | _ ->   Cubicle_tree.ELEstat(  "unprime function equality integer"  ,
+278 |                           Cubicle_tree.Equality( Cubicle_tree.Func_img(Cubicle_tree.Var("v") ,
+279 |                              Cubicle_tree.Var("z") )  ,
+280 |                               Cubicle_tree.Var("v") )  )       end.
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+(Existence (_, _, _, _, _, _)|Universal (_, _, _, _, _, _)|
+Pred_Comp (_, _, _))
+File "Tree_builder.ml", lines 261-280, characters 26-66:
+261 | ..........................match pred with 
+262 |    |  Ast.Prop prop ->  trans_prop prop
+263 |    | Ast.Universal (quanti , Ast.Var(v) , coparism , Ast.Var(z) , uni , pred1)  -> 
+264 |             match pred1 with 
+265 |                 | Ast.Prop pro -> begin match  pro with 
+...
+277 |                         | _ ->   Cubicle_tree.ELEstat(  "unprime function equality integer"  ,
+278 |                           Cubicle_tree.Equality( Cubicle_tree.Func_img(Cubicle_tree.Var("v") ,
+279 |                              Cubicle_tree.Var("z") )  ,
+280 |                               Cubicle_tree.Var("v") )  )       end.
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+Universal
+  (_, Var _, _,
+  (Func_img (_, _)|INT _|Binop (_, _, _)|Func_def (_, _, _)|
+  Func_exception (_, _, _)), _, _)
+File "Tree_builder.ml", lines 298-309, characters 27-130:
+298 | ...........................match obj with 
+299 | | Ast.Predec   pred ->  trans_pred pred
+300 | (*| Ast.Prime  (exp1 , string_list , exp2)  ->  Cubicle_tree.ELEstat ("prime  equality",Cubicle_tree.Inequality(l1, l2)  ) *)
+301 | | Ast.Func_except (exp1,var_list,Ast.Func_exception (e1,e2,e3) ) -> Cubicle_tree.ElEassig ("primed equality except" ,  
+302 |                 Cubicle_tree.Cases( tla_to_cub_exp exp1, tla_to_cub_exp e1, tla_to_cub_exp e2,
+...
+306 | | Ast.Mix (temp1, logicalop , temp2) -> let trans1 = trans_temp temp1 in 
+307 |                                         let trans2 = trans_temp temp2 in
+308 |                                        Cubicle_tree.ELEMix( "mix" , 
+309 |                                         Cubicle_tree.Combination (drop_str trans1 , tla_to_cub_log logicalop ,drop_str trans2 )  )
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+Func_except
+  (_, _, (Var _|Func_img (_, _)|INT _|Binop (_, _, _)|Func_def (_, _, _)))
+File "Tree_builder.ml", lines 331-337, characters 8-51:
+331 | ........let  Ast.ElE ( DEFIN exp1 ,var_list, str1,  Ast.Stat (stat), str2 ) =obji in
+332 |          let   tra=  trans_temp stat in   
+333 |           let result=  print_Cubobj  exp1 tra in 
+334 |           match stat with 
+335 |             | Ast.Predec pred -> if exp1 ="Init" then  print_string ("init (z) {"  ^  result ^ ("}\n"))
+336 |               else   print_string ( exp1 ^ " (z) {  "  ^  result ^ ("}\n")) 
+337 |             | _ ->  print_string  (result ^ "zzzz").
+Warning 8 [partial-match]: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+ElE (DEFIN _, _, _, Expr _, _)
+File "Tree_builder.ml", line 143, characters 4-5:
+143 | let a= (print_string   b)  in  
+          ^
+Warning 26 [unused-var]: unused variable a.
 # Target: main.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:main.cmo, file:main.ml, implem, ocaml, quiet }
 /Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt -c -o main.cmo main.ml
 # Target: parser.ml.depends, tags: { extension:ml, file:parser.ml, ocaml, ocamldep, quiet }

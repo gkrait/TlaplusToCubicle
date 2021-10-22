@@ -1,5 +1,9 @@
-Next  ==  transition Next (z) 
+array A[proc] : int 
  
-          requires { [A<10]} 
- 
-          {A[j] := case | j = t : 2 | _ :  A[j]; && A2 := 2}
+init (z) {A[z]=1}
+
+unsafe (z)  {A[z]=7}
+
+transition next (z)
+requires {A[z]<10} 
+{ A[z]:=A[z]+1}

@@ -334,7 +334,7 @@ let rec translate fil =
           match stat with 
             | Ast.Predec pred -> if exp1 ="Init" then  print_string ("init (z) {"  ^  result ^ ("}\n"))
               else   print_string ( exp1 ^ " (z) {  "  ^  result ^ ("}\n")) 
-            | _ ->  print_string  result  
+            | _ ->  print_string  (result ^ "zzzz") 
            
 
 

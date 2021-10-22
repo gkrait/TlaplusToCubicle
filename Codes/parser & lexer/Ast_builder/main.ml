@@ -6,15 +6,15 @@ let  lexbuf = Lexing.from_channel  chan  in  *)
 
 
 let  lexbuf =  Lexing.from_string 
-" VARIABLES x,e ;
-CONSTANTS y,t ;
-Init == x1=[obj \\in proc |-> 1 ];  
-Next==  a'=[a  EXCEPT ![t]=2 ]   ;
+" VARIABLES A ;
+CONSTANTS Proc ;
+Init == A=[obj \\in Proc |-> 1 ];  
+Next== A'=[A  EXCEPT ![t]=2 ] /\\  \\A t \\in Proc : (A[t]<10)   ;
 "
     in
 
 
-(*     *)
+(*  A'=[A  EXCEPT ![t]=2 ] /\\   *)
 
 try   let  tla = Parser.start Lexer.token lexbuf in (* parse input *)
     Tree_builder.translate tla 
