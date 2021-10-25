@@ -328,16 +328,15 @@ let rec translate fil =
    begin
       for i= 0 to l-1 do 
         let  obji= List.nth  obj_list i in 
-        let  Ast.ElE ( DEFIN exp1 ,var_list, str1,  Ast.Stat (stat), str2 ) =obji in
+        let  Ast.ElE (DEFIN exp1 ,var_list, str1,  Ast.Stat (stat), str2 ) =obji in
          let   tra=  trans_temp stat in   
           let result=  print_Cubobj  exp1 tra in 
           match stat with 
             | Ast.Predec pred -> if exp1 ="Init" then  print_string ("init (z) {"  ^  result ^ ("}\n"))
               else   print_string ( exp1 ^ " (z) {  "  ^  result ^ ("}\n")) 
-            | _ ->  print_string  (result ^ "zzzz") 
+
+            | _ ->  print_string  (result) 
            
-
-
       done; 
    end
 

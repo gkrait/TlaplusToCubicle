@@ -1,0 +1,36 @@
+
+** Conflict (shift/reduce) in state 52.
+** Tokens involved: SLPAR LPAR
+** The following explanations concentrate on token SLPAR.
+** This state is reached from start after reading:
+
+declaration declaration DEFINITION_NAME ASSIGN IDENTIFIER
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+start 
+tla_file EOF 
+declaration declaration tla_file_taile 
+                        list(definition) 
+                        definition list(definition) 
+                        DEFINITION_NAME ASSIGN state_function SEMICOLON 
+                                               (?)
+
+** In state 52, looking ahead at SLPAR, reducing production
+** factor -> IDENTIFIER
+** is permitted because of the following sub-derivation:
+
+expr 
+expr paranth(expr) // lookahead token appears because paranth(expr) can begin with SLPAR
+term // lookahead token is inherited
+factor // lookahead token is inherited
+IDENTIFIER . 
+
+** In state 52, looking ahead at SLPAR, shifting is permitted
+** because of the following sub-derivation:
+
+temporal_formula 
+primed_eq 
+IDENTIFIER paranth(varlist) PRIME EQUAL expr 
+           . SLPAR varlist SRPAR 

@@ -36,17 +36,14 @@ declaration:
 
 
 definition:
-| IDENTIFIER optional_varlist( varlist)  ASSIGN temporal_formula SEMICOLON {Ast.Statment (Ast.DEFIN ( $1), $2 , Ast.ASSIG , Ast.Stat $4, Ast.NEWL ) }
-| IDENTIFIER optional_varlist( varlist)  ASSIGN  expr SEMICOLON {Ast.Value (Ast.DEFIN ( $1) ,$2,Ast.ASSIG , Ast.Expr $4 , Ast.NEWL ) }
+| IDENTIFIER optional_varlist(varlist)  ASSIGN temporal_formula SEMICOLON {Ast.Statment (Ast.DEFIN ( $1), $2 , Ast.ASSIG , Ast.Stat $4, Ast.NEWL ) }
+| IDENTIFIER optional_varlist(varlist)  ASSIGN  expr SEMICOLON {Ast.Value (Ast.DEFIN ( $1) ,$2,Ast.ASSIG , Ast.Expr $4 , Ast.NEWL ) }
 
 
 
 /*
 definition:
 | DEFINITION_NAME optional_varlist( varlist)  ASSIGN state_function SEMICOLON {Ast.Statment (Ast.DEFIN ( $1), $2 , Ast.ASSIG , $4, Ast.NEWL ) }
-
-
-
 
 
   state_function:

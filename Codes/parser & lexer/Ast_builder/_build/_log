@@ -225,14 +225,15 @@ Warning 8 [partial-match]: this pattern-matching is not exhaustive.
 Here is an example of a case that is not matched:
 Func_except
   (_, _, (Var _|Func_img (_, _)|INT _|Binop (_, _, _)|Func_def (_, _, _)))
-File "Tree_builder.ml", lines 331-337, characters 8-51:
-331 | ........let  Ast.ElE ( DEFIN exp1 ,var_list, str1,  Ast.Stat (stat), str2 ) =obji in
+File "Tree_builder.ml", lines 331-338, characters 8-42:
+331 | ........let  Ast.ElE (DEFIN exp1 ,var_list, str1,  Ast.Stat (stat), str2 ) =obji in
 332 |          let   tra=  trans_temp stat in   
 333 |           let result=  print_Cubobj  exp1 tra in 
 334 |           match stat with 
 335 |             | Ast.Predec pred -> if exp1 ="Init" then  print_string ("init (z) {"  ^  result ^ ("}\n"))
 336 |               else   print_string ( exp1 ^ " (z) {  "  ^  result ^ ("}\n")) 
-337 |             | _ ->  print_string  (result ^ "zzzz").
+337 | 
+338 |             | _ ->  print_string  (result).
 Warning 8 [partial-match]: this pattern-matching is not exhaustive.
 Here is an example of a case that is not matched:
 ElE (DEFIN _, _, _, Expr _, _)
@@ -241,7 +242,7 @@ File "Tree_builder.ml", line 143, characters 4-5:
           ^
 Warning 26 [unused-var]: unused variable a.
 # Target: main.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:main.cmo, file:main.ml, implem, ocaml, quiet }
-/Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt -c -o main.cmo main.ml
+/Users/georgekrait/.opam/4.12.0/bin/ocamlc.opt -c -o main.cmo main.ml # cached
 # Target: parser.ml.depends, tags: { extension:ml, file:parser.ml, ocaml, ocamldep, quiet }
 /Users/georgekrait/.opam/4.12.0/bin/ocamldep.opt -modules parser.ml > parser.ml.depends # cached
 # Target: parser.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:parser.cmo, file:parser.ml, implem, ocaml, quiet }
