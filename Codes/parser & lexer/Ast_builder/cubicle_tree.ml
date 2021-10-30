@@ -29,7 +29,7 @@ type logicalop =
 
 type prop= 
 | Equality of exp  * exp 
-| Inequality of exp  * exp 
+| Inequality of exp  * coparism * exp 
 | Coposition of prop * logicalop * prop 
 
 
@@ -47,7 +47,7 @@ type primed_equality=
 type temp = 
 | Pred of pred 
 | Primed of primed_equality 
-| Combination of temp * logicalop * temp  
+| Temp_Combination of temp * logicalop * temp  
 
 
 

@@ -176,6 +176,14 @@ let rec print_Objs fil =
 (*             translating     *)
 
 
+
+let  rec tla_to_cub_comp biop = match biop with 
+ | Ast.EQ -> Cubicle_tree.EQ 
+ | Ast.Greater -> Cubicle_tree.Greater 
+ | Ast.Less -> Cubicle_tree.Less 
+ | Ast.Inclus -> Cubicle_tree.Inclus 
+
+
 (* Problem with  A[x]= 10  
 it understands as "Var equal Int" However, it is supposed to understand it as "Func_img equal Int"    *)
 let rec trans_equality  eq  = let Ast.Equality(l1 ,equa ,l2) =eq   in 
@@ -230,12 +238,14 @@ let rec change_log_type log= match log with
 let rec trans_prop prop = match prop with 
 | Ast.Equality (exp1 , com , exp2) ->  (trans_equality (Ast.Equality (exp1 , com , exp2)))
 | Ast.Inequality (exp1 , com , exp2) ->      let  Cubicle_tree.ELEstat ( str, Cubicle_tree.Equality(l1,l2)) = (trans_equality (Ast.Equality (exp1 , com , exp2))) in 
-                                                       Cubicle_tree.ELEstat ("unprime  inequality",Cubicle_tree.Inequality(l1, l2)  )
+                                                       Cubicle_tree.ELEstat ("unprime  inequality",Cubicle_tree.Inequality(l1,tla_to_cub_comp com ,l2)  )
 | Ast.Coposition  (prop1 , logicalop , prop2) ->  let  Cubicle_tree.ELEstat (str1,stat1) =  trans_prop  prop1  in 
                                                  let   Cubicle_tree.ELEstat (str2,stat2)=  trans_prop  prop2 in
                                                  let log = change_log_type logicalop in 
                                                   Cubicle_tree.ELEstat("proposition", Cubicle_tree.Coposition(stat1,log ,stat2) ) 
 |  Ast.Open_prop (ldef_sides,  str) ->  Cubicle_tree.ELEstat( "uncovered", Cubicle_tree.Equality(Cubicle_tree.Var("c"), Cubicle_tree.Var("x") ))
+
+
 
 
 let  rec tla_to_cub_biop biop = match biop with 
@@ -272,7 +282,7 @@ let rec trans_pred pred = match pred with
                        | Ast.Inequality (exp1 , coparism , exp2) -> 
                                   let l1=tla_to_cub_exp exp1 in 
                                   let l2=tla_to_cub_exp exp2 in 
-                                  Cubicle_tree.ELEstat ("unprime  inequality",Cubicle_tree.Inequality(l1, l2)  )
+                                  Cubicle_tree.ELEstat ("unprime  inequality",Cubicle_tree.Inequality(l1, tla_to_cub_comp coparism,l2)  )
 
                         | _ ->   Cubicle_tree.ELEstat(  "unprime function equality integer"  ,
                           Cubicle_tree.Equality( Cubicle_tree.Func_img(Cubicle_tree.Var("v") ,
@@ -306,7 +316,7 @@ let rec trans_temp obj =   match obj with
 | Ast.Mix (temp1, logicalop , temp2) -> let trans1 = trans_temp temp1 in 
                                         let trans2 = trans_temp temp2 in
                                        Cubicle_tree.ELEMix( "mix" , 
-                                        Cubicle_tree.Combination (drop_str trans1 , tla_to_cub_log logicalop ,drop_str trans2 )  )
+                                        Cubicle_tree.Temp_Combination (drop_str trans1 , tla_to_cub_log logicalop ,drop_str trans2 )  )
 
 
 
@@ -328,15 +338,16 @@ let rec translate fil =
    begin
       for i= 0 to l-1 do 
         let  obji= List.nth  obj_list i in 
-        let  Ast.ElE (DEFIN exp1 ,var_list, str1,  Ast.Stat (stat), str2 ) =obji in
+         let  Ast.ElE (DEFIN exp1 ,var_list, str1,  Ast.Stat (stat), str2 ) =obji in
          let   tra=  trans_temp stat in   
           let result=  print_Cubobj  exp1 tra in 
           match stat with 
-            | Ast.Predec pred -> if exp1 ="Init" then  print_string ("init (z) {"  ^  result ^ ("}\n"))
+            | Ast.Predec pred -> if exp1 ="Init" then  
+                    print_string ("init (z) {"  ^  result ^ ("}\n"))
               else   print_string ( exp1 ^ " (z) {  "  ^  result ^ ("}\n")) 
-
-            | _ ->  print_string  (result) 
-           
+            | Ast.Mix (temp1 , logicalop , temp2)  ->    
+                          let Cubicle_tree.ELEMix(stri, temp_trans )  = tra in  
+                                         print_string  (Cub_print.print_temp  exp1 temp_trans )    
       done; 
    end
 

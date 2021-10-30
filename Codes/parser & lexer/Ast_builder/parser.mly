@@ -56,8 +56,8 @@ definition:
  temporal_formula:
 | predicate { Ast.Predec $1}
 | primed_eq { $1 }
-| temporal_formula   logical_oper temporal_formula  {Ast.Mix ($1,Ast.Disjun,$3)} 
-
+| temporal_formula   logical_oper temporal_formula  {Ast.Mix ($1,$2,$3)} 
+|  LPAR temporal_formula RPAR {$2}
 
 
  predicate:
@@ -79,8 +79,8 @@ proposition
 
 
 %inline  logical_oper:
-| AND  {}
-| OR {}
+| AND  {Ast.Conj}
+| OR {Ast.Disjun}
 
 
 primed_eq:
