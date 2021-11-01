@@ -3,6 +3,7 @@
 %token EOF
 %token PLUS MINUS STAR SLASH EQUAL Larger Smaller OR AND  EXISTS FORALL
 %token LPAR RPAR COLON IN PRIME SEMICOLON ASSIGN SLPAR  SRPAR ARROW COMMA  Exclamation EXCEPT
+%token QUOTATION  LCurly_bra RCurly_bra
 %token <string> IDENTIFIER DEFINITION_NAME
 %token <string> Num VARs CONS 
 
@@ -19,18 +20,27 @@ start : tla_file EOF       { $1 };
 
 
 tla_file:
-| declaration declaration tla_file_taile {  Ast.File ( Ast.VARI ($1),  Ast.CONS ($2), $3  ) }
+| declaration declaration  tla_file_taile {  Ast.File ( Ast.VARI ($1),  Ast.CONS ($2), $3  ) }
 
 tla_file_taile : 
-| definition* {Ast.MulDef ($1)} /* put as list of defs  */ 
+| definition* {Ast.MulDef ($1)}; /* put as list of defs  */ 
 /*|  definition   {Ast.Definition  ($1)  } */
 
 
 
+nums :
+|  Num                   {[$1]}   
+| QUOTATION IDENTIFIER QUOTATION {[$2]}
+|  Num COMMA nums    {$1::$3}
+|  QUOTATION IDENTIFIER QUOTATION COMMA nums    {$2::$5};
+
+set :
+| LCurly_bra  nums RCurly_bra {$2}
+
 
 declaration:
 | VARs  varlist SEMICOLON { $2 }
-| CONS  varlist  SEMICOLON   { $2 }
+| CONS  varlist  SEMICOLON   { $2 };
  
 
 
@@ -60,6 +70,7 @@ definition:
 |  LPAR temporal_formula RPAR {$2}
 
 
+
  predicate:
 | proposition {Ast.Prop $1 }
 | EXISTS IDENTIFIER IN IDENTIFIER COLON LPAR  predicate RPAR   { Ast.Existence (Ast.Exis,Ast.Var $2, Ast.Inclus, Ast.Var $4, Ast.Col, $7 ) }
@@ -73,6 +84,9 @@ proposition
 : expr EQUAL expr      { Ast.Equality ($1,Ast.EQ,$3) }
 | expr Larger expr     { Ast.Inequality ($1,Ast.Greater,$3) }
 | expr Smaller expr    { Ast.Inequality ($1,Ast.Less,$3) }
+| IDENTIFIER IN set { Ast.Inclusion(Ast.Var($1),$3) } 
+| LPAR proposition RPAR { $2 }
+| proposition logical_oper proposition { Ast.Coposition ($1,$2,$3) };
 
 
  
@@ -109,9 +123,11 @@ term
 
 factor:
   | IDENTIFIER       {Ast.Var ($1) }
+  | IDENTIFIER optional_varlist(varlist)       {Ast.Var ($1) }
   |  Num                {Ast.INT $1}
   |  LPAR expr RPAR    { $2 }  
-  | SLPAR IDENTIFIER IN IDENTIFIER ARROW  expr SRPAR {Ast.Func_def (Ast.Var($2),Ast.Var $4 ,$6) } ;
+  | SLPAR IDENTIFIER IN IDENTIFIER ARROW  expr SRPAR {Ast.Func_def (Ast.Var($2),Ast.Var $4 ,$6) } 
+  | QUOTATION IDENTIFIER QUOTATION    { Ast.STRING $2 }
 
   
 varlist:   

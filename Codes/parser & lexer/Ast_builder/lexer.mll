@@ -88,6 +88,9 @@ rule  token = parse
   | "|->"                 { ARROW }
   | ","                  { COMMA }  
   | "!"               {Exclamation}
+  | "\""              {QUOTATION}
+  | "{"               {LCurly_bra} 
+  | "}"               {RCurly_bra} 
 
 
 

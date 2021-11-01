@@ -10,6 +10,7 @@ type exp =
   | Func_img of exp * exp 
   | INT of string
   | Binop of exp * binop * exp
+  | STRING of string  
 
 
 
@@ -31,12 +32,14 @@ type prop=
 | Equality of exp  * exp 
 | Inequality of exp  * coparism * exp 
 | Coposition of prop * logicalop * prop 
+| Declaration of exp * string list * string 
 
 
 type pred =
 | Prop of prop
 | Existence of  exp * exp * pred
 | Universal of  exp * exp * pred
+| Pred_Comp of pred * logicalop * pred 
 
 
 type primed_equality=

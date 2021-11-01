@@ -7,6 +7,7 @@ type binop =
 
 type exp = 
   | Var of string
+  | STRING of string
   | Func_img of exp * exp 
   | INT of string
   | Binop of exp * binop * exp
@@ -43,6 +44,7 @@ type logicalop =
 type prop = 
 | Equality of exp * coparism * exp 
 | Inequality of exp * coparism * exp
+| Inclusion of exp * string list 
 | Coposition of prop * logicalop * prop 
 | Open_prop of ldef_sides* string list 
 
@@ -67,6 +69,7 @@ type temp=
 | Prime of exp * string list * exp 
 | Func_except of exp * string list * exp 
 | Mix of temp * logicalop * temp
+| Open_temp of string 
 
 
 type rdef_sides=
@@ -90,7 +93,7 @@ type declarat=
 | CONS  of string list 
 
 type tla_file = 
-| File of declarat * declarat * tla_file_taile  
+| File of declarat * declarat *  tla_file_taile  
 
 
 
