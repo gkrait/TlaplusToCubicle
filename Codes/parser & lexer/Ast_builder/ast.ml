@@ -60,6 +60,7 @@ type pred =
 | Existence of quanti * exp * coparism * exp * uni * pred
 | Universal of quanti * exp * coparism * exp * uni * pred
 | Pred_Comp of pred * logicalop * pred 
+| Open_pred of string 
 
 
 

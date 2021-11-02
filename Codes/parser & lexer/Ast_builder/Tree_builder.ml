@@ -294,7 +294,8 @@ let rec trans_prop prop = match prop with
 
      
 
-let rec trans_pred pred = match pred with 
+let rec trans_pred pred =
+ match pred with 
    |  Ast.Prop prop ->  trans_prop prop
    | Ast.Universal (quanti , Ast.Var(v) , coparism , Ast.Var(z) , uni , pred1)  -> 
             match pred1 with 
@@ -321,6 +322,8 @@ let rec trans_pred pred = match pred with
                 Cubicle_tree.ELEstat ("Mix", 
                 Cubicle_tree.Coposition(prop1, logi ,prop2))
 
+    | Ast.Existence (quanti , Ast.Var(v) , coparism , Ast.Var(z) , uni , pred1) -> Cubicle_tree.ELEstat ("Uncovered", 
+                Cubicle_tree.Equality(Cubicle_tree.Var("x") , Cubicle_tree.Var("x")))
     | _ ->  Cubicle_tree.ELEstat ("Mix", 
                 Cubicle_tree.Equality(Cubicle_tree.Var("x") , Cubicle_tree.Var("x")))           
  
@@ -407,14 +410,15 @@ let rec translate fil =
       for i= 0 to l-1 do 
         let  obji= List.nth  obj_list i in 
          let  Ast.ElE (DEFIN exp1 ,var_list, str1,  Ast.Stat (stat), str2 ) =obji in
-          let  tra=  trans_temp stat in   
-           let result= 
-             if exp1 = "Spec" then   ""    (* Ignor the last definition Spec *)
-             else if exp1 = "TypeOk" then  
+          if exp1  = "Spec" then  print_string "" (* Ignor the last definition Spec *)
+          else  
+           let  tra=  trans_temp stat in   
+            let result=   
+             if exp1 = "TypeOk" then  
                let  final_res=(type_Ok stat) in 
                 ("type string_type =") ^ (String.concat "|" final_res.type_dec  ) 
                   ^ ("\n \n") ^ (String.concat "" final_res.array_dec  ) ^ ("\n \n")
-             else   print_Cubobj  exp1 tra in 
+              else   print_Cubobj  exp1 tra in 
                 match stat with 
                   | Ast.Predec pred -> 
                      if exp1 ="Init" then  
@@ -428,7 +432,8 @@ let rec translate fil =
                                      print_string (Cub_print.print_temp  exp1 temp_trans )  
       
       done; 
-   end ;
+   end 
+   
   
 
    

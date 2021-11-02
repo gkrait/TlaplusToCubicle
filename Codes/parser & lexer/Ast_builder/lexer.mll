@@ -91,6 +91,7 @@ rule  token = parse
   | "\""              {QUOTATION}
   | "{"               {LCurly_bra} 
   | "}"               {RCurly_bra} 
+  | "->"              {ARROW_set}
 
 
 

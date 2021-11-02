@@ -3,7 +3,7 @@
 %token EOF
 %token PLUS MINUS STAR SLASH EQUAL Larger Smaller OR AND  EXISTS FORALL
 %token LPAR RPAR COLON IN PRIME SEMICOLON ASSIGN SLPAR  SRPAR ARROW COMMA  Exclamation EXCEPT
-%token QUOTATION  LCurly_bra RCurly_bra
+%token QUOTATION  LCurly_bra RCurly_bra ARROW_set
 %token <string> IDENTIFIER DEFINITION_NAME
 %token <string> Num VARs CONS 
 
@@ -34,8 +34,8 @@ nums :
 |  Num COMMA nums    {$1::$3}
 |  QUOTATION IDENTIFIER QUOTATION COMMA nums    {$2::$5};
 
-set :
-| LCurly_bra  nums RCurly_bra {$2}
+set : 
+| SLPAR expr ARROW_set  LCurly_bra  nums RCurly_bra SRPAR {$5};
 
 
 declaration:
@@ -68,6 +68,7 @@ definition:
 | primed_eq { $1 }
 | temporal_formula   logical_oper temporal_formula  {Ast.Mix ($1,$2,$3)} 
 |  LPAR temporal_formula RPAR {$2}
+| IDENTIFIER optional_varlist(varlist)    {Ast.Open_temp $1 } 
 
 
 
@@ -75,6 +76,8 @@ definition:
 | proposition {Ast.Prop $1 }
 | EXISTS IDENTIFIER IN IDENTIFIER COLON LPAR  predicate RPAR   { Ast.Existence (Ast.Exis,Ast.Var $2, Ast.Inclus, Ast.Var $4, Ast.Col, $7 ) }
 | FORALL IDENTIFIER IN IDENTIFIER COLON LPAR predicate  RPAR  { Ast.Universal (Ast.Univ,Ast.Var $2, Ast.Inclus, Ast.Var $4, Ast.Col, $7 ) }
+| IDENTIFIER optional_varlist(varlist)    {Ast.Open_pred $1 } 
+| predicate logical_oper predicate    {Ast.Pred_Comp($1,$2,$3)  }
 
 
 /* problem in quantification */
@@ -85,7 +88,6 @@ proposition
 | expr Larger expr     { Ast.Inequality ($1,Ast.Greater,$3) }
 | expr Smaller expr    { Ast.Inequality ($1,Ast.Less,$3) }
 | IDENTIFIER IN set { Ast.Inclusion(Ast.Var($1),$3) } 
-| LPAR proposition RPAR { $2 }
 | proposition logical_oper proposition { Ast.Coposition ($1,$2,$3) };
 
 
