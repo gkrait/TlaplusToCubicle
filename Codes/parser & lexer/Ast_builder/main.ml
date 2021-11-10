@@ -5,24 +5,17 @@ let  lexbuf = Lexing.from_channel  chan  in  *)
 
 
 
-let  lexbuf =  Lexing.from_string 
-" VARIABLES A, A2  ;
-CONSTANTS Proc ;
-TypeOk==      A  \\in [Proc ->  { \" L1 \" , \" L2 \" , \" L3 \"} ]
-         /\\  A2 \\in  [Proc ->  {  1  ,  2  ,  3, 4  } ]
-         /\\  A3 \\in [Proc ->  { \" L4 \" , \" L5 \" , \" L6 \", \"L7\" } ]  ; 
-Init ==     A=[z \\in Proc |->  \" L1 \" ] 
-         /\\ A2 =[z \\in Proc |-> 1 ]
-         /\\ A3 =[z \\in Proc |-> \" L4 \" ]  ;  
-Next(z)==       ( (A'=[A  EXCEPT ![z]=\" L2 \" ]) /\\  (A[z]= \" L1 \") ) 
-           \\/  ( (A2'=[A2  EXCEPT ![z]=A2[z]+1 ]) /\\  (A2[z]< 5)      ) 
-           \\/  ( (A3'=[A3  EXCEPT ![z]=\" L5 \" ]) /\\  (A[z]= \" L4 \")      ) ;
-Spec ==  Init    \\/ \\E z \\in Proc : (Next(z)) ;          
-"
-    in
+
+   let input_str = Tree_builder.read_whole_file ("input.in") in 
+   let  lexbuf =  Lexing.from_string  input_str in
+    
+    (*
+
+more general  form more than 3 defs 
+add Tla header 
+use examples to test  *)
 
 
-(*  *)
 
 try   let  tla = Parser.start Lexer.token lexbuf in (* parse input *)
     Tree_builder.translate tla 
@@ -32,4 +25,4 @@ with
   | Invalid_argument _ -> print_endline ("Usage: " ^ Sys.argv.(0) ^ " 3 4 5")
   | Failure msg        -> print_endline ("Failure in " ^ msg)
   | Parser.Error       -> print_endline "Parse error"
-  | End_of_file        -> print_endline "Parse error: unexpected end of string"
+  | End_of_file        -> print_endline "Parse error: unexpected end of string"  

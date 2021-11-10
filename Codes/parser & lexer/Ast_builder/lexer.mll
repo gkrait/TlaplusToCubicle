@@ -1,5 +1,6 @@
 (* lexer.mll -*- tuareg -*- *)
 {
+    open Lexing
   open Parser
   let get = Lexing.lexeme
 
@@ -16,6 +17,11 @@ type token_ =
 
 
 
+let eol lexbuf =
+    let (start, curr) = (lexbuf.lex_start_p, lexbuf.lex_curr_p) in
+      lexbuf.lex_curr_p <- { curr with
+                               pos_lnum = curr.pos_lnum + 1 ;
+                               pos_bol  = curr.pos_cnum }
 
 
 }
@@ -54,10 +60,22 @@ let keyword = (
 
 
 
-(* Tokens *)
-rule  token = parse
-  | eol                  { token lexbuf }
-  | (" " | tab)          { token lexbuf }
+
+
+
+rule modfile = parse
+  | "----" '-'* ' '* "MODULE"
+      { [ PUNCT "----"; KWD "MODULE" ] }
+  | newline
+      { eol lexbuf ; modfile lexbuf }
+  | _ { modfile lexbuf }
+  | eof { [] }
+
+and token = parse
+  (* whitespace *)
+  | whitesp            { token lexbuf }
+  | newline            { eol lexbuf ; token lexbuf }
+ 
   | eof                  { EOF }
   | "+"                  { PLUS }
   | "-"                  { MINUS }
@@ -81,6 +99,9 @@ rule  token = parse
   |"VARIABLES"                  { VARs (Lexing.lexeme lexbuf)}
   |"CONSTANTS"                  { CONS (Lexing.lexeme lexbuf)}
   | "EXCEPT"               {EXCEPT}
+  | "UNCHANGED"            {UNCHANGED}
+  | "MODULE"               {MODULE}
+  | "EXTENDS"             {EXTENDS}
   | id                   { IDENTIFIER (Lexing.lexeme lexbuf)  }
   | def                  { DEFINITION_NAME (Lexing.lexeme lexbuf)  }
   | "["                   { SLPAR }
@@ -92,6 +113,7 @@ rule  token = parse
   | "{"               {LCurly_bra} 
   | "}"               {RCurly_bra} 
   | "->"              {ARROW_set}
+
 
 
 

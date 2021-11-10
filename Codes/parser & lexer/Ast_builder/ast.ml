@@ -46,6 +46,7 @@ type prop =
 | Inequality of exp * coparism * exp
 | Inclusion of exp * string list 
 | Coposition of prop * logicalop * prop 
+| UNCHAN of string list 
 | Open_prop of ldef_sides* string list 
 
 
@@ -72,6 +73,7 @@ type temp=
 | Mix of temp * logicalop * temp
 | Open_temp of string 
 
+ 
 
 type rdef_sides=
 | Expr of exp 

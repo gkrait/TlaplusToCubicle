@@ -3,7 +3,7 @@
 %token EOF
 %token PLUS MINUS STAR SLASH EQUAL Larger Smaller OR AND  EXISTS FORALL
 %token LPAR RPAR COLON IN PRIME SEMICOLON ASSIGN SLPAR  SRPAR ARROW COMMA  Exclamation EXCEPT
-%token QUOTATION  LCurly_bra RCurly_bra ARROW_set
+%token QUOTATION  LCurly_bra RCurly_bra ARROW_set UNCHANGED MODULE EXTENDS 
 %token <string> IDENTIFIER DEFINITION_NAME
 %token <string> Num VARs CONS 
 
@@ -17,10 +17,21 @@
 /* Productions */
 start : tla_file EOF       { $1 };
 
+moudleName:
+hyphen_encloser (MODULE, IDENTIFIER) extends?     {} 
 
+
+hyphen_encloser(x,y):
+| MINUS MINUS MINUS+ x y MINUS MINUS MINUS+ {}
+
+tail:
+|  EQUAL EQUAL EQUAL+ {}
+
+extends:
+| EXTENDS varlist {};
 
 tla_file:
-| declaration declaration  tla_file_taile {  Ast.File ( Ast.VARI ($1),  Ast.CONS ($2), $3  ) }
+| moudleName declaration declaration  tla_file_taile tail {  Ast.File ( Ast.VARI ($2),  Ast.CONS ($3), $4  ) }
 
 tla_file_taile : 
 | definition* {Ast.MulDef ($1)}; /* put as list of defs  */ 
@@ -72,6 +83,7 @@ definition:
 
 
 
+
  predicate:
 | proposition {Ast.Prop $1 }
 | EXISTS IDENTIFIER IN IDENTIFIER COLON LPAR  predicate RPAR   { Ast.Existence (Ast.Exis,Ast.Var $2, Ast.Inclus, Ast.Var $4, Ast.Col, $7 ) }
@@ -88,6 +100,7 @@ proposition
 | expr Larger expr     { Ast.Inequality ($1,Ast.Greater,$3) }
 | expr Smaller expr    { Ast.Inequality ($1,Ast.Less,$3) }
 | IDENTIFIER IN set { Ast.Inclusion(Ast.Var($1),$3) } 
+| UNCHANGED varlist  { Ast.UNCHAN $2 }
 | proposition logical_oper proposition { Ast.Coposition ($1,$2,$3) };
 
 

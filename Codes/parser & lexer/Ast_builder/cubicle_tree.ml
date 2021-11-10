@@ -33,6 +33,7 @@ type prop=
 | Inequality of exp  * coparism * exp 
 | Coposition of prop * logicalop * prop 
 | Declaration of exp * string list * string 
+| UNCHAN 
 
 
 type pred =
