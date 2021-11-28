@@ -1,3 +1,4 @@
+
 type binop = 
   | Add
   | Sub
@@ -13,6 +14,8 @@ type exp =
   | Binop of exp * binop * exp
   | Func_def of exp * exp * exp 
   | Func_exception of exp * exp * exp 
+  | TRUE
+  | FALSE
 
 
 
@@ -61,7 +64,7 @@ type pred =
 | Existence of quanti * exp * coparism * exp * uni * pred
 | Universal of quanti * exp * coparism * exp * uni * pred
 | Pred_Comp of pred * logicalop * pred 
-| Open_pred of string 
+| Open_pred of string * string list
 
 
 
@@ -71,7 +74,7 @@ type temp=
 | Prime of exp * string list * exp 
 | Func_except of exp * string list * exp 
 | Mix of temp * logicalop * temp
-| Open_temp of string 
+| Open_temp of string * string list
 
  
 

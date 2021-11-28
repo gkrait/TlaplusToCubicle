@@ -11,6 +11,8 @@ type exp =
   | INT of string
   | Binop of exp * binop * exp
   | STRING of string  
+  | TRUE
+  | FALSE
 
 
 
@@ -34,6 +36,7 @@ type prop=
 | Coposition of prop * logicalop * prop 
 | Declaration of exp * string list * string 
 | UNCHAN 
+| Open_prop of string * string list 
 
 
 type pred =

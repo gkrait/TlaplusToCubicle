@@ -93,7 +93,7 @@ and token = parse
   | ":"                  { COLON }
   | "\\in"                  { IN }
   | "'"                 { PRIME }
-  | ';'                { SEMICOLON }
+  | ";"                { SEMICOLON }
   |"=="                  { ASSIGN }
   | nu                   { Num (Lexing.lexeme lexbuf)}
   |"VARIABLES"                  { VARs (Lexing.lexeme lexbuf)}
@@ -102,8 +102,8 @@ and token = parse
   | "UNCHANGED"            {UNCHANGED}
   | "MODULE"               {MODULE}
   | "EXTENDS"             {EXTENDS}
-  | id                   { IDENTIFIER (Lexing.lexeme lexbuf)  }
-  | def                  { DEFINITION_NAME (Lexing.lexeme lexbuf)  }
+  | "FALSE"               {FALSE}
+  | "TRUE"                {TRUE}
   | "["                   { SLPAR }
   | "]"                   { SRPAR }    
   | "|->"                 { ARROW }
@@ -113,6 +113,7 @@ and token = parse
   | "{"               {LCurly_bra} 
   | "}"               {RCurly_bra} 
   | "->"              {ARROW_set}
+  | id                   { IDENTIFIER (Lexing.lexeme lexbuf)  }
 
 
 
