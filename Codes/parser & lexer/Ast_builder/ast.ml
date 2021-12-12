@@ -6,6 +6,7 @@ type binop =
   | Div
 
 
+
 type exp = 
   | Var of string
   | STRING of string
@@ -47,10 +48,11 @@ type logicalop =
 type prop = 
 | Equality of exp * coparism * exp 
 | Inequality of exp * coparism * exp
+| Not_equal of exp * exp 
 | Inclusion of exp * string list 
 | Coposition of prop * logicalop * prop 
 | UNCHAN of string list 
-| Open_prop of ldef_sides* string list 
+| Open_prop of string* string list 
 
 
 
@@ -61,8 +63,8 @@ type quanti=
 
 type pred = 
 | Prop of prop
-| Existence of quanti * exp * coparism * exp * uni * pred
-| Universal of quanti * exp * coparism * exp * uni * pred
+| Existence of quanti * string list * coparism * exp * uni * pred
+| Universal of quanti * string list * coparism * exp * uni * pred
 | Pred_Comp of pred * logicalop * pred 
 | Open_pred of string * string list
 
@@ -74,6 +76,7 @@ type temp=
 | Prime of exp * string list * exp 
 | Func_except of exp * string list * exp 
 | Mix of temp * logicalop * temp
+| Negation of temp 
 | Open_temp of string * string list
 
  

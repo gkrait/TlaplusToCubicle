@@ -1,20 +1,72 @@
+------------------------------ MODULE szymanski_at ------------------------------
+EXTENDS Integers, Sequences, TLC, FiniteSets
+CONSTANTS  Proc ;
+VARIABLES A , B, S, W ;
 
---------------------------- MODULE DijkstraMutex --------------------------- 
-EXTENDS Integers
+TypeOk == A  \in [Proc ->  { " L0 " , " L1 " , " L2 " , " L3 ",  " L4 " , " L5 " , " L6 ", " L7 "} ] ;
 
-VARIABLES A, A2, A3  ;
-CONSTANTS Proc ;
-TypeOk==      A  \in [Proc ->  { " L1 " , " L2 " , " L3 "} ]
-         /\  A2 \in  [Proc ->  {  1  ,  2  ,  3, 4  } ]
-         /\  A3 \in [Proc ->  { " L4 " , " L5 " , " L6 ", "L7" } ]  ; 
-Init ==     A=[z \in Proc |->  " L1 " ] 
-         /\ A2 =[z \in Proc |-> 1 ]
-         /\ A3 =[z \in Proc |-> " L4 " ]  ;   
-Next(z)==       ( (A'=[A  EXCEPT ![z]=" L2 " ]) /\  (A[z]<3) /\ (A[z]= " L1 ")  /\  UNCHANGED A2, A3 ) 
-           \/  ( (A2'=[A2  EXCEPT ![z]=A2[z]+1 ]) /\  (A2[z]< 5) /\  UNCHANGED A, A3 /\  A=A ) 
-           \/  ( (A3'=[A3  EXCEPT ![z]=" L5 " ]) /\ (A3[z]<3) /\ (A3[z]= " L4 ")  /\  UNCHANGED A, A2  /\ A3=A3  ) ;
-Spec ==  Init    /\ \E z \in Proc : (Next(z)) ;  
+Safety == \A z1 , z2 \in Proc : (A[z1] # "L7"  
+                                \/  A[z2] # "L7")
+                                /\ z1 #z2 ; 
 
+
+Init ==   A = [obj \in Proc |-> "L0"]
+         /\  A =   [obj \in Proc |-> "L1"]
+         /\ B = [obj \in Proc |-> FALSE]
+         /\ S = [obj \in Proc |-> FALSE]
+         /\ W = [obj \in Proc |-> FALSE];
+
+
+t0(x) ==    B'=[B EXCEPT ![x]=TRUE] 
+        /\  A'=[A EXCEPT ![x]="L1"]
+        /\ A= " L0 "  ;
+         
+t1(x) ==  A'=[A EXCEPT ![x]="L2"]
+         /\ B'=[B EXCEPT ![x]=FALSE] 
+         /\ S'= [S EXCEPT ![x] =FALSE]
+          /\ A[x]="L1";
+
+t2(x) ==    A'=[A EXCEPT ![x]="L3"]
+         /\ S'=[S EXCEPT ![x]=TRUE]
+         /\ W'=[S EXCEPT ![x]=TRUE] 
+         /\ A[x]="L2"   ;   
+
+t3_then(x,y) ==  
+                 A'=[A EXCEPT ![x]="L4"]
+                /\ S'=[S EXCEPT ![x]=FALSE]
+                /\ A[x]="L3" 
+                /\ B[y]=FALSE
+                /\ W[y]=FALSE;
+
+t3_else(x) ==       A[x]="L3"
+                /\ A'=[A EXCEPT ![x]="L5"]
+                /\ W'=[W EXCEPT ![x]=FALSE] ;
+                
+t4(x,y) ==         W[y]=FALSE 
+                /\ A'=[A EXCEPT ![x]="L5"]
+                /\ S'=[S EXCEPT ![x]=TRUE]
+                /\ W'=[S EXCEPT ![x]=FALSE]
+                /\ A[x]="L4"
+                /\ S[y]=TRUE
+                 ;
+
+t5(x) ==     A'=[A EXCEPT ![x]="L6"]
+        /\ A[x]="L5"
+        /\  W = [obj \in Proc |-> FALSE]  ;
+
+
+t6(x) ==  A'=[A EXCEPT ![x]="L7"]
+         /\ A[x]="L6"  ;
+         
+
+Next==  t1(x) 
+        \/ t2(x)
+        \/ t3_then(x,y)
+        \/ t3_else(x)
+        \/ t4(x,y)
+        \/ t5(x)
+        \/ t6(x)
+        \/ t7(x) ;
 
 
 = = = = = =

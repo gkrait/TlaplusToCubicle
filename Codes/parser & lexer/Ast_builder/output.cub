@@ -1,9 +1,33 @@
-array A[proc] : int 
- 
-init (z) {A[z]=1}
+type string_type =L0|L1|L2|L3|L4|L5|L6|L7
+ array A[proc] : string_type 
 
-unsafe (z)  {A[z]=7}
+unsafe (z) {v[z][z]=v} 
+init (z) {A[z]=L0 && A[z]=L1 && B[z]=false && S[z]=false && W[z]=false} 
 
-transition next (z)
-requires {A[z]<10} 
-{ A[z]:=A[z]+1}
+transition Next_1 (z) 
+requiers {A[z]=L1}
+{A[z]:= L2 && B[z]:= false && S[z]:= false}
+
+transition Next_2 (z) 
+requiers {A[z]=L2}
+{A[z]:= L3 && S[z]:= true && W[z]:= true}
+
+transition Next_3 (z) 
+requiers {A[z]=L3 && B[z]=false && W[z]=false}
+{A[z]:= L4 && S[z]:= false}
+
+transition Next_4 (z) 
+requiers {A[z]=L3}
+{A[z]:= L5 && W[z]:= false}
+
+transition Next_5 (z) 
+requiers {W[z]=false && A[z]=L4 && S[z]=true}
+{A[z]:= L5 && S[z]:= true && W[z]:= false}
+
+transition Next_6 (z) 
+requiers {A[z]=L5 && W[z]=false}
+{A[z]:= L6}
+
+transition Next_7 (z) 
+requiers {A[z]=L6}
+{A[z]:= L7}

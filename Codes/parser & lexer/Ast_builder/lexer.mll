@@ -107,12 +107,14 @@ and token = parse
   | "["                   { SLPAR }
   | "]"                   { SRPAR }    
   | "|->"                 { ARROW }
+  | "~"                   {NOT}
   | ","                  { COMMA }  
   | "!"               {Exclamation}
   | "\""              {QUOTATION}
   | "{"               {LCurly_bra} 
   | "}"               {RCurly_bra} 
   | "->"              {ARROW_set}
+  | "#"               {NOT_EQ}
   | id                   { IDENTIFIER (Lexing.lexeme lexbuf)  }
 
 

@@ -33,6 +33,7 @@ type logicalop =
 type prop= 
 | Equality of exp  * exp 
 | Inequality of exp  * coparism * exp 
+| Not_equal of exp * exp 
 | Coposition of prop * logicalop * prop 
 | Declaration of exp * string list * string 
 | UNCHAN 
@@ -51,11 +52,13 @@ type primed_equality=
 | Cases of exp * exp * exp * exp 
 
 
+
 type temp = 
 | Pred of pred 
 | Primed of primed_equality 
+| Open_temp of string * string list
 | Temp_Combination of temp * logicalop * temp  
-
+| Negation of temp 
 
 
 type obj_info = 
