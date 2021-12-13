@@ -28,8 +28,11 @@ let rec tla_to_cub_exp(expr)= match expr with
  | Ast.INT(n) -> Cubicle_tree.INT(n)
  | Ast.Binop(e1, bio , e2) -> Cubicle_tree.Binop(tla_to_cub_exp(e1), tla_to_cub_biop bio , tla_to_cub_exp(e2))
  | Ast.Func_img(e1,e2) -> Cubicle_tree.Func_img(tla_to_cub_exp e1,tla_to_cub_exp e2)
+ | Ast.Func_def(e1,e2,e3) -> tla_to_cub_exp e3 
+ | Ast.Func_exception(e1,e2,e3) ->  tla_to_cub_exp e3 
  | Ast.TRUE -> Cubicle_tree.TRUE
-  | Ast.FALSE -> Cubicle_tree.FALSE
+ | Ast.FALSE -> Cubicle_tree.FALSE
+ 
 
 
 let rec print_Strlist = function 
@@ -274,11 +277,13 @@ let rec change_log_type log= match log with
 let rec trans_prop prop = match prop with 
  | Ast.Equality (exp1 , com , exp2) ->  (trans_equality (Ast.Equality (exp1 , com , exp2)))
  | Ast.Inequality (exp1 , com , exp2) ->      let  Cubicle_tree.ELEstat ( str, Cubicle_tree.Equality(l1,l2)) = (trans_equality (Ast.Equality (exp1 , com , exp2))) in 
-                                                       Cubicle_tree.ELEstat ("unprime  inequality",Cubicle_tree.Inequality(l1,tla_to_cub_comp com ,l2)  )
- |  Ast.Open_prop (Ast.DEFIN(v),var_list) ->  
-                Cubicle_tree.ELEstat("open prop", 
-                    Cubicle_tree.Open_prop(v,var_list))
+                                                       Cubicle_tree.ELEstat ("unprime  inequality", 
+                                                            Cubicle_tree.Inequality(l1,tla_to_cub_comp com ,l2)  )
+ |  Ast.Open_prop (v,var_list) ->  
+                Cubicle_tree.ELEstat("open prop", Cubicle_tree.Open_prop(v,var_list))
 
+ | Ast.Not_equal(exp1,exp2) ->   Cubicle_tree.ELEstat ("not equality", 
+                            Cubicle_tree.Not_equal(tla_to_cub_exp exp1 , tla_to_cub_exp exp2) )
  | Ast.Inclusion(exp , string_list ) -> 
             let data_type= check_str (List.nth  string_list 0) in 
             if  data_type ="int" then  
@@ -299,7 +304,7 @@ let rec trans_prop prop = match prop with
                                                  let log = change_log_type logicalop in 
                                                   Cubicle_tree.ELEstat("proposition", Cubicle_tree.Coposition(stat1,log ,stat2) ) 
 
- |Ast.Open_prop(Ast.DEFIN(v), var_list) -> 
+ |Ast.Open_prop(v, var_list) -> 
             Cubicle_tree.ELEstat("open prop", Cubicle_tree.Open_prop(v,var_list)  )
  
 
@@ -310,41 +315,48 @@ let rec trans_prop prop = match prop with
 let rec trans_pred pred =
  match pred with 
    |  Ast.Prop prop ->  trans_prop prop
-   | Ast.Universal (quanti , Ast.Var(v) , coparism , Ast.Var(z) , uni , pred1)  -> begin
+   | Ast.Universal (quanti , var_list , coparism , Ast.Var(z) , uni , pred1)  -> begin
             match pred1 with 
                 | Ast.Prop pro -> begin match  pro with 
                        |  Ast.Equality  (exp1 , coparism , exp2)  ->
-                           let l1=tla_to_cub_exp exp1 in 
+                            let l1=tla_to_cub_exp exp1 in 
                             let l2=tla_to_cub_exp exp2 in 
-                                  Cubicle_tree.ELEstat ("unprime  equality",
+                            Cubicle_tree.ELEstat ("unprime  equality",
                                     Cubicle_tree.Equality(l1 , l2)  )
 
                        | Ast.Inequality (exp1 , coparism , exp2) -> 
-                                  let l1=tla_to_cub_exp exp1 in 
-                                  let l2=tla_to_cub_exp exp2 in 
-                                  Cubicle_tree.ELEstat ("unprime  inequality",Cubicle_tree.Inequality(l1, tla_to_cub_comp coparism,l2)  )
+                                let l1=tla_to_cub_exp exp1 in 
+                                let l2=tla_to_cub_exp exp2 in 
+                                Cubicle_tree.ELEstat ("unprime  inequality",
+                                    Cubicle_tree.Inequality(l1, tla_to_cub_comp coparism,l2)  )
 
+                        |  Ast.Not_equal  (exp1  , exp2)  ->
+                           let l1=tla_to_cub_exp exp1 in 
+                            let l2=tla_to_cub_exp exp2 in 
+                                  Cubicle_tree.ELEstat ("unprime  not equal",
+                                    Cubicle_tree.Not_equal(l1 , l2)  )
                         | _ ->   Cubicle_tree.ELEstat(  "unprime function equality integer"  ,
                           Cubicle_tree.Equality( Cubicle_tree.Func_img(Cubicle_tree.Var("v") ,
                              Cubicle_tree.Var("z") )  ,
-                              Cubicle_tree.Var("v") )  )       end end
+                              Cubicle_tree.Var("v") )  )       end 
+
+                 | Ast.Pred_Comp(pr1,log,pr2) ->
+                        let  Cubicle_tree.ELEstat(strq,tra_pr1)=  trans_pred pr1 in 
+                        let  Cubicle_tree.ELEstat(str2 ,tra_pr2)=  trans_pred pr2 in    
+                            Cubicle_tree.ELEstat(  "unprime composition"  ,
+                          Cubicle_tree.Coposition(tra_pr1, tla_to_cub_log log,tra_pr2) ) (* George check here *)  end
    | Ast.Pred_Comp(pred1 , logicalop , pred2) -> 
                  let  Cubicle_tree.ELEstat(str1  ,  prop1) = trans_pred  pred1 in 
                  let  Cubicle_tree.ELEstat(str2  ,  prop2) = trans_pred  pred2 in 
                  let logi=tla_to_cub_log logicalop in 
                 Cubicle_tree.ELEstat ("Mix", 
                 Cubicle_tree.Coposition(prop1, logi ,prop2))
-   | Ast.Existence (quanti , Ast.Var(v) , coparism , Ast.Var(z) , uni , pred1) -> 
+   | Ast.Existence (quanti , var_list , coparism , Ast.Var(z) , uni , pred1) -> 
         Cubicle_tree.ELEstat ("Uncovered", 
                 Cubicle_tree.Equality(Cubicle_tree.Var("x") , Cubicle_tree.Var("x")))
    | Ast.Open_pred(stat_name, var_list) ->  Cubicle_tree.ELEstat ("open pred", 
                 Cubicle_tree.Open_prop(stat_name, var_list))           
  
-
-
-
-
-
 
          (* Cubicle_tree.ELEstat ( "To Check", trans_pred pred1)
 
@@ -359,7 +371,7 @@ let rec drop_str info= match info with
 
 
 let rec trans_temp obj =   match obj with 
- | Ast.Predec   pred ->  trans_pred pred
+ | Ast.Predec pred  ->  trans_pred pred
  | Ast.Func_except (exp1,var_list,Ast.Func_exception (e1,e2,e3) ) -> 
         Cubicle_tree.ElEassig ("primed equality except" ,  
                 Cubicle_tree.Cases( tla_to_cub_exp exp1, tla_to_cub_exp e1, tla_to_cub_exp e2,
@@ -371,15 +383,18 @@ let rec trans_temp obj =   match obj with
                                        Cubicle_tree.ELEMix( "mix" , 
                                         Cubicle_tree.Temp_Combination (drop_str trans1 , tla_to_cub_log logicalop ,drop_str trans2 )  )
  | Ast.Open_temp (stat_name,var_list) -> 
-        Cubicle_tree.ELEstat("open temp",
-          Cubicle_tree.Open_prop(stat_name,var_list)  )
+        Cubicle_tree.ELEMix("open temp",
+          Cubicle_tree.Open_temp(stat_name,var_list)  )
+ | Ast.Negation temp ->  let Cubicle_tree.ELEMix(str, trans) = trans_temp temp in  
+ Cubicle_tree.ELEMix("negation",
+          Cubicle_tree.Negation(trans)  )       
 
 let rec print_Cubobj  name cub_obj defs_dic = match cub_obj with 
      | Cubicle_tree.ELEstat(str,stat ) -> begin  match str with 
-           | "equality integer" -> Cub_print.print_prop  stat defs_dic
-           | _ -> Cub_print.print_prop  stat defs_dic
+           | "equality integer" -> [(Cub_print.print_prop  stat defs_dic,"")]
+           | _ -> [( Cub_print.print_prop  stat defs_dic ,"")]
          end 
-      | Cubicle_tree.ElEassig (str, assig) -> Cub_print.print_primed  assig    
+      | Cubicle_tree.ElEassig (str, assig) -> [("", Cub_print.print_primed  assig )]   
       | Cubicle_tree.ELEMix (str, stat ) -> (Cub_print.print_temp name stat defs_dic)  
            
   
@@ -411,43 +426,105 @@ let rec type_Ok  def=
                 let res2 =  type_Ok (Ast.Predec (Ast.Prop (prop2))) in
                  { type_dec= res1.type_dec @ res2.type_dec   ;  array_dec = res1.array_dec @res2.array_dec  }  
  
-
+let rec non_trivial_con(str1,str2, sep)= 
+    if str1 = "" && str2 = "" then ""
+    else if  str1 = "" && str2 != "" then str2
+    else if str1 != "" && str2 = "" then str1
+    else (str1) ^ (sep) ^ (str2)
 
 let rec print_init init_stat defs_dic= match init_stat with 
     |   Ast.Predec(init_pred) -> 
         let  stat_cub= trans_pred init_pred in 
         let  Cubicle_tree.ELEstat (str, prop_cub ) = stat_cub in 
-        let stat_str = Cub_print.print_prop prop_cub defs_dic in  stat_str
+        let  stat_str = Cub_print.print_prop prop_cub defs_dic in
+          stat_str
     | Ast.Mix(tem1,logic , tem2) -> 
          (print_init tem1 defs_dic) 
         ^ ( Cub_print.print_log (change_log_type logic) )
         ^(print_init tem2 defs_dic) 
+    | Ast.Negation pred -> ("~") ^("(") ^(print_init pred defs_dic) ^(")")
     | Ast.Open_temp (prop_name,  var_list) -> 
         let l= List.length defs_dic 
-        and substitution = ref "" in
+        and substitution = ref ("","") in
         for i= 0 to l-1 do 
-            let (def_name,def_stat)=List.nth defs_dic i in 
-            if prop_name = def_name then  substitution := def_stat 
-            else substitution := !substitution; 
+            let (def_name, (def_stat, e))=List.nth defs_dic i in 
+            if prop_name = def_name then  substitution := (def_stat, e)
+            else substitution := !substitution;
             !substitution;
         done;
-        !substitution 
+        let (e1,e2) = !substitution in 
+        e1^e2
 
-let rec translate ?ok:(typeOk_stat_name="TypeOk")
-                  ?ini:(init_stat_name="Init") 
-                  ?nex:(next_stat_name="Next") 
-                  ?spc:(spec_stat_name="Spec")
+let rec print_intermid  intermid_stat defs_dic = match intermid_stat with 
+        | Ast.Predec (pred) -> (print_init intermid_stat defs_dic,"")
+        | Ast.Prime(exp1 , var_last , exp2 ) -> 
+            let e1= tla_to_cub_exp exp1 
+            and e2= tla_to_cub_exp exp2  in 
+            ( "" , (Cub_print.print_exp e1) ^ (":=") ^ (Cub_print.print_exp e2) )
+        | Ast.Negation pred -> let (e1,e2) = print_intermid  pred  defs_dic in 
+          (("~") ^ ("(") ^ (e1) ^ (")")  , 
+                                ("~") ^ ("(") ^ (e2) ^ (")") ) (* George: I need to recheck here *)
+        | Ast.Open_temp(name ,var_list) -> 
+            let l= List.length defs_dic 
+            and substitution = ref ("","") in
+            for i= 0 to l-1 do 
+                let (def_name, (pred_part,prim_part))=List.nth defs_dic i in 
+                if name = def_name then  substitution := (pred_part,prim_part) 
+                else substitution := !substitution; 
+                !substitution;
+                done;
+                !substitution
+        
+        | Ast.Func_except(exp1 , var_last , exp2) ->
+            ("", ( Cub_print.print_exp (tla_to_cub_exp exp1) ) ^ ("[z]:= ") ^ 
+                ( Cub_print.print_exp (tla_to_cub_exp exp2) ) )       
+        | Ast.Mix(temp1,log, temp2) -> 
+            let log_str = match log with 
+                |Ast.Conj -> " && " 
+                |Ast.Disjun -> " || " 
+            in     
+            let (pred1,prim1) =  print_intermid  temp1 defs_dic  
+            and (pred2,prim2) =  print_intermid  temp2 defs_dic in 
+                (non_trivial_con(pred1, pred2, log_str) ,
+                non_trivial_con(prim1,prim2, log_str) )
+
+
+
+
+let rec print_Next next_stat defs_dic name = let  tra=  trans_temp next_stat in 
+    let transitions_str =  ref "" in 
+    let stats_list= print_Cubobj  name tra defs_dic in 
+    let l= List.length  stats_list in 
+    for i =0 to l-1 do
+    let (e1,e2) = List.nth stats_list i  in 
+    if (e1,e2) = ("", "") then transitions_str := !transitions_str ^  ""
+    else 
+        transitions_str := !transitions_str ^ ("\ntransition ") ^ 
+            (name) ^ ("_") ^(string_of_int (i+1)) ^ (" (z) \n") ^ ("requiers {") ^
+            (e1) ^("}\n") ^ ("{") ^(e2) ^("}\n")
+    done;
+    !transitions_str   
+
+
+
+let rec translate ?ok:(typeOk_stat_name= "TypeOk")
+                  ?saf:(safety_stat_name="Safety") 
+                  ?ini:(init_stat_name= "Init")   
+                  ?nex:(next_stat_name= "Next") 
+                  ?spc:(spec_stat_name= "Spec")
                   fil  =
-   let (Ast.File(Ast.VARI (var), Ast.CONS(con) , defs  )) = fil in 
-   let  obj_list=   parse_tla fil in 
-   let  l= List.length obj_list in 
-   let defs_dic = ref [] in    
+    let (Ast.File(Ast.VARI (var), Ast.CONS(con) , defs  )) = fil in 
+    let  obj_list=   parse_tla fil in 
+    let  l= List.length obj_list in 
+    let defs_dic = ref [("",("",""))] in    
       begin
+      let final_result =ref "" in
       for i= 0 to l-1 do 
         let  obji= List.nth  obj_list i in 
         let  Ast.ElE (DEFIN name ,var_list, str1,  Ast.Stat (stat), str2 ) =obji in
         begin 
-            defs_dic := !defs_dic @ [(name, print_Cubobj  name (trans_temp stat) !defs_dic)];
+            let (e1,e2) = print_intermid stat !defs_dic in  
+            defs_dic := !defs_dic @ [(name, (e1,e2))];
             if name  = spec_stat_name then  print_string "" (* Ignor the last definition Spec *)
             else  
                 let result=    
@@ -460,31 +537,24 @@ let rec translate ?ok:(typeOk_stat_name="TypeOk")
                     in 
                    (string_type_dec) ^ ("\n ") ^ (String.concat "" final_res.array_dec  ) ^ ("\n")
                 else if name = init_stat_name then  ("init (z) {") 
-                                            ^ (print_init stat !defs_dic) ^ ("} \n")
-                else if name =next_stat_name then  
-                        let  tra=  trans_temp stat in
-                        print_Cubobj  name tra !defs_dic 
+                                            ^ (print_init stat !defs_dic) ^ ("} \n") 
+                else if name =next_stat_name then 
+                            print_Next stat !defs_dic name
+                else if name = safety_stat_name then 
+                        ("unsafe (z) {")  ^ (print_init stat !defs_dic) ^ ("} \n")
+
                 else "" 
                 in  print_string result  ;
-              (* else   print_Cubobj  name tra !defs_dic in   *) 
+                final_result :=  !final_result ^ result; 
                
        end;                                                           
       done; 
+        let oc = open_out "output.cub" in 
+        Printf.fprintf oc "%s" (!final_result);  
+        close_out oc;    
     end
    
-                (*match stat with 
-                  | Ast.Predec pred -> 
-                     if name ="Init" then  
-                         print_string ("init (z) {"  ^  result ^ ("}\n"))
-                     else if name = "TypeOk" then 
-                          print_string result    
-                    (* else   print_string ( name ^ " (z) {  "  ^  result ^ ("}\n"))  *)
-                  | Ast.Mix (temp1 , logicalop , temp2)  ->  if name ="Spec" then  print_string ""
-                      else
-                          let Cubicle_tree.ELEMix(stri, temp_trans )  = tra in  
-                                     print_string (Cub_print.print_temp  name temp_trans !defs_dic) 
-                            *)         
-
+            
   
 
    

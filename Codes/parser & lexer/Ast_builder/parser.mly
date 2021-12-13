@@ -124,7 +124,8 @@ proposition
 | expr NOT_EQ expr      { Ast.Not_equal($1,$3) }
 | IDENTIFIER IN set { Ast.Inclusion(Ast.Var($1),$3) } 
 | UNCHANGED varlist  { Ast.UNCHAN $2 } 
-| IDENTIFIER optional_varlist(varlist)    {Ast.Open_prop( $1, $2) }   ;
+| IDENTIFIER optional_varlist(varlist)    {Ast.Open_prop( $1, $2) } 
+;
 
 
 

@@ -37,7 +37,8 @@ let rec print_prop prop defs_dic= match prop with
   | Cubicle_tree.Inequality (exp1, inq ,  exp2) ->    "(" ^ print_exp exp1^ "[z]" ^ 
                      (print_inq inq ) ^ print_exp exp2 ^ ")"       
   | Cubicle_tree.UNCHAN -> "UNCHAN"   
-  | Cubicle_tree.Coposition (prop1, oper, prop2) -> (print_prop prop1 defs_dic) ^ (print_log oper) ^    (print_prop prop2 defs_dic) 
+  | Cubicle_tree.Coposition (prop1, oper, prop2) -> ("( ") ^ (print_prop prop1 defs_dic) ^ (" )") ^ 
+            (print_log oper) ^ ("( ") ^ (print_prop prop2 defs_dic) ^ (" )")
   | Cubicle_tree.Declaration(e1,e2,e3) -> "\n Declaration \n"
   | Cubicle_tree.Not_equal (exp1, exp2) -> 
                                print_exp exp1 ^      "[z] # " ^      print_exp exp2  
