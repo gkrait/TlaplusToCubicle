@@ -1,7 +1,7 @@
 type string_type =L0|L1|L2|L3|L4|L5|L6|L7
  array A[proc] : string_type 
 
-unsafe (z) {v[z][z]=v} 
+unsafe (z) {( ( A[z] # L7 ) || ( A[z] # L7 ) ) && ( z1[z] # z2 )} 
 init (z) {A[z]=L0 && A[z]=L1 && B[z]=false && S[z]=false && W[z]=false} 
 
 transition Next_1 (z) 
