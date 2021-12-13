@@ -59,6 +59,11 @@ t6(x) ==  A'=[A EXCEPT ![x]="L7"]
          /\ A[x]="L6"  ;
          
 
+t7(x) ==  A[x]="L7"   
+         /\ A'=[A EXCEPT ![x]="L0"] 
+         /\ S'=[S EXCEPT ![x]=FALSE] ; 
+
+
 Next==  t1(x) 
         \/ t2(x)
         \/ t3_then(x,y)

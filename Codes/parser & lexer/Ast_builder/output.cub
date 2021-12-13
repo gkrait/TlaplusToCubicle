@@ -31,3 +31,7 @@ requiers {A[z]=L5 && W[z]=false}
 transition Next_7 (z) 
 requiers {A[z]=L6}
 {A[z]:= L7}
+
+transition Next_8 (z) 
+requiers {A[z]=L7}
+{A[z]:= L0 && S[z]:= false}
