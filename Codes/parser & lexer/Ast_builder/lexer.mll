@@ -74,8 +74,8 @@ rule modfile = parse
 and token = parse
   (* whitespace *)
   | whitesp            { token lexbuf }
+  | tab                 {token lexbuf}
   | newline            { eol lexbuf ; token lexbuf }
- 
   | eof                  { EOF }
   | "+"                  { PLUS }
   | "-"                  { MINUS }

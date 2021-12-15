@@ -1,4 +1,10 @@
-%{ %}
+%{
+
+let rec tmp_to_pred(tmp)= match tmp with 
+  | Ast.Predec(pred) -> pred 
+  | Ast.Mix(tm1,log,tm2) -> Ast.Pred_Comp(tmp_to_pred tm1, log , tmp_to_pred tm2)
+
+ %}
 
 %token EOF
 %token PLUS MINUS STAR SLASH EQUAL Larger Smaller OR AND  EXISTS FORALL
@@ -9,13 +15,11 @@
 %token <string> Num VARs CONS 
 
 
-%nonassoc NOT 
-%left PLUS
-%left EQUAL
+
 %left AND
 %left OR
-
-
+%nonassoc EXISTS FORALL
+%nonassoc NOT 
 
 %start <Ast.tla_file> start
 %%
@@ -76,55 +80,57 @@ declaration:
 
 
 definition:
-| IDENTIFIER optional_varlist(varlist)  ASSIGN temporal_formula SEMICOLON {Ast.Statment (Ast.DEFIN ( $1), $2 , Ast.ASSIG , Ast.Stat $4, Ast.NEWL ) }
-| IDENTIFIER optional_varlist(varlist)  ASSIGN  expr SEMICOLON {Ast.Value (Ast.DEFIN ( $1) ,$2,Ast.ASSIG , Ast.Expr $4 , Ast.NEWL ) }
-;
+| IDENTIFIER paranth_optional(varlist)  ASSIGN temporal_formula SEMICOLON {Ast.Statment (Ast.DEFIN ( $1), $2 , Ast.ASSIG , Ast.Stat $4, Ast.NEWL ) }
+/*| IDENTIFIER paranth_optional(varlist)  ASSIGN  expr SEMICOLON {Ast.Value (Ast.DEFIN ( $1) ,$2,Ast.ASSIG , Ast.Expr $4 , Ast.NEWL ) }
+;*/
 
 
  temporal_formula:
 | simp_temporal_formula {$1}
-|  simp_temporal_formula   logical_oper    temporal_formula   {Ast.Mix ($1,$2,$3)}  
-| NOT temporal_formula {Ast.Negation $2 } %prec NOT 
+| LPAR temporal_formula  RPAR {$2}
+|  temporal_formula   AND    temporal_formula   {Ast.Mix ($1,Ast.Conj,$3)}  
+|  temporal_formula   OR    temporal_formula   {Ast.Mix ($1,Ast.Disjun,$3)}  
+| NOT temporal_formula {Ast.Negation $2 } %prec NOT
 ;
 
 
 
  simp_temporal_formula:
-| simple_predicate { Ast.Predec $1}
 | primed_eq { $1 }
-| IDENTIFIER optional_varlist(varlist)    {Ast.Open_temp( $1, $2) }   ;
-
- predicate:
-| simple_predicate {$1}
-|  simple_predicate logical_oper  predicate    {Ast.Pred_Comp( $1,$2,$3)  } ;
+| predicate { Ast.Predec $1};
 
 
 
-simple_predicate: 
-| simple_prop {Ast.Prop $1 }
-| LPAR predicate  RPAR {$2}
-| EXISTS varlist IN IDENTIFIER COLON   predicate     { Ast.Existence (Ast.Exis, $2, Ast.Inclus, Ast.Var $4, Ast.Col, $6 ) }
-| FORALL varlist IN IDENTIFIER COLON  predicate    { Ast.Universal (Ast.Univ, $2, Ast.Inclus, Ast.Var $4, Ast.Col, $6 ) }
+
+
+predicate: 
+| proposition {Ast.Prop $1}
+| EXISTS varlist IN IDENTIFIER COLON   temporal_formula      { 
+  let pred = tmp_to_pred $6 in 
+  Ast.Existence (Ast.Exis, $2, Ast.Inclus, Ast.Var $4, Ast.Col, pred) } %prec EXISTS
+| FORALL varlist IN IDENTIFIER COLON    temporal_formula      { 
+let pred = tmp_to_pred $6 in 
+  Ast.Universal (Ast.Univ, $2, Ast.Inclus, Ast.Var $4, Ast.Col, pred) 
+   } %prec FORALL
 ;
 /* problem in quantification */
 
 
-proposition
-: simple_prop {$1}
-|  simple_prop logical_oper  proposition  { Ast.Coposition ($1,$2,$3) }   ;
- 
-%inline  logical_oper:
+
+
+ /*
+ logical_oper:
 | AND  {Ast.Conj}
 | OR {Ast.Disjun}; 
-
-  simple_prop:
+*/
+  proposition:
  expr EQUAL expr      { Ast.Equality ($1,Ast.EQ,$3) }
 | expr Larger expr     { Ast.Inequality ($1,Ast.Greater,$3) }
 | expr Smaller expr    { Ast.Inequality ($1,Ast.Less,$3) }
 | expr NOT_EQ expr      { Ast.Not_equal($1,$3) }
 | IDENTIFIER IN set { Ast.Inclusion(Ast.Var($1),$3) } 
 | UNCHANGED varlist  { Ast.UNCHAN $2 } 
-| IDENTIFIER optional_varlist(varlist)    {Ast.Open_prop( $1, $2) } 
+| IDENTIFIER paranth_optional(varlist)    {Ast.Open_prop( $1, $2) } 
 ;
 
 
@@ -154,18 +160,17 @@ term
 
 
 factor:
-  | IDENTIFIER optional_varlist(varlist)       {Ast.Var ($1) }
   |  Num                {Ast.INT $1}
   | FALSE                 {Ast.FALSE}
   | TRUE                  {Ast.TRUE}
   | SLPAR IDENTIFIER IN IDENTIFIER ARROW  expr SRPAR {Ast.Func_def (Ast.Var($2),Ast.Var $4 ,$6) } 
-  | QUOTATION IDENTIFIER QUOTATION    { Ast.STRING $2 };
+  | QUOTATION IDENTIFIER QUOTATION    { Ast.STRING $2 }
+  | IDENTIFIER  optional_varlist(varlist)       {Ast.Func_img (Ast.Var $1, $2) };
 
 
 
 
 varlist:   
-       | {[]}
        |  IDENTIFIER  {[$1]}
        |  IDENTIFIER COMMA varlist   {$1::$3};
        ;
@@ -173,12 +178,23 @@ varlist:
 
  optional_varlist(x):
 | {[]}
+| s_paranth(x)
 | paranth(x) {$1};
 
   
-paranth(x) :
-| LPAR  x  RPAR  { $2}
+%inline paranth(x) :
+| LPAR  x  RPAR  { $2};
+
+ paranth_optional(x):
+| {[]}
+| paranth(x) {$1}  ;
+
+
+ s_paranth(x) :
 | SLPAR  x  SRPAR  {$2} ; 
 
+%inline s_paranth_optional(x):
+| {[]}
+| s_paranth(x) {$1}  
 
 

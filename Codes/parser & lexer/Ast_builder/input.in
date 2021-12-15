@@ -3,18 +3,22 @@ EXTENDS Integers, Sequences, TLC, FiniteSets
 CONSTANTS  Proc ;
 VARIABLES A , B, S, W ;
 
-TypeOk == A  \in [Proc ->  { " L0 " , " L1 " , " L2 " , " L3 ",  " L4 " , " L5 " , " L6 ", " L7 "} ] ;
 
-Safety == \A z1 , z2 \in Proc : (A[z1] # "L7"  
-                                \/  A[z2] # "L7")
-                                /\ z1 #z2 ; 
-
+TypeOk == A  \in [Proc ->  { " L0 " , " L1 " , " L2 " , " L3 ",  " L4 " , " L5 " , " L6 ", " L7 "} ]
+        /\ B  \in [Proc ->  { FALSE , TRUE } ] 
+        /\ S  \in [Proc ->  { FALSE , TRUE } ] 
+        /\ W  \in [Proc ->  { FALSE , TRUE } ]  ;
 
 Init ==   A = [obj \in Proc |-> "L0"]
-         /\  A =   [obj \in Proc |-> "L1"]
          /\ B = [obj \in Proc |-> FALSE]
          /\ S = [obj \in Proc |-> FALSE]
          /\ W = [obj \in Proc |-> FALSE];
+
+
+     
+Safety == \A z1 , z2 \in Proc : A[z1] # "L7"  
+                                \/  A[z2] # "L7"
+                                /\ z1 #z2 ; 
 
 
 t0(x) ==    B'=[B EXCEPT ![x]=TRUE] 
@@ -51,6 +55,7 @@ t4(x,y) ==         W[y]=FALSE
                  ;
 
 t5(x) ==     A'=[A EXCEPT ![x]="L6"]
+        /\ B=B
         /\ A[x]="L5"
         /\  W = [obj \in Proc |-> FALSE]  ;
 
@@ -63,7 +68,6 @@ t7(x) ==  A[x]="L7"
          /\ A'=[A EXCEPT ![x]="L0"] 
          /\ S'=[S EXCEPT ![x]=FALSE] ; 
 
-
 Next==  t1(x) 
         \/ t2(x)
         \/ t3_then(x,y)
@@ -72,6 +76,5 @@ Next==  t1(x)
         \/ t5(x)
         \/ t6(x)
         \/ t7(x) ;
-
 
 = = = = = =

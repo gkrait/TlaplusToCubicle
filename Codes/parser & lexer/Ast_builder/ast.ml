@@ -8,12 +8,12 @@ type binop =
 
 
 type exp = 
+  | Func_def of exp * exp * exp 
   | Var of string
   | STRING of string
-  | Func_img of exp * exp 
+  | Func_img of exp * string list  
   | INT of string
   | Binop of exp * binop * exp
-  | Func_def of exp * exp * exp 
   | Func_exception of exp * exp * exp 
   | TRUE
   | FALSE
