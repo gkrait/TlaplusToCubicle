@@ -450,15 +450,16 @@ let rec non_trivial_con(str1,str2, sep)=
     else if str1 != "" && str2 = "" then str1
     else let lpar= if (String.contains_from str1 0 ':') && (String.contains_from str1 0 '=')  then "" else "(" 
             and  rpar= if (String.contains_from str1 0 ':') && (String.contains_from str1 0 '=') then "" else ")" in 
-    lpar ^ (str1) ^ rpar ^ (sep) ^ lpar ^ (str2) ^ rpar
+         let sep_general= if  lpar = "(" then  sep else "" in  
+    lpar ^ (str1) ^ rpar ^ (sep_general) ^ lpar ^ (str2) ^ rpar
 
 
 
 let rec print_init init_stat defs_dic= match init_stat with 
     |   Ast.Predec( init_pred) -> let  stat_cub= trans_pred init_pred in 
         let  Cubicle_tree.ELEstat (str, prop_cub ) = stat_cub in 
-        let  stat_str = ((Cub_print.fix_print_prop_output (Cub_print.print_prop prop_cub defs_dic) )) in
-          stat_str 
+        let  (stat_str,e2) = (( (Cub_print.print_prop prop_cub defs_dic) )) in
+          stat_str ^e2
     | Ast.Mix(tem1,logic , tem2) -> 
          ("(") ^ ((print_init tem1 defs_dic) ) ^ (")") 
         ^ ( Cub_print.print_log (change_log_type logic) )
@@ -477,7 +478,7 @@ let rec print_init init_stat defs_dic= match init_stat with
         e1^e2
 
 let rec print_intermid  intermid_stat defs_dic = match intermid_stat with 
-        | Ast.Predec (pred) -> ((print_init intermid_stat defs_dic)  ,"")
+        | Ast.Predec (pred) -> ((print_init intermid_stat defs_dic)  ,"") 
         | (Ast.Prime(exp1 , var_last , exp2)) | (Ast.Func_except(exp1 , var_last , exp2)) ->
             let stat_trans = trans_temp intermid_stat in
             let Cubicle_tree.ElEassig(info_str, trans_info)= stat_trans in
@@ -565,12 +566,17 @@ let rec translate ?ok:(typeOk_stat_name= "TypeOk")
                             ("type string_type =") ^ (String.concat " | " final_res.type_dec) 
                     in 
                    (string_type_dec) ^ ("\n ") ^ (String.concat "" final_res.array_dec  ) ^ ("\n")
-                else if name = init_stat_name then  ("init (z) {") 
+                else if name = init_stat_name then  
+                    let vars_init= if  List.length var_list != 0 then  String.concat " " var_list
+                                  else "z"  in 
+                ("init (") ^ (vars_init) ^  (") {") 
                                             ^ (print_init stat !defs_dic) ^ ("} \n") 
                 else if name =next_stat_name then 
                             print_Next stat !defs_dic name
                 else if name = safety_stat_name then 
-                        ("unsafe (z) {")  ^ (print_init stat !defs_dic) ^ ("} \n")
+                        let vars_safe= if  List.length var_list != 0 then  String.concat " " var_list
+                                  else "z"  in 
+                        ("unsafe (")  ^ (vars_safe) ^  (") {") ^ (print_init stat !defs_dic) ^ ("} \n")
 
                 else "" 
                 in  print_string result  ;

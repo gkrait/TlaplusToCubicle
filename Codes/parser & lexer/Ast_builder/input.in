@@ -21,8 +21,7 @@ tr2(z) ==  A[z] = "Wait"
           /\ \A j \in Proc :  A[j] = CASE  j=z -> "Crit"
                                            [] j> z -> A[j] 
                                            []  z>j /\ A[j]="Idle" -> "Idle"
-                                           [] OTHER -> "Crash" ;
-
+                                           [] OTHER -> "Crash" ;                              
 
 tr3(z) ==  A[z] = "Crit"
           /\ A'=[A EXCEPT ![z]="Idle"];
@@ -30,7 +29,7 @@ tr3(z) ==  A[z] = "Crit"
 
 Next== \E z \in Proc :  tr1(z)
                        \/ tr2(z)
-                       \/ tr3(z)  ;                                         
+                       \/ tr3(z) ;                                         
 
 = = = = = =
 

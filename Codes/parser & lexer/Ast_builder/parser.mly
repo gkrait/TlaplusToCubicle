@@ -206,5 +206,3 @@ varlist:
 %inline s_paranth_optional(x):
 | {[]}
 | s_paranth(x) {$1}  
-
-

@@ -49,7 +49,7 @@ let namechar = (letter | numeral | '_')
 let name     = namechar* letter namechar*
 
 let keyword = (
-  "ASSUME"|"ASSUMPTION"|"AXIOM"|"BOOLEAN"|"CASE"|"CHOOSE"|"CONSTANT"
+  "ASSUME"|"ASSUMPTION"|"AXIOM"|"BOOLEAN"|"CHOOSE"|"CONSTANT"
   |"CONSTANTS"|"BY"|"DEF"|"DEFINE"|"DEFS"|"LAMBDA"|"OBVIOUS"|"ELSE"
   |"EXCEPT"|"EXTENDS"|"IF"|"IN"|"INSTANCE"|"LET"|"HAVE"|"TRUE"|"FALSE"
   |"HIDE"|"PROOF"|"PROVE"|"STATE"|"OMITTED"|"LOCAL"|"MODULE"|"OTHER"
