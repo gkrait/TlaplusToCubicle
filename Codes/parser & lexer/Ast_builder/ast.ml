@@ -69,7 +69,8 @@ type pred =
 | Open_pred of string * string list
 
 
-
+type arrow = 
+| Arrow  of prop * exp 
 
 type temp=
 | Predec of pred
@@ -78,6 +79,10 @@ type temp=
 | Mix of temp * logicalop * temp
 | Negation of temp 
 | Open_temp of string * string list
+| CASES of string list * exp * arrow list 
+
+
+
 
  
 

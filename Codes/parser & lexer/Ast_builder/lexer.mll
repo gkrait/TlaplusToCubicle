@@ -104,6 +104,8 @@ and token = parse
   | "EXTENDS"             {EXTENDS}
   | "FALSE"               {FALSE}
   | "TRUE"                {TRUE}
+  | "CASE"                {CASE}
+  | "[]"                  {Square}
   | "["                   { SLPAR }
   | "]"                   { SRPAR }    
   | "|->"                 { ARROW }

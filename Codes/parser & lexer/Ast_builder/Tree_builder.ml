@@ -1,5 +1,6 @@
 type cub_declaration = {type_dec : string list  ; array_dec : string list } 
 
+
 let check_str s = 
   try int_of_string s |> ignore; "int"
   with Failure _ -> if (s ="FALSE" || s= "TRUE") then "bool" else "str"
@@ -214,32 +215,13 @@ let rec print_Objs fil =
 
 let rec trans_equality  eq  = let Ast.Equality(l1 ,equa ,l2) =eq   in 
   match l1 with 
-   (* | Ast.Func_img  ( exp1 , vars)  ->  Cubicle_tree.ELEstat ("unprime  equality bool", 
-                                                Cubicle_tree.Equality(tla_to_cub_exp exp1, Cubicle_tree.Var(String.concat "CC" vars) ) ) 
-*)
-   (* let vars_conc= String.concat "," vars in 
-            Cubicle_tree.ELEstat("unprime  equality integer function image" ,
-                                        Cubicle_tree.Equality(tla_to_cub_exp exp1 ,Cubicle_tree.Var vars_conc   ) ) 
-        *) (* begin  let Ast.Var(a)  = exp1 in     
-         match l2 with 
-                  | Ast.INT (num) -> Cubicle_tree.ELEstat("unprime  equality integer function image" ,
-                                                     Cubicle_tree.Equality(Cubicle_tree.Func_img( Cubicle_tree.Var(a), Cubicle_tree.Var("x") ),
-                                                      Cubicle_tree.INT(num) ) ) 
-                   | Ast.Var v ->  
-                    Cubicle_tree.ELEstat ("unprime  equality string function image", 
-                         Cubicle_tree.Equality(Cubicle_tree.Var(a), Cubicle_tree.Var(v) )) 
-                   | Ast.TRUE ->  Cubicle_tree.ELEstat ("unprime  equality bool function image", 
-                         Cubicle_tree.Equality(Cubicle_tree.Var(a), Cubicle_tree.TRUE )) 
-                    | Ast.FALSE ->  Cubicle_tree.ELEstat ("unprime  equality bool function image", 
-                         Cubicle_tree.Equality(Cubicle_tree.Var(a), Cubicle_tree.FALSE ))           end *)
-
     | Ast.Func_img  ( Ast.Var x1 , vars)  ->  
      begin  
        match l2 with 
                  | Ast.Func_def(x,proc, value) ->  let xx= tla_to_cub_exp x and procp= tla_to_cub_exp proc
                  and value_tr= tla_to_cub_exp value in 
                   Cubicle_tree.ELEstat("", 
-                  Cubicle_tree.Equality ( Cubicle_tree.Var x1, Cubicle_tree.Func_def(xx,procp, value_tr)  ) )
+                  Cubicle_tree.Equality ( tla_to_cub_exp l1, Cubicle_tree.Func_def(xx,procp, value_tr)  ) )
   
                  (* begin match value with
                                             | Ast.INT num ->    Cubicle_tree.ELEstat ("unprime function equality integer" ,
@@ -256,18 +238,18 @@ let rec trans_equality  eq  = let Ast.Equality(l1 ,equa ,l2) =eq   in
                                                 Cubicle_tree.Equality(Cubicle_tree.Var(x1), Cubicle_tree.FALSE ) )                                                      
                                            end  *)
                  | Ast.Var(v) -> Cubicle_tree.ELEstat ("unprime  equality var", 
-                                                  Cubicle_tree.Equality(Cubicle_tree.Var(x1), Cubicle_tree.Var(v) ) )
+                                                  Cubicle_tree.Equality(tla_to_cub_exp l1, Cubicle_tree.Var(v) ) )
                  | Ast.INT num-> Cubicle_tree.ELEstat ("unprime  equality int", 
-                                                  Cubicle_tree.Equality(Cubicle_tree.Var(x1), Cubicle_tree.INT(num) ) ) 
+                                                  Cubicle_tree.Equality(tla_to_cub_exp l1, Cubicle_tree.INT(num) ) ) 
                  | Ast.Binop (exp1 , bi , exp2)-> Cubicle_tree.ELEstat ("Uncovered unprime mix exp", 
-                                                  Cubicle_tree.Equality(Cubicle_tree.Var(x1), Cubicle_tree.Var ("z") ) )                                                                    
+                                                  Cubicle_tree.Equality(tla_to_cub_exp l1, Cubicle_tree.Var ("z") ) )                                                                    
                                                    
                  | Ast.STRING(s) ->   Cubicle_tree.ELEstat (" unprime  equality string", 
-                                                  Cubicle_tree.Equality(Cubicle_tree.Var(x1), Cubicle_tree.STRING (s) ) ) 
+                                                  Cubicle_tree.Equality(tla_to_cub_exp l1 , Cubicle_tree.STRING (s) ) ) 
                  | Ast.TRUE ->   Cubicle_tree.ELEstat (" unprime  equality bool", 
-                                                  Cubicle_tree.Equality(Cubicle_tree.Var(x1), Cubicle_tree.TRUE  ) )                                                             
+                                                  Cubicle_tree.Equality(tla_to_cub_exp l1, Cubicle_tree.TRUE  ) )                                                             
                  | Ast.FALSE ->   Cubicle_tree.ELEstat (" unprime  equality bool", 
-                                                  Cubicle_tree.Equality(Cubicle_tree.Var(x1), Cubicle_tree.FALSE ) )                           
+                                                  Cubicle_tree.Equality(tla_to_cub_exp l1, Cubicle_tree.FALSE ) )                           
                  | Ast.Func_img(e1,e2) -> let e1_cub= tla_to_cub_exp e1 in 
                     Cubicle_tree.ELEstat (" unprime  equality var", 
                                                   Cubicle_tree.Equality(tla_to_cub_exp l1, Cubicle_tree.Func_img(e1_cub,e2) ) )                            
@@ -369,8 +351,9 @@ let rec trans_pred pred =
                 Cubicle_tree.ELEstat ("Mix", 
                 Cubicle_tree.Coposition(prop1, logi ,prop2))
    | Ast.Existence (quanti , var_list , coparism , Ast.Var(z) , uni , pred1) -> 
-        Cubicle_tree.ELEstat ("Uncovered", 
-                Cubicle_tree.Equality(Cubicle_tree.Var("x") , Cubicle_tree.Var("x")))
+           trans_pred  pred1
+        (*Cubicle_tree.ELEstat ("Uncovered", 
+                Cubicle_tree.Equality(Cubicle_tree.Var("x") , Cubicle_tree.Var("x"))) *)
    | Ast.Open_pred(stat_name, var_list) ->  Cubicle_tree.ELEstat ("open pred", 
                 Cubicle_tree.Open_prop(stat_name, var_list))           
  
@@ -385,6 +368,14 @@ let rec drop_str info= match info with
  |Cubicle_tree.ElEassig(str, stat) -> Cubicle_tree.Primed(stat) 
  |Cubicle_tree.ELEstat(str, stat )  -> Cubicle_tree.Pred (Cubicle_tree.Prop  stat )
  | Cubicle_tree.ELEMix(str,stat) -> stat
+
+let rec tla_to_cub_arrow (arrows)= match arrows with
+     | [arrow] ->  let  Ast.Arrow(prop,exp) = arrow in 
+            let exp_cub= tla_to_cub_exp exp 
+            and info_prop_cub = trans_pred  (Ast.Prop prop) in 
+            let Cubicle_tree.ELEstat(str,prop_cub)= info_prop_cub in 
+            [Cubicle_tree.Arrow(prop_cub,exp_cub)]
+    | h::t -> tla_to_cub_arrow ([h]) @ tla_to_cub_arrow (t)        
 
 
 let rec trans_temp obj =   match obj with 
@@ -404,7 +395,10 @@ let rec trans_temp obj =   match obj with
           Cubicle_tree.Open_temp(stat_name,var_list)  )
  | Ast.Negation temp ->  let Cubicle_tree.ELEMix(str, trans) = trans_temp temp in  
  Cubicle_tree.ELEMix("negation",
-          Cubicle_tree.Negation(trans)  )       
+          Cubicle_tree.Negation(trans)  )  
+ | Ast.CASES(vars , exp , arrows ) ->  let cub_arrows= tla_to_cub_arrow arrows in 
+       Cubicle_tree.ELEMix("Cases",
+        Cubicle_tree.CASES(vars, tla_to_cub_exp exp , cub_arrows ) )             
 
 let rec print_Cubobj  name cub_obj defs_dic = match cub_obj with 
     | Cubicle_tree.ELEstat(str,stat ) -> begin  match str with 
@@ -413,6 +407,7 @@ let rec print_Cubobj  name cub_obj defs_dic = match cub_obj with
          end 
     | Cubicle_tree.ElEassig (str, assig) -> [("", Cub_print.print_primed  assig )]   
     | Cubicle_tree.ELEMix (str, stat ) ->  ((Cub_print.print_temp name stat defs_dic)  )  
+
            
   
 let rec insert_at_end l i =
@@ -446,11 +441,16 @@ let rec type_Ok  def= match def with
         let res1 = type_Ok  temp1 in 
         let res2 = type_Ok  temp2 in 
   { type_dec= res1.type_dec @ res2.type_dec   ;  array_dec = res1.array_dec @res2.array_dec  }   
+
+
+
 let rec non_trivial_con(str1,str2, sep)= 
     if str1 = "" && str2 = "" then ""
     else if  str1 = "" && str2 != "" then str2
     else if str1 != "" && str2 = "" then str1
-    else ("(") ^ (str1) ^ (")") ^ (sep) ^ ("(") ^ (str2) ^ (")")
+    else let lpar= if (String.contains_from str1 0 ':') && (String.contains_from str1 0 '=')  then "" else "(" 
+            and  rpar= if (String.contains_from str1 0 ':') && (String.contains_from str1 0 '=') then "" else ")" in 
+    lpar ^ (str1) ^ rpar ^ (sep) ^ lpar ^ (str2) ^ rpar
 
 
 
@@ -477,11 +477,15 @@ let rec print_init init_stat defs_dic= match init_stat with
         e1^e2
 
 let rec print_intermid  intermid_stat defs_dic = match intermid_stat with 
-        | Ast.Predec (pred) -> (print_init intermid_stat defs_dic,"")
-        | Ast.Prime(exp1 , var_last , exp2) -> 
-            let e1= tla_to_cub_exp exp1 
+        | Ast.Predec (pred) -> ((print_init intermid_stat defs_dic)  ,"")
+        | (Ast.Prime(exp1 , var_last , exp2)) | (Ast.Func_except(exp1 , var_last , exp2)) ->
+            let stat_trans = trans_temp intermid_stat in
+            let Cubicle_tree.ElEassig(info_str, trans_info)= stat_trans in
+            let trans_str= Cub_print.print_primed trans_info in 
+            ("",trans_str)
+            (*let e1= tla_to_cub_exp exp1 
             and e2= tla_to_cub_exp exp2  in 
-            ( "" , (Cub_print.print_exp e1) ^ (":=") ^ (Cub_print.print_exp e2) )
+            ( "" , (Cub_print.print_exp e1) ^ (":=") ^ (Cub_print.print_exp e2) ) *)
         | Ast.Negation pred -> let (e1,e2) = print_intermid  pred  defs_dic in 
           (("~") ^ ("(") ^ (e1) ^ (")")  , 
                                 ("~") ^ ("(") ^ (e2) ^ (")") ) (* George: I need to recheck here *)
@@ -497,9 +501,9 @@ let rec print_intermid  intermid_stat defs_dic = match intermid_stat with
                 done;
                 !substitution
         
-        | Ast.Func_except(exp1 , var_last , exp2) ->
+        (*| Ast.Func_except(exp1 , var_last , exp2) ->
             ("", ( Cub_print.print_exp (tla_to_cub_exp exp1) ) ^ ("[z]:= ") ^ 
-                ( Cub_print.print_exp (tla_to_cub_exp exp2) ) )       
+                ( Cub_print.print_exp (tla_to_cub_exp exp2) ) )      *) 
         | Ast.Mix(temp1,log, temp2) -> 
             let log_str = match log with 
                 |Ast.Conj -> " && " 
@@ -508,7 +512,12 @@ let rec print_intermid  intermid_stat defs_dic = match intermid_stat with
             let (pred1,prim1) =  print_intermid  temp1 defs_dic  
             and (pred2,prim2) =  print_intermid  temp2 defs_dic in 
             (non_trivial_con(pred1, pred2, log_str) ,
-                non_trivial_con(prim1,prim2, log_str) )
+                non_trivial_con(prim1,prim2, log_str) )  
+        | Ast.CASES (vars,  exp , cub_arrows )  -> 
+            let  info_cub_stat=  trans_temp intermid_stat in  
+            let  Cubicle_tree.ELEMix(str,cub_stat)=info_cub_stat in 
+             let [(e1,e2)]= (Cub_print.print_temp "" cub_stat defs_dic) in 
+             (e1,e2)
 
 
 
@@ -522,8 +531,8 @@ let rec print_Next next_stat defs_dic name = let  tra=  trans_temp next_stat in
     if (e1,e2) = ("", "") then transitions_str := !transitions_str ^  ""
     else 
         transitions_str := !transitions_str ^ ("\ntransition ") ^ 
-            (name) ^ ("_") ^(string_of_int (i+1)) ^ (" (z) \n") ^ ("requiers {") ^
-            (e1) ^("}\n") ^ ("{") ^(e2) ^("}\n")
+            (name) ^ ("_") ^(string_of_int (i+1)) ^ (" (z) \n") ^ ("requires {\n") ^
+            (e1) ^("}\n") ^ ("{\n") ^(e2) ^("}\n")
     done;
     !transitions_str   
 

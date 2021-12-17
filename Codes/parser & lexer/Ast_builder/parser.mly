@@ -10,14 +10,13 @@ let rec tmp_to_pred(tmp)= match tmp with
 %token PLUS MINUS STAR SLASH EQUAL Larger Smaller OR AND  EXISTS FORALL
 %token LPAR RPAR COLON IN PRIME SEMICOLON ASSIGN SLPAR  SRPAR ARROW COMMA  Exclamation EXCEPT
 %token QUOTATION  LCurly_bra RCurly_bra ARROW_set UNCHANGED MODULE EXTENDS TRUE FALSE
-%token NOT_EQ NOT
+%token NOT_EQ NOT CASE ARROWS Square
 %token <string> IDENTIFIER 
 %token <string> Num VARs CONS 
 
 
 
-%left AND
-%left OR
+%left OR AND
 %nonassoc EXISTS FORALL
 %nonassoc NOT 
 
@@ -97,10 +96,21 @@ definition:
 
  simp_temporal_formula:
 | primed_eq { $1 }
-| predicate { Ast.Predec $1};
+| predicate { Ast.Predec $1}
+| FORALL  varlist IN IDENTIFIER COLON expr  EQUAL CASE  arrow  arrowt+     { Ast.CASES ($2,$6,$9::$10)}  ;
 
 
+arrow:
+| composed_prop ARROW_set expr   {Ast.Arrow($1, $3)  };
 
+arrowt:
+| Square composed_prop ARROW_set expr {Ast.Arrow($2, $4)} ;
+
+
+composed_prop:
+| proposition {$1}
+| proposition AND proposition {Ast.Coposition (  $1, Ast.Conj, $3)   }
+| proposition OR proposition {Ast.Coposition (  $1, Ast.Disjun, $3)   }
 
 
 predicate: 

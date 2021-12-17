@@ -7,12 +7,13 @@ type binop =
 
 type exp = 
   | Var of string
-  | Func_img of exp * exp 
+  | Func_img of exp * string list  
   | INT of string
   | Binop of exp * binop * exp
   | STRING of string  
   | TRUE
   | FALSE
+  | Func_def of exp * exp * exp
 
 
 
@@ -51,7 +52,8 @@ type primed_equality=
 | Primed_assig of exp * exp  
 | Cases of exp * exp * exp * exp 
 
-
+type arrow = 
+| Arrow  of prop * exp 
 
 type temp = 
 | Pred of pred 
@@ -59,6 +61,7 @@ type temp =
 | Open_temp of string * string list
 | Temp_Combination of temp * logicalop * temp  
 | Negation of temp 
+| CASES of string list * exp * arrow list 
 
 
 type obj_info = 
