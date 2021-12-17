@@ -1,37 +1,31 @@
-type string_type =L0|L1|L2|L3|L4|L5|L6|L7
+type string_type =Idle | Wait | Crit | Crash
  array A[proc] : string_type 
 
-unsafe (z) {( ( A[z] # L7 ) || ( A[z] # L7 ) ) && ( z1[z] # z2 )} 
-init (z) {A[z]=L0 && A[z]=L1 && B[z]=false && S[z]=false && W[z]=false} 
+init (z) {A[z]=Idle} 
+unsafe (z) {(A[z1] = Crit) && (A[z2] = Crit)} 
 
 transition Next_1 (z) 
-requiers {A[z]=L1}
-{A[z]:= L2 && B[z]:= false && S[z]:= false}
+requires {
+A[z] = Idle}
+{
+A[j] := case 
+| j = z : Wait 
+| j  <  z : A[j] ; 
+}
 
 transition Next_2 (z) 
-requiers {A[z]=L2}
-{A[z]:= L3 && S[z]:= true && W[z]:= true}
+requires {
+A[z] = Wait}
+{
+A[j] := case 
+| j = z : Crit 
+| j  >  z : A[j] 
+| ( z  >  j ) && ( A[j] = Idle ) : Idle 
+| _ : Crash ; 
+}
 
 transition Next_3 (z) 
-requiers {A[z]=L3 && B[z]=false && W[z]=false}
-{A[z]:= L4 && S[z]:= false}
-
-transition Next_4 (z) 
-requiers {A[z]=L3}
-{A[z]:= L5 && W[z]:= false}
-
-transition Next_5 (z) 
-requiers {W[z]=false && A[z]=L4 && S[z]=true}
-{A[z]:= L5 && S[z]:= true && W[z]:= false}
-
-transition Next_6 (z) 
-requiers {A[z]=L5 && W[z]=false}
-{A[z]:= L6}
-
-transition Next_7 (z) 
-requiers {A[z]=L6}
-{A[z]:= L7}
-
-transition Next_8 (z) 
-requiers {A[z]=L7}
-{A[z]:= L0 && S[z]:= false}
+requires {
+A[z] = Crit}
+{
+A[j] := case | j = z : Idle | _ :  A[j]; }

@@ -1,80 +1,37 @@
------------------------------- MODULE szymanski_at ------------------------------
+-------------------------- MODULE distrib_channels --------------------------
 EXTENDS Integers, Sequences, TLC, FiniteSets
-CONSTANTS  Proc ;
-VARIABLES A , B, S, W ;
+CONSTANTS  Proc;
+VARIABLES A ;
 
 
-TypeOk == A  \in [Proc ->  { " L0 " , " L1 " , " L2 " , " L3 ",  " L4 " , " L5 " , " L6 ", " L7 "} ]
-        /\ B  \in [Proc ->  { FALSE , TRUE } ] 
-        /\ S  \in [Proc ->  { FALSE , TRUE } ] 
-        /\ W  \in [Proc ->  { FALSE , TRUE } ]  ;
-
-Init ==   A = [obj \in Proc |-> "L0"]
-         /\ B = [obj \in Proc |-> FALSE]
-         /\ S = [obj \in Proc |-> FALSE]
-         /\ W = [obj \in Proc |-> FALSE];
+TypeOk == A \in [Proc ->  { " Idle "  , " Wait " , " Crit ",  " Crash " } ] ;
 
 
-     
-Safety == \A z1 , z2 \in Proc : A[z1] # "L7"  
-                                \/  A[z2] # "L7"
-                                /\ z1 #z2 ; 
+Init ==  A = [obj \in Proc |-> "Idle"] ;
+
+Safety(z1,z2) == A[z1] = Crit /\ A[z2] = Crit  ;
+
+tr1(z) ==  A[z] = "Idle"
+           /\ \A j \in Proc : A[j] = CASE  j=z -> "Wait"
+                                           [] j < z -> A[j] ;
 
 
-t0(x) ==    B'=[B EXCEPT ![x]=TRUE] 
-        /\  A'=[A EXCEPT ![x]="L1"]
-        /\ A= " L0 "  ;
-         
-t1(x) ==  A'=[A EXCEPT ![x]="L2"]
-         /\ B'=[B EXCEPT ![x]=FALSE] 
-         /\ S'= [S EXCEPT ![x] =FALSE]
-          /\ A[x]="L1";
 
-t2(x) ==    A'=[A EXCEPT ![x]="L3"]
-         /\ S'=[S EXCEPT ![x]=TRUE]
-         /\ W'=[S EXCEPT ![x]=TRUE] 
-         /\ A[x]="L2"   ;   
-
-t3_then(x,y) ==  
-                 A'=[A EXCEPT ![x]="L4"]
-                /\ S'=[S EXCEPT ![x]=FALSE]
-                /\ A[x]="L3" 
-                /\ B[y]=FALSE
-                /\ W[y]=FALSE;
-
-t3_else(x) ==       A[x]="L3"
-                /\ A'=[A EXCEPT ![x]="L5"]
-                /\ W'=[W EXCEPT ![x]=FALSE] ;
-                
-t4(x,y) ==         W[y]=FALSE 
-                /\ A'=[A EXCEPT ![x]="L5"]
-                /\ S'=[S EXCEPT ![x]=TRUE]
-                /\ W'=[S EXCEPT ![x]=FALSE]
-                /\ A[x]="L4"
-                /\ S[y]=TRUE
-                 ;
-
-t5(x) ==     A'=[A EXCEPT ![x]="L6"]
-        /\ B=B
-        /\ A[x]="L5"
-        /\  W = [obj \in Proc |-> FALSE]  ;
+tr2(z) ==  A[z] = "Wait"
+          /\ \A j \in Proc :  A[j] = CASE  j=z -> "Crit"
+                                           [] j> z -> A[j] 
+                                           []  z>j /\ A[j]="Idle" -> "Idle"
+                                           [] OTHER -> "Crash" ;
 
 
-t6(x) ==  A'=[A EXCEPT ![x]="L7"]
-         /\ A[x]="L6"  ;
-         
+tr3(z) ==  A[z] = "Crit"
+          /\ A'=[A EXCEPT ![z]="Idle"];
 
-t7(x) ==  A[x]="L7"   
-         /\ A'=[A EXCEPT ![x]="L0"] 
-         /\ S'=[S EXCEPT ![x]=FALSE] ; 
 
-Next==  t1(x) 
-        \/ t2(x)
-        \/ t3_then(x,y)
-        \/ t3_else(x)
-        \/ t4(x,y)
-        \/ t5(x)
-        \/ t6(x)
-        \/ t7(x) ;
+Next== \E z \in Proc :  tr1(z)
+                       \/ tr2(z)
+                       \/ tr3(z)  ;                                         
 
 = = = = = =
+
+
