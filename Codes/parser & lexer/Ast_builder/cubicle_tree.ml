@@ -27,7 +27,7 @@ type coparism =
 type logicalop =
 | Conj 
 | Disjun
-
+| ASSIG 
 
 
 

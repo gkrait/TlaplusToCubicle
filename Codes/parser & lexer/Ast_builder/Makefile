@@ -1,16 +1,16 @@
 ############################################################
-## Makefile for the xyz grammar
+## Makefile for the Tla2Cubicle grammar
 ## ---------------------------------------------------------
 ##
 ## Usage:
 ##   make [target]
 ##
 ## Targets:
-##   xyz.byte     -- build the example as ocaml byte code (default target)
-##   xyz.native   -- build the example as native
-##   xyz.top      -- build an interactive toplevel
-##   xyz.debug    -- build the example with debugging symbols
-##   xyz.profile  -- build the example with profiling instrumentation
+##   Tla2Cubicle.byte     -- build the example as ocaml byte code (default target)
+##   Tla2Cubicle.native   -- build the example as native
+##   Tla2Cubicle.top      -- build an interactive toplevel
+##   Tla2Cubicle.debug    -- build the example with debugging symbols
+##   Tla2Cubicle.profile  -- build the example with profiling instrumentation
 ##   htdoc          -- generate documentation (in doc/index.html)
 ##   clean          -- clean up all build related files
 ##
@@ -18,15 +18,15 @@
 
 # (just ignore this thing...)
 .PHONY: default all \
-        xyz.byte xyz.native xyz.top xyz.debug xyz.profile \
+        Tla2Cubicle.byte Tla2Cubicle.native Tla2Cubicle.top Tla2Cubicle.debug Tla2Cubicle.profile \
         htdoc clean prepare findlib
 
 # Default build target (defined below)
-# should probably be either 'xyz.native' or 'xyz.byte'
-xyz: xyz.byte
+# should probably be either 'Tla2Cubicle.native' or 'Tla2Cubicle.byte'
+Tla2Cubicle: Tla2Cubicle.byte
 
 # Default target for Eclipse
-all: xyz
+all: Tla2Cubicle
 
 # Non-source directories (comma separated, no spaces)
 # Add directories that do not contain ml source files.
@@ -49,38 +49,38 @@ DOC_DIR := doc
 BLD_DIR := _build
 
 # Base invokation of ocamlbuild
-OCAMLBUILD := ocamlbuild -no-links -use-menhir -menhir "menhir -v" -Xs $(EXCL_DIRS)
+OCAMLBUILD := ocamlbuild  -no-links -use-menhir -menhir "menhir -v  " -Xs $(EXCL_DIRS)
 
-xyz.byte: prepare
-	@echo "*** Building xyz.byte"
+Tla2Cubicle.byte: prepare
+	@echo "*** Building Tla2Cubicle.byte"
 	@$(OCAMLBUILD) $(SRC_DIR)/main.byte
-	@ln -sf $(BLD_DIR)/$(SRC_DIR)/main.byte xyz.byte
-	@ln -sf xyz.byte xyz
+	@ln -sf $(BLD_DIR)/$(SRC_DIR)/main.byte Tla2Cubicle.byte
+	@ln -sf Tla2Cubicle.byte Tla2Cubicle
 
-xyz.native: prepare
-	@echo "*** Building xyz.native"
+Tla2Cubicle.native: prepare
+	@echo "*** Building Tla2Cubicle.native"
 	@$(OCAMLBUILD) $(SRC_DIR)/main.native
-	@ln -sf $(BLD_DIR)/$(SRC_DIR)/main.native xyz.native
-	@ln -sf xyz.native xyz
+	@ln -sf $(BLD_DIR)/$(SRC_DIR)/main.native Tla2Cubicle.native
+	@ln -sf Tla2Cubicle.native Tla2Cubicle
 
-xyz.debug: prepare
-	@echo "*** Building xyz.debug"
+Tla2Cubicle.debug: prepare
+	@echo "*** Building Tla2Cubicle.debug"
 	@$(OCAMLBUILD) $(SRC_DIR)/main.d.byte
-	@ln -sf _build/$(SRC_DIR)/main.d.byte xyz.debug
+	@ln -sf _build/$(SRC_DIR)/main.d.byte Tla2Cubicle.debug
 
-xyz.profile: prepare
-	@echo "*** Building xyz.profile"
+Tla2Cubicle.profile: prepare
+	@echo "*** Building Tla2Cubicle.profile"
 	@$(OCAMLBUILD) $(SRC_DIR)/main.p.native
-	@ln -sf _build/$(SRC_DIR)/main.p.native xyz.profile
+	@ln -sf _build/$(SRC_DIR)/main.p.native Tla2Cubicle.profile
 
-xyz.top: prepare
-	@echo "*** Building xyz.top"
+Tla2Cubicle.top: prepare
+	@echo "*** Building Tla2Cubicle.top"
 	@echo $(MODS:%=$(SRC_DIR)/%) > $(SRC_DIR)/main.mltop
 	@$(OCAMLBUILD) $(SRC_DIR)/main.top
 	@rm -f $(SRC_DIR)/main.mltop
-	@ln -sf _build/$(SRC_DIR)/main.top xyz.top
+	@ln -sf _build/$(SRC_DIR)/main.top Tla2Cubicle.top
 
-htdoc: xyz.byte
+htdoc: Tla2Cubicle.byte
 	@echo "*** Building $(DOC_DIR)"
 	@mkdir -p $(DOC_DIR)
 	@ocamldoc -d $(DOC_DIR) -I $(BLD_DIR)/$(SRC_DIR) \
@@ -90,7 +90,7 @@ htdoc: xyz.byte
 clean:
 	$(OCAMLBUILD) -clean
 	rm -rf $(DOC_DIR)
-	rm -f xyz xyz.byte xyz.native xyz.top xyz.debug xyz.profile
+	rm -f Tla2Cubicle Tla2Cubicle.byte Tla2Cubicle.native Tla2Cubicle.top Tla2Cubicle.debug Tla2Cubicle.profile
 	rm -f $(SRC_DIR)/main.mltop
 	rm -f .ocamlinit
 	rm -f parser.automaton

@@ -1,14 +1,20 @@
  
  type temp_conjunctions = {predi : Cubicle_tree.temp list  ; pri : Cubicle_tree.temp list } 
 
+(**************************************************************************************************)
+(**************************************************************************************************)
+(**************************************************************************************************)
+(******************************   Printing Cubicle Objects   **************************************)
+(**************************************************************************************************)
+(**************************************************************************************************)
+(**************************************************************************************************)
 
-let print_op op = match op with
+let rec print_op op = match op with
   | Cubicle_tree.Add ->  "+"
   | Cubicle_tree.Sub ->  "-"
   | Cubicle_tree.Mul ->  "*"
   | Cubicle_tree.Div ->  "/"
-
-let  rec str_of_bool b = if b then "\n true \n" else "\n false \n"
+let rec str_of_bool b = if b then "\n true \n" else "\n false \n"
 let rec print_exp exp = match exp with
   | Cubicle_tree.Func_def(e1,e2,e3) ->  "Function"
   | Cubicle_tree.Func_img (exp1,vars) -> let vars_str= if List.length vars = 0 then "" else  "[" ^(String.concat "," vars) ^"]" in 
@@ -19,23 +25,15 @@ let rec print_exp exp = match exp with
   | Cubicle_tree.TRUE -> "True"  
   | Cubicle_tree.FALSE -> "False" 
   | Cubicle_tree.Var v ->  v
-  | Cubicle_tree.INT  (num)->  num    
-
-    
+  | Cubicle_tree.INT  (num)->  num        
 let rec print_log oper= match oper with 
- | Cubicle_tree.Conj ->  (" && ")  
- | Cubicle_tree.Disjun ->  " || "
-
-
-let print_inq inq = match inq with 
+  | Cubicle_tree.Conj ->  (" && ")  
+  | Cubicle_tree.Disjun ->  " || "
+let rec  print_inq inq = match inq with 
  | Cubicle_tree.EQ -> "="
  | Cubicle_tree.Greater -> ">"
  | Cubicle_tree.Less -> "<"
  | Cubicle_tree.Inclus -> "\\in"
-
-
-
-
 let rec print_prop prop defs_dic= match prop with  
   | Cubicle_tree.Equality (exp1, exp2) ->  
    begin  
@@ -45,7 +43,7 @@ let rec print_prop prop defs_dic= match prop with
        if (print_exp exp1) = (print_exp exp2) then ("","") 
         else  (print_exp exp1 ^ " = " ^  print_exp exp2 , "")
                
-      | _ ->  (print_exp exp1 ^ " = " ^ print_exp exp2,"")
+      | _ ->  ((print_exp exp1) ^ " = " ^ (print_exp exp2),"")
     end 
   | Cubicle_tree.Inequality (exp1, inq ,  exp2) ->   (  print_exp exp1 ^ 
                   "  "^   (print_inq inq ) ^ "  " ^ print_exp exp2 , "")       
@@ -55,7 +53,7 @@ let rec print_prop prop defs_dic= match prop with
     and (e3,e4) = (print_prop prop2 defs_dic) in 
       ( ("( ") ^ e1 ^ (" )") ^ (print_log oper) ^ ("( ") ^ e3 ^ (" )") ,
          ("( ") ^ e2 ^ (" )") ^ (print_log oper) ^ ("( ") ^ e4 ^ (" )")  ) 
-  | Cubicle_tree.Declaration(e1,e2,e3) -> ("\n Declaration \n","")
+  | Cubicle_tree.Declaration(e1,e2,e3) -> ("\nDeclaration \n","")
   | Cubicle_tree.Not_equal (exp1, exp2) -> begin match exp2 with 
       | Cubicle_tree.Func_def(e1,e2,e3) -> (print_exp exp1 ^ "[z] <> " ^ print_exp e3,"") 
       | _ ->    (print_exp exp1 ^ " <> " ^ print_exp exp2,"")  end 
@@ -72,41 +70,26 @@ let rec print_prop prop defs_dic= match prop with
       (e1,e2) 
       
 
-  let rec fix_print_prop_output   print_prop_output= 
-  let (e1,e2)= print_prop_output in e1               
+let rec fix_print_prop_output   print_prop_output= 
+    let (e1,e2)= print_prop_output in e1               
 
-     
-      
-   
-
- let rec print_equality cub_obj = match cub_obj with 
-   | Cubicle_tree.ELEstat(str,stat)   -> begin
-       match str with 
-         | "unprime function equality integer" -> "hi"
-   end
- 
 let rec e4_deal exp = match exp with 
  | Cubicle_tree.Var v -> v ^"[z]" 
  |  Cubicle_tree.Binop(e1,op,e2) -> (e4_deal e1) ^ (print_op op ) ^ (e4_deal e2)
  | _ -> print_exp exp   
-
-
 let rec print_primed primed_stat = match primed_stat with 
     | Cubicle_tree.Primed_assig (exp1,exp2) -> print_exp exp1 ^ " := " ^ print_exp exp2 
     | Cubicle_tree.Cases(e1,e2,e3,e4) ->  
-      print_exp e1 ^ "[j] := case | j = z"   ^ " : " ^
-       
-       e4_deal e4
-        ^    
-          " | _ :  " ^ print_exp e2 ^ "[j]; " 
+      print_exp e1 ^ "[j] := case | j = z"   ^ " : " ^ e4_deal e4 ^ " | _ :  " ^ print_exp e2 ^ "[j]; " 
 
  let rec classifier temp = match temp with 
  | Cubicle_tree.Pred pred ->  {predi   = [Cubicle_tree.Pred(pred)] ; pri = [] } 
  | Cubicle_tree.Primed primed -> {predi   = [] ; pri = [Cubicle_tree.Primed primed]}
  | Cubicle_tree.Temp_Combination (temp1 , logicalop , temp2) -> let list1= classifier (temp1) in 
                                                                 let list2= classifier (temp2) in
-                                { predi = (list1.predi) @ (list2.predi) ;
-                                  pri = list1.pri @ list2.pri }
+                                { predi = (list1.predi) @ (list2.predi); pri = list1.pri @ list2.pri }
+ | Cubicle_tree.Open_temp(name, vars) -> { predi =[] ; pri = [temp]  }
+ | _ ->  { predi =[] ; pri = [temp]  }                              
 let rec sublist l i j defs_dic=
   if i > j then
     []
@@ -116,8 +99,6 @@ let rec print_temp_sim temp defs_dic= match temp with
  | Cubicle_tree.Pred (Cubicle_tree.Prop prop) -> 
  (fix_print_prop_output (print_prop prop defs_dic) )
  | Cubicle_tree.Primed primed_equality -> (print_primed primed_equality)
-
-
 let rec list_to_str temp_list defs_dic= let l= List.length temp_list in 
                                    match l with 
                                        | 0 -> ""
@@ -139,9 +120,7 @@ let rec list_to_str temp_list defs_dic= let l= List.length temp_list in
                                              list_to_str sublist_string_tail defs_dic
                                           else    (print_temp_sim (List.nth  temp_list 0) (defs_dic)) ^ (" && ") ^
                                              (list_to_str sublist_string_tail defs_dic) end 
-
-
-let rec  remove_unchanged props_list = 
+let rec remove_unchanged props_list = 
     let l= List.length props_list in 
     match l with
         | 1 -> let [Cubicle_tree.Pred( Cubicle_tree.Prop(ele))] = props_list in 
@@ -150,24 +129,19 @@ let rec  remove_unchanged props_list =
                       | Cubicle_tree.Equality(e1,e2) ->  if  e1=e2 then [] 
                                                             else props_list
                       | Cubicle_tree.Coposition( p1,l, p2) -> 
-                                                let an1= remove_unchanged [Cubicle_tree.Pred( Cubicle_tree.Prop(p1))] in 
-                                                let an2 = remove_unchanged [Cubicle_tree.Pred( Cubicle_tree.Prop(p2))] in 
-                                                if  List.length an1   != 0 && List.length an2 != 0 
-                                                    then  an1 @ an2 
-                                                else if   List.length an1   = 0 && List.length an2 != 0
-                                                    then an2 
-                                                else if   List.length an1   != 0 && List.length an2 = 0  
-                                                    then an1 
-                                                else []
+                        let an1= remove_unchanged [Cubicle_tree.Pred( Cubicle_tree.Prop(p1))] in 
+                        let an2 = remove_unchanged [Cubicle_tree.Pred( Cubicle_tree.Prop(p2))] in 
+                        if  List.length an1   != 0 && List.length an2 != 0 
+                            then  an1 @ an2 
+                        else if   List.length an1   = 0 && List.length an2 != 0
+                            then an2 
+                        else if   List.length an1   != 0 && List.length an2 = 0  
+                            then an1 
+                        else []
                       | _ -> props_list                                                                   
                  end                                                          
           | _ -> let h::t = props_list in 
                    remove_unchanged [h] @ remove_unchanged t
-
-
-let ind= ref 0 
-
-
 let rec print_arrows arrows defs_dic = match List.length arrows with
      | 1 ->  let arrow = List.nth arrows 0 in 
         let  Cubicle_tree.Arrow(prop,exp) = arrow in 
@@ -183,15 +157,11 @@ let rec print_arrows arrows defs_dic = match List.length arrows with
                   | Cubicle_tree.Open_prop("OTHER",vars)-> "_ : "
                   | _ -> (fix_print_prop_output (print_prop prop_t defs_dic)) ^ (" : ") in 
              (!result)  ^ ("| ") ^  (prop_str) ^ (print_exp exp_t)   
-
-
-
-
-let rec print_temp name temp defs_dic=  
+let rec print_temp  temp defs_dic=  
   match temp with 
   | Cubicle_tree.Primed primed_equality -> [ ("",print_primed primed_equality) ]
   | Cubicle_tree.Pred (Cubicle_tree.Prop prop) ->   [print_prop prop defs_dic ] 
-  | Cubicle_tree.Negation pred  -> let l = print_temp  name pred defs_dic  in 
+  | Cubicle_tree.Negation pred  -> let l = print_temp pred defs_dic  in 
       let result= ref [] in 
           for i=0 to ((List.length l)-1) do  
             let (e1,e2) = List.nth l i in 
@@ -215,12 +185,13 @@ let rec print_temp name temp defs_dic=
       let x2= (list_to_str class_list.pri defs_dic ) in 
        [(x1 , x2)]  
     | Cubicle_tree.Disjun ->  
-     let list1= (print_temp name temp1 defs_dic) 
-     and  list2 = (print_temp name temp2 defs_dic)  in 
+     let list1= (print_temp  temp1 defs_dic) 
+     and  list2 = (print_temp temp2 defs_dic)  in 
        list1 @ list2
+    | _ -> []   
       end
   | Cubicle_tree.CASES(exp , vars , cub_arrows ) ->  ["",(print_exp exp ) ^ (" := case \n") ^ (print_arrows cub_arrows defs_dic) ^(" ; \n") ] 
-
+  | _ -> []   
            
 
   (*| Cubicle_tree.CASES(vars , tla_to_cub_exp exp , cub_arrows )   -> [("","")] *)
