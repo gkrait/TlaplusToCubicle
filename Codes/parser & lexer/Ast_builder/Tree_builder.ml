@@ -464,7 +464,7 @@ let rec print_init init_stat defs_dic= match init_stat with
          ("(") ^ ((print_init tem1 defs_dic) ) ^ (")") 
         ^ ( Cub_print.print_log (change_log_type logic) )
         ^ ("(") ^ (print_init tem2 defs_dic)  ^ (")")
-    | Ast.Negation pred -> ("~") ^("(") ^(print_init pred defs_dic) ^(")")
+    | Ast.Negation pred -> ("not ") ^("(") ^(print_init pred defs_dic) ^(")")
     | Ast.Open_temp (prop_name,  var_list) -> 
         let l= List.length defs_dic 
         and substitution = ref ("","") in
@@ -476,6 +476,18 @@ let rec print_init init_stat defs_dic= match init_stat with
         done;
         let (e1,e2) = !substitution in 
         e1^e2
+
+
+let rec remove_not_eqal safty_stat defs_dic = match safty_stat with 
+    | Ast.Predec( Ast.Prop (Ast.Not_equal(Ast.Func_img(exp1,[]) ,Ast.Func_img(exp2,[]))) ) -> ""   
+    | Ast.Mix(tem1,log, tem2) -> let stat1= remove_not_eqal tem1 defs_dic 
+        and  stat2= remove_not_eqal tem2 defs_dic in 
+        let log_str = match log with 
+                |Ast.Conj -> " && " 
+                |Ast.Disjun -> " || "  in 
+        non_trivial_con(stat1,stat2,log_str)
+    | _ ->   print_init safty_stat defs_dic                       
+
 
 let rec print_intermid  intermid_stat defs_dic = match intermid_stat with 
         | Ast.Predec (pred) -> ((print_init intermid_stat defs_dic)  ,"") 
@@ -575,8 +587,9 @@ let rec translate ?ok:(typeOk_stat_name= "TypeOk")
                             print_Next stat !defs_dic name
                 else if name = safety_stat_name then 
                         let vars_safe= if  List.length var_list != 0 then  String.concat " " var_list
-                                  else "z"  in 
-                        ("unsafe (")  ^ (vars_safe) ^  (") {") ^ (print_init stat !defs_dic) ^ ("} \n")
+                                  else "z"  in
+                        let stat_without_not_eq = remove_not_eqal  stat !defs_dic in         
+                        ("unsafe (")  ^ (vars_safe) ^  (") {") ^ ("not (") ^(stat_without_not_eq)^(" )")  ^ ("} \n")
 
                 else "" 
                 in  print_string result  ;

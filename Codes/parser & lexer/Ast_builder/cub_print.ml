@@ -195,8 +195,8 @@ let rec print_temp name temp defs_dic=
       let result= ref [] in 
           for i=0 to ((List.length l)-1) do  
             let (e1,e2) = List.nth l i in 
-            result:= !result @ [(("~") ^ ("(") ^ (e1) ^ (")")  , 
-                                ("~") ^ ("(") ^ (e2) ^ (")") )]
+            result:= !result @ [(("not") ^ ("(") ^ (e1) ^ (")")  , 
+                                ("not") ^ ("(") ^ (e2) ^ (")") )]
           done;
           !result 
   | Cubicle_tree.Open_temp (temp_name,  var_list) -> 
