@@ -10,7 +10,9 @@ A[z] = Idle}
 {
 A[j] := case 
 | j = z : Wait 
-| j  <  z : A[j] ; 
+| j  <  z : A[j] 
+| ( z  <  j ) && ( A[j] = Idle ) : A[j] 
+| _ : Crash ; 
 }
 
 transition Next_2 (z) 

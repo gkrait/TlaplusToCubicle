@@ -396,9 +396,9 @@ let rec trans_temp obj =   match obj with
  | Ast.Negation temp ->  let Cubicle_tree.ELEMix(str, trans) = trans_temp temp in  
  Cubicle_tree.ELEMix("negation",
           Cubicle_tree.Negation(trans)  )  
- | Ast.CASES(vars , exp , arrows ) ->  let cub_arrows= tla_to_cub_arrow arrows in 
+ | Ast.CASES(exp , vars , arrows ) ->  let cub_arrows= tla_to_cub_arrow arrows in 
        Cubicle_tree.ELEMix("Cases",
-        Cubicle_tree.CASES(vars, tla_to_cub_exp exp , cub_arrows ) )             
+        Cubicle_tree.CASES(Cubicle_tree.Func_img((tla_to_cub_exp exp) , vars), vars , cub_arrows )  )             
 
 let rec print_Cubobj  name cub_obj defs_dic = match cub_obj with 
     | Cubicle_tree.ELEstat(str,stat ) -> begin  match str with 
@@ -514,7 +514,7 @@ let rec print_intermid  intermid_stat defs_dic = match intermid_stat with
             and (pred2,prim2) =  print_intermid  temp2 defs_dic in 
             (non_trivial_con(pred1, pred2, log_str) ,
                 non_trivial_con(prim1,prim2, log_str) )  
-        | Ast.CASES (vars,  exp , cub_arrows )  -> 
+        | Ast.CASES (exp , vars , cub_arrows ) -> 
             let  info_cub_stat=  trans_temp intermid_stat in  
             let  Cubicle_tree.ELEMix(str,cub_stat)=info_cub_stat in 
              let [(e1,e2)]= (Cub_print.print_temp "" cub_stat defs_dic) in 

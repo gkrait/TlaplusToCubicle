@@ -219,7 +219,7 @@ let rec print_temp name temp defs_dic=
      and  list2 = (print_temp name temp2 defs_dic)  in 
        list1 @ list2
       end
-  | Cubicle_tree.CASES(vars , exp , cub_arrows ) ->  ["",(print_exp exp ) ^ (" := case \n") ^ (print_arrows cub_arrows defs_dic) ^(" ; \n") ] 
+  | Cubicle_tree.CASES(exp , vars , cub_arrows ) ->  ["",(print_exp exp ) ^ (" := case \n") ^ (print_arrows cub_arrows defs_dic) ^(" ; \n") ] 
 
            
 

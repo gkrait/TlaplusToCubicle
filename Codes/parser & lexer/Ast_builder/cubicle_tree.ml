@@ -61,7 +61,7 @@ type temp =
 | Open_temp of string * string list
 | Temp_Combination of temp * logicalop * temp  
 | Negation of temp 
-| CASES of string list * exp * arrow list 
+| CASES of exp *  string list * arrow list
 
 
 type obj_info = 

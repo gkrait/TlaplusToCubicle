@@ -1,4 +1,3 @@
-
 type binop = 
   | Add
   | Sub
@@ -17,6 +16,7 @@ type exp =
   | Func_exception of exp * exp * exp 
   | TRUE
   | FALSE
+
 
 
 
@@ -68,18 +68,18 @@ type pred =
 | Pred_Comp of pred * logicalop * pred 
 | Open_pred of string * string list
 
-
-type arrow = 
-| Arrow  of prop * exp 
+type arrow=
+| Arrow of  prop * exp   
 
 type temp=
 | Predec of pred
 | Prime of exp * string list * exp 
 | Func_except of exp * string list * exp 
+| CASES  of exp *  string list * arrow list
 | Mix of temp * logicalop * temp
 | Negation of temp 
 | Open_temp of string * string list
-| CASES of string list * exp * arrow list 
+
 
 
 
@@ -113,6 +113,3 @@ type tla_file =
 
 type obj_info = 
 | ElE of   ldef_sides  * string list * string *  rdef_sides * string
-
-
-
