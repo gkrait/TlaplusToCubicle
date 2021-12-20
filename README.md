@@ -1,7 +1,11 @@
 
 
 ``` TlaplusToCubicle ``` is a software to translate a spec written in a fragment of [TLA++](https://lamport.azurewebsites.net/tla/tla.html)  producing an 
-equivalent spec  in [Cubicle](http://cubicle.lri.fr/) input language.   
+equivalent spec  in [Cubicle](http://cubicle.lri.fr/) input language. Such a translator is useful for TLA+ specs that are defined by parametrized transition systems with states represented as arrays indexed by an arbitrary number of processes. For checking this type of classes, [Cubicle](http://cubicle.lri.fr/) model checker shows good results.          
+
+
+# Assumptions
+We assume that the input spec is written by a TLA+ fragment described by the grammer defined by a [Menhir-generated parser](https://github.com/gkrait/TlaplusToCubicle/blob/master/Ast_builder/parser.mly).    
 
 # Example
 To translate the  [Berkeley](https://github.com/gkrait/TlaplusToCubicle/blob/master/Examples/Berkeley/input.in) spec described below, 
