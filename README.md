@@ -9,7 +9,7 @@ We assume that the input spec is written by a TLA+ fragment described by the gra
 
 # Example
 To translate the  [Berkeley](https://github.com/gkrait/TlaplusToCubicle/blob/master/Examples/Berkeley/input.in) spec described below, 
-we save it in a .tla file  
+we save it in a .tla file  foo.tla
 
 
 
