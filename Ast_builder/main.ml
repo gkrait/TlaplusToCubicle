@@ -1,23 +1,9 @@
-(* let lexbuf = Lexing.from_channel stdin in *)
-
-(*let chan = open_in "main.in" in 
-let  lexbuf = Lexing.from_channel  chan  in  *)
 
 
-
-
-   let input_str = Tree_builder.read_whole_file ("input.in") in 
+    let filename = Sys.argv.(1) in
+   let input_str = Tree_builder.read_whole_file filename in 
    let  lexbuf =  Lexing.from_string  input_str in
-    
-    (*
-
-more general  form more than 3 defs 
-add Tla header 
-use examples to test  *)
-
-
-
-try   let  tla = Parser.start Lexer.token lexbuf in (* parse input *)
+try   let  tla = Parser.start Lexer.token lexbuf in 
     Tree_builder.translate tla 
 
   
