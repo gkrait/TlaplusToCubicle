@@ -1,3 +1,5 @@
+
+
 type string_type =Idle | Wait | Crit | Crash
  array A[proc] : string_type 
 
