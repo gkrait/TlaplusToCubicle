@@ -2,7 +2,7 @@ type string_type =Idle | Wait | Crit | Crash
  array A[proc] : string_type 
 
 init (z) {A[z]=Idle} 
-unsafe (z) {(A[z1] = Crit) && (A[z2] = Crit)} 
+unsafe (z1 z2) {not ((not (A[z1] = Crit)) || (not (A[z2] = Crit)) )} 
 
 transition Next_1 (z) 
 requires {
@@ -10,7 +10,9 @@ A[z] = Idle}
 {
 A[j] := case 
 | j = z : Wait 
-| j  <  z : A[j] ; 
+| j  <  z : A[j] 
+| ( z  <  j ) && ( A[j] = Idle ) : A[j] 
+| _ : Crash ; 
 }
 
 transition Next_2 (z) 

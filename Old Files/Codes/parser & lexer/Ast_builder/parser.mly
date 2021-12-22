@@ -10,7 +10,7 @@ let rec tmp_to_pred(tmp)= match tmp with
 %token PLUS MINUS STAR SLASH EQUAL Larger Smaller OR AND  EXISTS FORALL
 %token LPAR RPAR COLON IN PRIME SEMICOLON ASSIGN SLPAR  SRPAR ARROW COMMA  Exclamation EXCEPT
 %token QUOTATION  LCurly_bra RCurly_bra ARROW_set UNCHANGED MODULE EXTENDS TRUE FALSE
-%token NOT_EQ NOT CASE ARROWS Square
+%token NOT_EQ NOT CASE  Square 
 %token <string> IDENTIFIER 
 %token <string> Num VARs CONS 
 
@@ -18,7 +18,9 @@ let rec tmp_to_pred(tmp)= match tmp with
 
 %left OR AND
 %nonassoc EXISTS FORALL
-%nonassoc NOT 
+%nonassoc NOT  
+
+
 
 %start <Ast.tla_file> start
 %%
@@ -96,15 +98,12 @@ definition:
 
  simp_temporal_formula:
 | primed_eq { $1 }
-| predicate { Ast.Predec $1}
-| FORALL  varlist IN IDENTIFIER COLON expr  EQUAL CASE  arrow  arrowt+     { Ast.CASES ($2,$6,$9::$10)}  ;
+| predicate { Ast.Predec $1} ;
 
 
-arrow:
-| composed_prop ARROW_set expr   {Ast.Arrow($1, $3)  };
 
-arrowt:
-| Square composed_prop ARROW_set expr {Ast.Arrow($2, $4)} ;
+
+
 
 
 composed_prop:
@@ -147,20 +146,41 @@ let pred = tmp_to_pred $6 in
 
 
 primed_eq:
-| IDENTIFIER optional_varlist(varlist) PRIME  EQUAL expr { Ast.Prime ( Ast.Var $1, $2 , $5 ) }
-| IDENTIFIER optional_varlist(varlist) PRIME  EQUAL func_excep {Ast.Func_except(Ast.Var($1),$2,$5) };
+| IDENTIFIER optional_varlist(varlist) PRIME  EQUAL expr_without_func { Ast.Prime ( Ast.Var $1, $2 , $5 ) }
+| IDENTIFIER optional_varlist(varlist) PRIME  EQUAL func_excep {Ast.Func_except(Ast.Var($1),$2,$5) }
+| IDENTIFIER optional_varlist(varlist) PRIME  EQUAL SLPAR varlist IN IDENTIFIER case_func  
+    { Ast.CASES ( Ast.Func_img(Ast.Var $1, $2) , $6 , $9 ) }  ;
 
 
+
+case_func:
+|  ARROW CASE  arrow  arrowt+ SRPAR 
+    { $3 :: $4 }
 
 func_excep :
-| SLPAR expr EXCEPT Exclamation  SLPAR expr SRPAR EQUAL  expr  SRPAR {Ast.Func_exception($2,$6,$9 ) };
+| SLPAR expr EXCEPT Exclamation  SLPAR expr SRPAR EQUAL  expr  SRPAR 
+    {Ast.Func_exception($2,$6,$9 ) };
+
+
+arrow:
+| composed_prop ARROW_set expr   {Ast.Arrow($1, $3)  };
+
+arrowt:
+| Square composed_prop ARROW_set expr {Ast.Arrow($2, $4)} ;
+
 
 expr:
-  |  expr PLUS term    { Ast.Binop ($1,Ast.Add,$3) }
-  |  expr MINUS term   { Ast.Binop ($1,Ast.Sub,$3) }
-  |  term              { $1 };
+expr_without_func {$1}
+| function_unprim {$1} ;
 
-  
+expr_without_func:  
+  |  expr_without_func PLUS term    { Ast.Binop ($1,Ast.Add,$3) }
+  |  expr_without_func MINUS term   { Ast.Binop ($1,Ast.Sub,$3) }
+  |  term              { $1 }  ;
+
+function_unprim:
+|  SLPAR IDENTIFIER IN IDENTIFIER  ARROW expr SRPAR
+          {Ast.Func_def(Ast.Var $2, Ast.Var $4, $6 )}   
 
 term
   :  term STAR factor  { Ast.Binop($1,Ast.Mul,$3) }
@@ -173,7 +193,6 @@ factor:
   |  Num                {Ast.INT $1}
   | FALSE                 {Ast.FALSE}
   | TRUE                  {Ast.TRUE}
-  | SLPAR IDENTIFIER IN IDENTIFIER ARROW  expr SRPAR {Ast.Func_def (Ast.Var($2),Ast.Var $4 ,$6) } 
   | QUOTATION IDENTIFIER QUOTATION    { Ast.STRING $2 }
   | IDENTIFIER  optional_varlist(varlist)       {Ast.Func_img (Ast.Var $1, $2) };
 
@@ -206,5 +225,3 @@ varlist:
 %inline s_paranth_optional(x):
 | {[]}
 | s_paranth(x) {$1}  
-
-

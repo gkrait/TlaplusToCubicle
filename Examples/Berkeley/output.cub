@@ -1,0 +1,35 @@
+
+
+type string_type =Idle | Wait | Crit | Crash
+ array A[proc] : string_type 
+
+init (z) {A[z]=Idle} 
+unsafe (z1 z2) {not ((not (A[z1] = Crit)) || (not (A[z2] = Crit)) )} 
+
+transition Next_1 (z) 
+requires {
+A[z] = Idle}
+{
+A[j] := case 
+| j = z : Wait 
+| j  <  z : A[j] 
+| ( z  <  j ) && ( A[j] = Idle ) : A[j] 
+| _ : Crash ; 
+}
+
+transition Next_2 (z) 
+requires {
+A[z] = Wait}
+{
+A[j] := case 
+| j = z : Crit 
+| j  >  z : A[j] 
+| ( z  >  j ) && ( A[j] = Idle ) : Idle 
+| _ : Crash ; 
+}
+
+transition Next_3 (z) 
+requires {
+A[z] = Crit}
+{
+A[j] := case | j = z : Idle | _ :  A[j]; }
