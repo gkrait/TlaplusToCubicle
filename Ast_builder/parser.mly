@@ -1,24 +1,33 @@
 %{
-
+open Lexing
 let rec tmp_to_pred(tmp)= match tmp with 
   | Ast.Predec(pred) -> pred 
   | Ast.Mix(tm1,log,tm2) -> Ast.Pred_Comp(tmp_to_pred tm1, log , tmp_to_pred tm2)
+
+
+let eol lexbuf =
+    let (start, curr) = (lexbuf.lex_start_p, lexbuf.lex_curr_p) in
+      lexbuf.lex_curr_p <- { curr with
+                               pos_lnum = curr.pos_lnum + 1 ;
+                               pos_bol  = curr.pos_cnum }  
 
  %}
 
 %token EOF
 %token PLUS MINUS STAR SLASH EQUAL Larger Smaller OR AND  EXISTS FORALL
-%token LPAR RPAR COLON IN PRIME SEMICOLON ASSIGN SLPAR  SRPAR ARROW COMMA  Exclamation EXCEPT
+%token LPAR RPAR COLON IN PRIME  ASSIGN SLPAR  SRPAR ARROW COMMA  Exclamation EXCEPT
 %token QUOTATION  LCurly_bra RCurly_bra ARROW_set UNCHANGED MODULE EXTENDS TRUE FALSE
-%token NOT_EQ NOT CASE  Square 
+%token NOT_EQ NOT CASE  Square END
 %token <string> IDENTIFIER 
 %token <string> Num VARs CONS 
+%token <string> NEWLINE 
 
 
 
 %left OR AND
 %nonassoc EXISTS FORALL
 %nonassoc NOT  
+
 
 
 
@@ -38,7 +47,7 @@ hyphen_encloser(x,y):
 ;
 
 tail:
-|  EQUAL EQUAL EQUAL+ {}
+|  END {}
 ;
 
 extends:
@@ -73,15 +82,15 @@ set :
 
 
 declaration:
-| VARs  varlist SEMICOLON { $2 }
-| CONS  varlist  SEMICOLON   { $2 }
+| VARs  varlist  { $2 }
+| CONS  varlist     { $2 }
 ;
  
 
 
 
 definition:
-| IDENTIFIER paranth_optional(varlist)  ASSIGN temporal_formula SEMICOLON {Ast.Statment (Ast.DEFIN ( $1), $2 , Ast.ASSIG , Ast.Stat $4, Ast.NEWL ) }
+| IDENTIFIER paranth_optional(varlist)  ASSIGN temporal_formula NEWLINE?   {Ast.Statment (Ast.DEFIN ( $1), $2 , Ast.ASSIG , Ast.Stat $4, Ast.NEWL ) }
 /*| IDENTIFIER paranth_optional(varlist)  ASSIGN  expr SEMICOLON {Ast.Value (Ast.DEFIN ( $1) ,$2,Ast.ASSIG , Ast.Expr $4 , Ast.NEWL ) }
 ;*/
 
@@ -113,7 +122,7 @@ composed_prop:
 
 
 predicate: 
-| proposition {Ast.Prop $1}
+| proposition {Ast.Prop $1} 
 | EXISTS varlist IN IDENTIFIER COLON   temporal_formula      { 
   let pred = tmp_to_pred $6 in 
   Ast.Existence (Ast.Exis, $2, Ast.Inclus, Ast.Var $4, Ast.Col, pred) } %prec EXISTS
@@ -133,7 +142,7 @@ let pred = tmp_to_pred $6 in
 | OR {Ast.Disjun}; 
 */
   proposition:
- expr EQUAL expr      { Ast.Equality ($1,Ast.EQ,$3) }
+ expr EQUAL expr      { Ast.Equality ($1,Ast.EQ,$3) } 
 | expr Larger expr     { Ast.Inequality ($1,Ast.Greater,$3) }
 | expr Smaller expr    { Ast.Inequality ($1,Ast.Less,$3) }
 | expr NOT_EQ expr      { Ast.Not_equal($1,$3) }
@@ -194,7 +203,7 @@ factor:
   | FALSE                 {Ast.FALSE}
   | TRUE                  {Ast.TRUE}
   | QUOTATION IDENTIFIER QUOTATION    { Ast.STRING $2 }
-  | IDENTIFIER  optional_varlist(varlist)       {Ast.Func_img (Ast.Var $1, $2) };
+  | IDENTIFIER  optional_varlist(varlist)    {Ast.Func_img (Ast.Var $1, $2) };
 
 
 
