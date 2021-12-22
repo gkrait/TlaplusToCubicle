@@ -9,7 +9,7 @@ We assume that the input spec is written by a TLA+ fragment described by the gra
 
 # Example
 To translate the  [Berkeley](https://github.com/gkrait/TlaplusToCubicle/blob/master/Examples/Berkeley/input.in) spec described below, 
-we save it in a .tla file  foo.tla
+we save it in a .tla file  _foo.tla_
 
 
 
@@ -50,7 +50,7 @@ Then, we run the following coomands:
 make
 ./Tla2Cubicle <foo.tla>
 ```
-The file output.cub is then generated containing the translation of foo.tla content:
+The file output.cub is then generated containing the translation of _foo.tla_ content:
 ```
 type string_type =Idle | Wait | Crit | Crash
  array A[proc] : string_type 
