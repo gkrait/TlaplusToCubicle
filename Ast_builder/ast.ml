@@ -27,7 +27,7 @@ type ldef_sides=
 type uni=
 |  Col 
 | Prim
-| NEWL
+| NEWL 
 
 
 
@@ -113,3 +113,4 @@ type tla_file =
 
 type obj_info = 
 | ElE of   ldef_sides  * string list * string *  rdef_sides * string
+
