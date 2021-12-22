@@ -36,7 +36,7 @@ let nu = ['0'-'9'] ['0'-'9']*
   let tab   = "\009"
   let cr    = "\013"
   let lf    = "\010"
-  let eol   =   cr | lf | cr lf 
+
 
 
 let whitesp  = [' ']
@@ -75,7 +75,7 @@ and token = parse
   (* whitespace *)
   | whitesp            { token lexbuf }
   | tab                 {token lexbuf}
-  | newline            { eol lexbuf ; token lexbuf }
+  | newline            { eol lexbuf ; token lexbuf   }
   | eof                  { EOF }
   | "+"                  { PLUS }
   | "-"                  { MINUS }
@@ -89,11 +89,11 @@ and token = parse
   | "/\\"                  { AND }
   | "\\/"                 { OR }
   | "\\A"                {  FORALL }
+  | "===" '='*            {END}
   | "\\E"                { EXISTS  }
   | ":"                  { COLON }
   | "\\in"                  { IN }
   | "'"                 { PRIME }
-  | ";"                { SEMICOLON }
   |"=="                  { ASSIGN }
   | nu                   { Num (Lexing.lexeme lexbuf)}
   |"VARIABLES"                  { VARs (Lexing.lexeme lexbuf)}
@@ -118,6 +118,9 @@ and token = parse
   | "->"              {ARROW_set}
   | "#"               {NOT_EQ}
   | id                   { IDENTIFIER (Lexing.lexeme lexbuf)  }
+
+
+
 
 
 
