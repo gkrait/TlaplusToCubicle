@@ -1,0 +1,3 @@
+# files to be ignored by git in order to avoid useless conflicts
+.DS_Store
+
