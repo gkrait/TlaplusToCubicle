@@ -89,12 +89,12 @@ and token = parse
   | "/\\"                  { AND }
   | "\\/"                 { OR }
   | "\\A"                {  FORALL }
-  | "===" '='*            {END}
   | "\\E"                { EXISTS  }
   | ":"                  { COLON }
   | "\\in"                  { IN }
   | "'"                 { PRIME }
   |"=="                  { ASSIGN }
+  | "=>"                  {IMPLICATION}
   | nu                   { Num (Lexing.lexeme lexbuf)}
   |"VARIABLES"                  { VARs (Lexing.lexeme lexbuf)}
   |"CONSTANTS"                  { CONS (Lexing.lexeme lexbuf)}
@@ -117,8 +117,8 @@ and token = parse
   | "}"               {RCurly_bra} 
   | "->"              {ARROW_set}
   | "#"               {NOT_EQ}
+  | "===" '='*            {END}
   | id                   { IDENTIFIER (Lexing.lexeme lexbuf)  }
-
 
 
 
