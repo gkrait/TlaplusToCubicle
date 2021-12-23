@@ -17,7 +17,7 @@ let eol lexbuf =
 %token PLUS MINUS STAR SLASH EQUAL Larger Smaller OR AND  EXISTS FORALL
 %token LPAR RPAR COLON IN PRIME  ASSIGN SLPAR  SRPAR ARROW COMMA  Exclamation EXCEPT
 %token QUOTATION  LCurly_bra RCurly_bra ARROW_set UNCHANGED MODULE EXTENDS TRUE FALSE
-%token NOT_EQ NOT CASE  Square END
+%token NOT_EQ NOT CASE  Square END IMPLICATION
 %token <string> IDENTIFIER 
 %token <string> Num VARs CONS 
 %token <string> NEWLINE 
@@ -100,6 +100,7 @@ definition:
 | LPAR temporal_formula  RPAR {$2}
 |  temporal_formula   AND    temporal_formula   {Ast.Mix ($1,Ast.Conj,$3)}  
 |  temporal_formula   OR    temporal_formula   {Ast.Mix ($1,Ast.Disjun,$3)}  
+| temporal_formula IMPLICATION temporal_formula {Ast.Implication($1,$3) }
 | NOT temporal_formula {Ast.Negation $2 } %prec NOT
 ;
 
@@ -125,24 +126,19 @@ predicate:
 | proposition {Ast.Prop $1} 
 | EXISTS varlist IN IDENTIFIER COLON   temporal_formula      { 
   let pred = tmp_to_pred $6 in 
-  Ast.Existence (Ast.Exis, $2, Ast.Inclus, Ast.Var $4, Ast.Col, pred) } %prec EXISTS
+  Ast.Existence (Ast.Exis, $2,  Ast.Var $4, pred) } %prec EXISTS
 | FORALL varlist IN IDENTIFIER COLON    temporal_formula      { 
 let pred = tmp_to_pred $6 in 
-  Ast.Universal (Ast.Univ, $2, Ast.Inclus, Ast.Var $4, Ast.Col, pred) 
+  Ast.Universal (Ast.Univ, $2, Ast.Var $4,  pred) 
    } %prec FORALL
 ;
-/* problem in quantification */
 
 
 
 
- /*
- logical_oper:
-| AND  {Ast.Conj}
-| OR {Ast.Disjun}; 
-*/
+
   proposition:
- expr EQUAL expr      { Ast.Equality ($1,Ast.EQ,$3) } 
+ expr EQUAL expr      { Ast.Equality ($1,$3) } 
 | expr Larger expr     { Ast.Inequality ($1,Ast.Greater,$3) }
 | expr Smaller expr    { Ast.Inequality ($1,Ast.Less,$3) }
 | expr NOT_EQ expr      { Ast.Not_equal($1,$3) }
