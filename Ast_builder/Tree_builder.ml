@@ -67,7 +67,7 @@ let rec parse_tla spec = match spec with
 (**************************************************************************************************)
 (**************************************************************************************************)
 
-let rec trans_equality  eq  = let Ast.Equality(l1 ,equa ,l2) =eq   in 
+let rec trans_equality  eq  = let Ast.Equality(l1  ,l2) =eq   in 
   match l1 with 
     | Ast.Func_img  ( Ast.Var x1 , vars)  ->  
      begin  
@@ -109,8 +109,8 @@ let rec change_log_type log= match log with
  | Ast.Conj -> Cubicle_tree.Conj
  | Ast.Disjun -> Cubicle_tree.Disjun
 let rec trans_prop prop = match prop with 
-    | Ast.Equality (exp1 , com , exp2) ->  (trans_equality (Ast.Equality (exp1 , com , exp2))) 
-    | Ast.Inequality (exp1 , com , exp2) ->      let  Cubicle_tree.ELEstat ( str, Cubicle_tree.Equality(l1,l2)) = (trans_equality (Ast.Equality (exp1 , com , exp2))) in 
+    | Ast.Equality (exp1  , exp2) ->  (trans_equality (Ast.Equality (exp1  , exp2))) 
+    | Ast.Inequality (exp1 , com , exp2) ->      let  Cubicle_tree.ELEstat ( str, Cubicle_tree.Equality(l1,l2)) = (trans_equality (Ast.Equality (exp1  , exp2))) in 
                                                     Cubicle_tree.ELEstat ("unprime  inequality", 
                                                     Cubicle_tree.Inequality(l1,tla_to_cub_comp com ,l2)  )
  |  Ast.Open_prop (v,var_list) ->  
@@ -147,10 +147,10 @@ let rec trans_prop prop = match prop with
 let rec trans_pred pred =
  match pred with 
    | Ast.Prop prop ->  trans_prop prop
-   | Ast.Universal (quanti , var_list , coparism , Ast.Var(z) , uni , pred1)  -> begin
+   | Ast.Universal (quanti , var_list  , Ast.Var(z)  , pred1)  -> begin
             match pred1 with 
                 | Ast.Prop pro -> begin match  pro with 
-                       |  Ast.Equality  (exp1 , coparism , exp2)  ->
+                       |  Ast.Equality  (exp1  , exp2)  ->
                             let l1=tla_to_cub_exp exp1 in 
                             let l2=tla_to_cub_exp exp2 in 
                             Cubicle_tree.ELEstat ("unprime  equality",
@@ -188,7 +188,7 @@ let rec trans_pred pred =
                  let logi=tla_to_cub_log logicalop in 
                 Cubicle_tree.ELEstat ("Mix", 
                 Cubicle_tree.Coposition(prop1, logi ,prop2))
-   | Ast.Existence (quanti , var_list , coparism , Ast.Var(z) , uni , pred1) -> 
+   | Ast.Existence (quanti , var_list , Ast.Var(z)  , pred1) -> 
            trans_pred  pred1
         (*Cubicle_tree.ELEstat ("Uncovered", 
                 Cubicle_tree.Equality(Cubicle_tree.Var("x") , Cubicle_tree.Var("x"))) *)
@@ -197,7 +197,6 @@ let rec trans_pred pred =
  
 
          (* Cubicle_tree.ELEstat ( "To Check", trans_pred pred1)
-
        Cubicle_tree.Equality ( Cubicle_tree.Var("xnxnxnn"), 
           Cubicle_tree.Var(z) ) )  *)
 let rec drop_str info= match info with 
@@ -231,8 +230,44 @@ let rec trans_temp obj =   match obj with
           Cubicle_tree.Negation(trans)  )  
  | Ast.CASES(exp , vars , arrows ) ->  let cub_arrows= tla_to_cub_arrow arrows in 
        Cubicle_tree.ELEMix("Cases",
-        Cubicle_tree.CASES(Cubicle_tree.Func_img((tla_to_cub_exp exp) , vars), vars , cub_arrows )  )             
+        Cubicle_tree.CASES(Cubicle_tree.Func_img((tla_to_cub_exp exp) , vars), vars , cub_arrows )  )   
+  | Ast.Implication(temp1,temp2) -> let equiv= Ast.Mix(Ast.Negation(temp2), Ast.Disjun, temp1 ) in 
+   trans_temp equiv
 
+(**************************************************************************************************)
+(**************************************************************************************************)
+(**************************************************************************************************)
+(*******************************  Computing negation of statement  ********************************)
+(**************************************************************************************************)
+(**************************************************************************************************)
+(**************************************************************************************************)
+
+let rec negation_prop stat = match stat with 
+    | Ast.Equality(e1,e2) -> Ast.Not_equal(e1,e2)
+    | Ast.Not_equal(e1,e2) -> Ast.Equality(e1,e2)
+    | Ast.Coposition(e1,log,e2) -> 
+            begin match log with 
+                | Ast.Conj -> Ast.Coposition(negation_prop e1, Ast.Disjun, negation_prop e2 )
+                | Ast.Disjun -> Ast.Coposition(negation_prop e1, Ast.Conj, negation_prop e2 )
+            end
+    | Ast.UNCHAN vars ->   stat
+    | Ast.Open_prop(name,vars) -> stat   (* will fix that in translation *)      
+
+let rec negation_pred stat = match stat with 
+    | Ast.Prop (prop) -> Ast.Prop (negation_prop prop)
+    | Ast.Existence (Ast.Exis, vars, Ast.Var v, (pred)) -> 
+        Ast.Universal(Ast.Univ,vars,Ast.Var v, negation_pred stat) 
+    | Ast.Universal (Ast.Univ, vars, Ast.Var v, pred) -> 
+        Ast.Existence (Ast.Exis, vars, Ast.Var v, negation_pred (pred)) 
+
+let rec negation_temp stat = match stat with
+    | Ast.Predec(pred) -> Ast.Predec (negation_pred pred)  
+    | Ast.Mix(temp1,log,temp2) ->   begin match log with 
+                | Ast.Conj -> Ast.Mix(negation_temp temp1, Ast.Disjun, negation_temp temp2 )
+                | Ast.Disjun -> Ast.Mix(negation_temp temp1, Ast.Conj, negation_temp temp2 )
+            end 
+    | Ast.Implication(temp1,temp2) ->  Ast.Mix(negation_temp temp1,Ast.Conj, temp2)
+    | Ast.Negation(temp) -> temp         
 
 (**************************************************************************************************)
 (**************************************************************************************************)
@@ -305,17 +340,24 @@ let rec print_init init_stat defs_dic= match init_stat with
         done;
         let (e1,e2) = !substitution in 
         e1
+    | Ast.Implication(pred1, pred2) -> let eq_stat=  Ast.Mix(negation_temp(pred2), Ast.Disjun, pred1) in 
+              print_init  eq_stat defs_dic    
     | _ -> ""    
+
 let rec remove_not_eqal safty_stat defs_dic = match safty_stat with 
-    | Ast.Predec( Ast.Prop (Ast.Not_equal(Ast.Func_img(exp1,[]) ,Ast.Func_img(exp2,[]))) ) -> ""   
-    | Ast.Mix(tem1,log, tem2) -> let stat1= remove_not_eqal tem1 defs_dic 
+    | Ast.Implication (Ast.Predec( Ast.Prop (Ast.Not_equal(Ast.Func_img(exp1,[]) ,Ast.Func_img(exp2,[]))) ) ,
+        temp2)->  print_init (negation_temp temp2) defs_dic 
+    | Ast.Predec( Ast.Prop (Ast.Not_equal(Ast.Func_img(exp1,[]) ,Ast.Func_img(exp2,[]))) ) -> ""
+    | Ast.Mix(tem1,log, tem2) -> 
+        let stat1= remove_not_eqal tem1 defs_dic 
         and  stat2= remove_not_eqal tem2 defs_dic in 
         let log_str = match log with 
                 |Ast.Conj -> " && " 
                 |Ast.Disjun -> " || "
                 | _ -> ""  in 
         non_trivial_con(stat1,stat2,log_str)
-    | _ ->   print_init safty_stat defs_dic                       
+    | Ast.Negation(temp) -> (remove_not_eqal (negation_temp temp) defs_dic)    
+    | _ ->   print_init (negation_temp safty_stat) defs_dic                       
 let rec print_intermid  intermid_stat defs_dic = match intermid_stat with 
         | Ast.Predec (pred) -> ((print_init intermid_stat defs_dic)  ,"") 
         | (Ast.Prime(exp1 , var_last , exp2)) | (Ast.Func_except(exp1 , var_last , exp2)) ->
@@ -352,6 +394,8 @@ let rec print_intermid  intermid_stat defs_dic = match intermid_stat with
             let  Cubicle_tree.ELEMix(str,cub_stat)=info_cub_stat in 
              let [(e1,e2)]= (Cub_print.print_temp cub_stat defs_dic) in 
              (e1,e2)
+        | Ast.Implication(pred1, pred2) -> let eq_stat=  Ast.Mix(negation_temp(pred2), Ast.Disjun, pred1) in 
+              print_intermid  eq_stat defs_dic
 let rec print_Next next_stat defs_dic name = let  tra=  trans_temp next_stat in 
     let transitions_str =  ref "" in 
     let stats_list= print_Cubobj  name tra defs_dic in 
@@ -418,7 +462,7 @@ let rec translate ?okx:(typeOk_stat_name= "TypeOk")
                                   else "z"  in
                         let stat_without_not_eq = if (List.length var_list) > 1 then  remove_not_eqal  stat !defs_dic
                             else print_init stat !defs_dic in         
-                        ("unsafe (")  ^ (vars_safe) ^  (") {") ^ ("not (") ^(stat_without_not_eq)^(" )")  ^ ("} \n")
+                        ("unsafe (")  ^ (vars_safe) ^  (") {")  ^(stat_without_not_eq)^(" ")  ^ ("} \n")
 
                     else "" 
                 in  print_string result  ;
@@ -435,15 +479,8 @@ let rec translate ?okx:(typeOk_stat_name= "TypeOk")
    
             
   
-
-   
   let read_whole_file filename =
     let ch = open_in filename in
     let s = really_input_string ch (in_channel_length ch) in
     close_in ch;
     s  
-
-
-
-
-
