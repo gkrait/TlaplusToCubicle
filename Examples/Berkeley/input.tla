@@ -2,11 +2,9 @@
 EXTENDS  TLC
 CONSTANTS  Proc
 VARIABLES A 
-TypeOk == A \in [Proc ->  { " Idle "  , " Wait " , " Crit ",  " Crash " } ] 
+TypeOk == A \in [Proc ->  { "Idle"  , "Wait" , "Crit",  "Crash" } ] 
 Init ==  A = [obj \in Proc |-> "Idle"] 
-Safety(z1,z2) ==   (~(A[z1] = Crit) 
-                \/ ~(A[z2] = Crit))
-                /\ (z1 # z2) 
+Safety(z1,z2) ==   z1 # z2 => (~(A[z1] = "Crit") \/ ~(A[z2] = "Crit")) 
 tr1(z) ==  A[z] = "Idle"
            /\ A' = [ j \in Proc |-> CASE  j=z -> "Wait"
                                            [] j < z -> A[j] 
