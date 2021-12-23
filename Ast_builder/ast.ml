@@ -46,7 +46,7 @@ type logicalop =
 | ASSIG 
 
 type prop = 
-| Equality of exp * coparism * exp 
+| Equality of exp  * exp 
 | Inequality of exp * coparism * exp
 | Not_equal of exp * exp 
 | Inclusion of exp * string list 
@@ -63,8 +63,8 @@ type quanti=
 
 type pred = 
 | Prop of prop
-| Existence of quanti * string list * coparism * exp * uni * pred
-| Universal of quanti * string list * coparism * exp * uni * pred
+| Existence of quanti * string list  * exp  * pred
+| Universal of quanti * string list  * exp  * pred
 | Pred_Comp of pred * logicalop * pred 
 | Open_pred of string * string list
 
@@ -79,6 +79,7 @@ type temp=
 | Mix of temp * logicalop * temp
 | Negation of temp 
 | Open_temp of string * string list
+| Implication of temp * temp
 
 
 
@@ -113,4 +114,3 @@ type tla_file =
 
 type obj_info = 
 | ElE of   ldef_sides  * string list * string *  rdef_sides * string
-
