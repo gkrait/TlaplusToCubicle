@@ -1,0 +1,69 @@
+
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{TlaplusToCubicle}
+\date{December 2021}
+
+\begin{document}
+
+\maketitle
+
+\section*{Overview}
+
+\textit{TlaplusToCubicle} is a software to translate a spec written in a fragment of \textit{TLA++}, producing an equivalent spec in Cubicle input language. Such a translator is useful for TLA+ specs that are defined by parametrized transition systems with states represented as arrays indexed by an arbitrary number of processes. For checking this type of classes, Cubicle model checker shows good results.
+
+ \textit{TlaplusToCubicle} takes a \textit{.tla} file (where the considered spec  is saved) as an input, generating a  \textit{.cub} file where an equivalent spec is written in Cubicle's input language. 
+
+\section*{Repository structure}
+
+\subsection*{Algorithm}
+
+The algorithm idea is simply to 
+\begin{itemize}
+\item parse the \textit{.tla} input file, generating the abstract syntax tree $\emph{Tla\_Ast}$, 
+\item translate $\emph{Tla\_Ast}$ to a syntax tree $\emph{Cubicle\_Ast}$ that is corresponding to an "equivalent" Cubicle spec, and 
+\item convert $\emph{Cubicle\_Ast}$ to a string that involves the Cubicle translation. 
+
+\end{itemize}
+
+The implementation of the algorithm is written in Ocaml. The starting point for the software is in File \emph{main.ml}.
+\subsection*{Parsing the input file }
+As mentioned above, the input spec is supposed to be written in a fragment of \textit{TLA++}. File \textit{parser.mly} contains the grammar of the fragment. To generate the parser, we use \textit{Menhir} which is an open source parser generator. 
+
+Note that before parsing the input file, a lexer, produced by \textit{ocamllex}, performs the lexical analysis of the regular expressions from the input file. The file \textit{lexer.mll} contains  the lexer definitions. 
+
+
+The structure of $\emph{Tla\_Ast}$ is described in File  $\textit{Tla\_tree.ml}$. Briefly, a \textit{.tla} file  grammatically  consists of variables and constants declaration, followed by a sequence of definitions. 
+
+
+\subsection*{ Translating $\emph{Tla\_Ast}$ to $\emph{Cubicle\_Ast}$ }
+The instructions of the translation process are in File \emph{Translator.ml}. Function \emph{translate} combines the steps of the translation process together. The function has 5 optional arguments of string values determining the predicates:  
+
+\begin{itemize}
+\item \emph{TypeOk} that declares the data type of each variable, 
+\item \emph{Safety}  that represents the invariant predicate of the \emph{Tla++} sepc and will be translated to the  Cubicle-predicate \emph{unsafe}, 
+\item \emph{Init} that specifies the initial-state relation,
+\item \emph{Next} that specifies the next-state relation and will be translated to the transitions in the Cubicle output file, and
+\item \emph{Spec} which is a temporal formula that represents the behavior spec,
+\end{itemize}
+in addition to a keyword argument \emph{fil} of type $\emph{tla\_file}$.   
+
+\subsection*{ Printing $\emph{Cubicle\_Ast}$ }
+After translating each $\emph{Tla++}$ definition, Function \emph{translate} prints the resulting equivalent \emph{Cubicle} object(s). The functions used in printing \emph{Cubicle} objects are in File $\emph{Cub\_print}$.
+
+
+\section*{Limitations}
+
+\begin{itemize}
+
+\item The \emph{Tla++} fragment is too restricted. The data type of the considered variables are mainly \emph{Tla++} functions where the domain is a constant \emph{Proc} that represents the set of processes. The values that functions can take are integer, boolean or string.  
+\item  The user needs to declare the type of each variable in Predicate \emph{TypeOk} using function sets. More precisely, 
+ the accepted syntax is a conjunction of propositions of the form:
+$$ \emph{var} \textrm{ } \backslash n \textrm{ }  [ \emph{Proc}   \rightarrow   \{ e_1, \dots, e_n \} ], $$
+ where $e_1, \dots, e_n$ are integer, boolean or string values. 
+
+\end{itemize}
+
+\end{document}
+
