@@ -1,3 +1,9 @@
+
+############################################################
+##     Title: XYZ expressions
+##     Author: Jan Midtgaard
+##     Date: 2014
+##      Availability: https://github.com/jmid/xyz-exp-ast/blob/master/Makefile
 ############################################################
 ## Makefile for the Tla2Cubicle grammar
 ## ---------------------------------------------------------
