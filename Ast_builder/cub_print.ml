@@ -1,4 +1,4 @@
-  
+ 
  type temp_conjunctions = {predi : Cubicle_tree.temp list  ; pri : Cubicle_tree.temp list } 
 
 (**************************************************************************************************)
@@ -66,7 +66,7 @@ let rec print_prop ?(open_def_vars="") prop defs_dic stat_position  = match prop
       let l= List.length defs_dic 
       and substitution = ref ("","") in
       for i= 0 to l-1 do 
-        let (def_name,(def_stat,e2))=List.nth defs_dic i in 
+        let (def_name,(def_stat,e2,open_vars))=List.nth defs_dic i in 
         if prop_name = def_name then  substitution := (def_stat,e2)
         else substitution := !substitution; 
       !substitution;
@@ -178,7 +178,7 @@ let rec print_temp  temp defs_dic stat_position=
       let l= List.length defs_dic 
       and substitution = ref ("","") in
       for i= 0 to l-1 do 
-        let (def_name,(pred_part,primed_part))=List.nth defs_dic i in 
+        let (def_name,(pred_part,primed_part,open_vars))=List.nth defs_dic i in 
         if temp_name = def_name then  substitution := (pred_part,primed_part)
         else substitution := !substitution; 
       !substitution;
@@ -206,7 +206,5 @@ let rec print_temp  temp defs_dic stat_position=
 
 
               
-
-
 
 
